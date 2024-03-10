@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/ui/screens/add_new_card/screen.dart';
+import 'package:add_new_card/add_new_card.dart';
 
 void main() {
   runApp(const MyApp());
