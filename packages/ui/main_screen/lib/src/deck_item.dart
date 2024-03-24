@@ -23,6 +23,7 @@ class DeckItem extends StatelessWidget {
             subtitle: const Text('Brief description of the deck'),
           ),
           ButtonBar(
+            alignment: MainAxisAlignment.start,
             children: [
               TextButton(
                 onPressed: () => null,
