@@ -37,6 +37,9 @@ dependencies:
   components:
     path: 'packages/ui/components'
 
+  card_browser:
+    path: 'packages/ui/card_browser'
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
