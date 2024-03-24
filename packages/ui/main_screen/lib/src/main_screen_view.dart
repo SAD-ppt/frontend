@@ -96,6 +96,45 @@ class _MainScreenView extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    leading: Icon(Icons.add_box),
+                    title: Text('Add New Deck'),
+                    onTap: () {
+                      // Handle add new deck
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.add_circle),
+                    title: Text('Add New Card'),
+                    onTap: () {
+                      // Handle add new card
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.add_circle_outline),
+                    title: Text('Add New Template'),
+                    onTap: () {
+                      // Handle add new template
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
