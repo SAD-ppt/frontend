@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ChosenFieldsList extends StatelessWidget {
+class DragAndDropFieldsSelectForm extends StatelessWidget {
   final List<String> availableFields;
   final List<String> frontFields;
   final List<String> backFields;
@@ -11,7 +10,7 @@ class ChosenFieldsList extends StatelessWidget {
   final void Function(String) onFrontFieldRemoved;
   final void Function(String) onBackFieldRemoved;
 
-  const ChosenFieldsList({
+  const DragAndDropFieldsSelectForm({
     super.key,
     required this.availableFields,
     required this.frontFields,
@@ -51,7 +50,6 @@ class _AvailableFieldsList extends StatelessWidget {
   final List<String> availableFields;
 
   const _AvailableFieldsList({
-    super.key,
     required this.availableFields,
   });
 
@@ -124,8 +122,7 @@ class _ChosenFieldsList extends StatelessWidget {
           ),
         );
       },
-      onAcceptWithDetails: (details) =>
-          onAdded(details.data),
+      onAcceptWithDetails: (details) => onAdded(details.data),
     );
   }
 }

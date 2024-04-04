@@ -1,8 +1,7 @@
 import 'package:add_new_template/src/bloc/bloc.dart';
 import 'package:add_new_template/src/bloc/event.dart';
 import 'package:add_new_template/src/bloc/state.dart';
-import 'package:add_new_template/src/card_name.dart';
-import 'package:add_new_template/src/add_card_types/chosen_fields_list.dart';
+import 'package:add_new_template/src/add_card_types/drag_and_drop_fields_select_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,10 +47,12 @@ class _CardTypeForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AddNewTemplateBloc, AddNewTemplateState>(
         builder: (context, state) {
-      return ChosenFieldsList(
-        availableFields: state.fields.where((element) =>
-              !state.cardTypes[index].frontFields.contains(element) &&
-              !state.cardTypes[index].backFields.contains(element)).toList(),
+      return DragAndDropFieldsSelectForm(
+        availableFields: state.fields
+            .where((element) =>
+                !state.cardTypes[index].frontFields.contains(element) &&
+                !state.cardTypes[index].backFields.contains(element))
+            .toList(),
         frontFields: state.cardTypes[index].frontFields,
         backFields: state.cardTypes[index].backFields,
         onFrontFieldAdded: (field) {
