@@ -60,11 +60,11 @@ final class AddFieldToCardType extends AddNewTemplateEvent {
 
 final class RemoveFieldFromCardType extends AddNewTemplateEvent {
   final int index;
-  final int fieldIndex;
+  final String field;
   final bool isFront;
 
-  const RemoveFieldFromCardType(this.index, this.fieldIndex, this.isFront);
+  const RemoveFieldFromCardType(this.index, this.field, this.isFront);
 
   @override
-  List<Object> get props => [index, fieldIndex, isFront];
+  List<Object> get props => [index, field, isFront];
 }

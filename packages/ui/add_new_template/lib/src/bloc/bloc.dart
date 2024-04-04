@@ -51,45 +51,33 @@ class AddNewTemplateBloc
 
   FutureOr<void> _onAddFieldToCardType(
       AddFieldToCardType event, Emitter<AddNewTemplateState> emit) {
-    final cardType = state.cardTypes[event.index];
-    if (event.isFront) {
-      emit(state.copyWith(
-        cardTypes: [
-          ...state.cardTypes..removeAt(event.index),
-          cardType.copyWith(frontFields: [...cardType.frontFields, event.field]),
-        ],
-        fields: state.fields..remove(event.field),
-      ));
-    } else {
-      emit(state.copyWith(
-        cardTypes: [
-          ...state.cardTypes..removeAt(event.index),
-          cardType.copyWith(backFields: [...cardType.backFields, event.field]),
-        ],
-        fields: state.fields..remove(event.field),
-      ));
-    }
+    final newCardTypes = state.cardTypes.indexed.map((e) {
+      final (index, cardType) = e;
+      if (index == event.index) {
+        if (event.isFront) {
+          return cardType.addFieldToFront(event.field);
+        } else {
+          return cardType.addFieldToBack(event.field);
+        }
+      }
+      return cardType;
+    }).toList();
+    emit(state.copyWith(cardTypes: newCardTypes));
   }
 
   FutureOr<void> _onRemoveFieldFromCardType(
       RemoveFieldFromCardType event, Emitter<AddNewTemplateState> emit) {
-    final cardType = state.cardTypes[event.index];
-    if (event.isFront) {
-      emit(state.copyWith(
-        cardTypes: [
-          ...state.cardTypes..removeAt(event.index),
-          cardType.copyWith(frontFields: cardType.frontFields..removeAt(event.fieldIndex)),
-        ],
-        fields: [...state.fields, cardType.frontFields[event.fieldIndex]],
-      ));
-    } else {
-      emit(state.copyWith(
-        cardTypes: [
-          ...state.cardTypes..removeAt(event.index),
-          cardType.copyWith(backFields: cardType.backFields..removeAt(event.fieldIndex)),
-        ],
-        fields: [...state.fields, cardType.backFields[event.fieldIndex]],
-      ));
-    }
+    final newCardTypes = state.cardTypes.indexed.map((e) {
+      final (index, cardType) = e;
+      if (index == event.index) {
+        if (event.isFront) {
+          return cardType.removeFieldFromFront(event.field);
+        } else {
+          return cardType.removeFieldFromBack(event.field);
+        }
+      }
+      return cardType;
+    }).toList();
+    emit(state.copyWith(cardTypes: newCardTypes));
   }
 }
