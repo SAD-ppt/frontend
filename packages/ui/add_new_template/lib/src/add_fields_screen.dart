@@ -6,8 +6,8 @@ import 'bloc/event.dart';
 import 'fields_list.dart';
 import 'template_name.dart';
 
-class AddFields extends StatelessWidget {
-  const AddFields({super.key});
+class AddFieldsScreen extends StatelessWidget {
+  const AddFieldsScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

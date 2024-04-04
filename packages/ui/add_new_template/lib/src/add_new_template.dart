@@ -1,5 +1,5 @@
-import 'package:add_new_template/src/add_card_types/add_card_types.dart';
-import 'package:add_new_template/src/add_fields.dart';
+import 'package:add_new_template/src/add_card_types_screen/add_card_types_screen.dart';
+import 'package:add_new_template/src/add_fields_screen.dart';
 import 'package:add_new_template/src/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,9 +18,9 @@ class AddNewTemplateScreen extends StatelessWidget {
           WidgetBuilder builder;
           switch (settings.name) {
             case 'add_new_template/add_fields':
-              builder = (BuildContext context) => const AddFields();
+              builder = (BuildContext context) => const AddFieldsScreen();
             case 'add_new_template/add_card_types':
-              builder = (BuildContext context) => const AddCardTypesPage();
+              builder = (BuildContext context) => const AddCardTypesScreen();
             default:
               throw Exception('Invalid route: ${settings.name}');
           }

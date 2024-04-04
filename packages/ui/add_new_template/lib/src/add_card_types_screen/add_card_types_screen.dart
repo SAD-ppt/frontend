@@ -1,12 +1,13 @@
 import 'package:add_new_template/src/bloc/bloc.dart';
 import 'package:add_new_template/src/bloc/event.dart';
 import 'package:add_new_template/src/bloc/state.dart';
-import 'package:add_new_template/src/add_card_types/drag_and_drop_fields_select_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddCardTypesPage extends StatelessWidget {
-  const AddCardTypesPage({super.key});
+import 'drag_and_drop_fields_select_form.dart';
+
+class AddCardTypesScreen extends StatelessWidget {
+  const AddCardTypesScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
