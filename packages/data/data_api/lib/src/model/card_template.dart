@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 enum CardSide { front, back }
@@ -34,4 +34,22 @@ class CardTemplate extends Equatable {
 
   @override
   List<Object> get props => [id, noteTemplateId, name];
+}
+
+/// A class that represents a card template detail, with the card template
+/// along with the front and back fields.
+@immutable
+class CardTemplateDetail extends Equatable {
+  final CardTemplate cardTemplate;
+  final List<CardTemplateField> frontFields;
+  final List<CardTemplateField> backFields;
+
+  const CardTemplateDetail({
+    required this.cardTemplate,
+    required this.frontFields,
+    required this.backFields,
+  });
+
+  @override
+  List<Object> get props => [cardTemplate, frontFields, backFields];
 }

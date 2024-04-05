@@ -1,4 +1,4 @@
-name: sqlite_data
+name: repos
 description: "A new Flutter package project."
 version: 0.0.1
 homepage:
@@ -10,8 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  data_api:
-    path: ../data_api
 
 dev_dependencies:
   flutter_test:

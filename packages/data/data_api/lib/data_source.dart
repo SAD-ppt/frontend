@@ -1,7 +1,6 @@
 library data_source;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/card_api.dart';
+export 'src/note_api.dart';
+export 'src/note_template_api.dart';
+export 'src/deck_api.dart';
