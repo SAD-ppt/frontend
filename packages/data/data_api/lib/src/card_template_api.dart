@@ -11,6 +11,9 @@ abstract interface class CardTemplateApi {
   Future<CardTemplate> createEmptyCardTemplate(
       Uuid noteTemplateId, String name);
 
+  Future<CardTemplate> createNewCardTemplate(Uuid noteTemplateId, String name,
+      List<(CardSide side, int orderNumber)> fields);
+
   Future<void> addNewFieldToCardTemplate(Uuid cardTemplateId, CardSide side);
 
   Future<void> deleteFieldFromCardTemplate(

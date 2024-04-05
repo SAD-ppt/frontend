@@ -4,6 +4,8 @@ export 'src/card_api.dart';
 export 'src/note_api.dart';
 export 'src/note_template_api.dart';
 export 'src/deck_api.dart';
+export 'src/card_template_api.dart';
+
 export 'src/model/card.dart';
 export 'src/model/deck.dart';
 export 'src/model/note.dart';
