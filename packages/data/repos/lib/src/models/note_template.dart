@@ -7,11 +7,13 @@ import 'card_template.dart';
 @immutable
 class NoteTemplate extends Equatable {
   final Uuid id;
+  final String name;
   final List<String> fieldNames;
   final List<CardTemplate> associatedCardTemplates;
 
   const NoteTemplate({
     required this.id,
+    required this.name,
     required this.fieldNames,
     required this.associatedCardTemplates,
   });
@@ -19,5 +21,5 @@ class NoteTemplate extends Equatable {
   get getId => id;
 
   @override
-  List<Object?> get props => [id, fieldNames, associatedCardTemplates];
+  List<Object?> get props => [id, name, fieldNames, associatedCardTemplates];
 }
