@@ -85,3 +85,4 @@ class NoteTemplateRepo {
     throw UnimplementedError();
   }
 }
+}
