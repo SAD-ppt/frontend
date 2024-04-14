@@ -8,7 +8,7 @@ abstract interface class NoteTemplateApi {
       getNoteTemplate(Uuid id);
 
   Future<(NoteTemplate, List<NoteTemplateField>)> createNoteTemplate(
-      NoteTemplate noteTemplate, List<NoteTemplateField> noteFields);
+      String name, List<String> noteFieldNames);
 
   Future<NoteTemplate> updateNoteTemplate(NoteTemplate noteTemplate);
 
