@@ -14,18 +14,12 @@ class NoteTemplateRepo {
   /// Creates a new note template with the given [name] and [fieldNames].
   /// The newly created note will have no associated card templates.
   /// Returns the newly created note template.
-  Future<NoteTemplate> createNewNoteTemplate(
+  Future<void> createNewNoteTemplate(
     String name,
     List<String> fieldNames,
   ) async {
     final (api.NoteTemplate noteTemplate, List<api.NoteTemplateField> fields) =
         await noteTemplateApi.createNoteTemplate(name, fieldNames);
-    return NoteTemplate(
-      id: noteTemplate.id,
-      name: noteTemplate.name,
-      fieldNames: fieldNames,
-      associatedCardTemplates: const [],
-    );
   }
 
   /// Creates a new card template with the given [name] and [front] and [back]
