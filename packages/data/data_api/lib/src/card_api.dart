@@ -10,4 +10,5 @@ abstract interface class CardApi {
   Future<Card> createCard(Card card);
   Future<Card> updateCard(Card card);
   Future<void> deleteCard(Uuid id);
+  Future<int> getNumCardsInDeck(Uuid id);
 }
