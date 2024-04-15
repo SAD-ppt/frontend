@@ -1,4 +1,4 @@
-import 'package:data_source/src/model/note_template.dart';
+import 'package:data_api/src/model/note_template.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class NoteTemplateApi {

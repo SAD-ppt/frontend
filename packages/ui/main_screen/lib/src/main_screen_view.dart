@@ -110,34 +110,37 @@ class _MainScreenView extends StatelessWidget {
   void _onAddButtonPressed(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.add_box),
-              title: const Text('Add New Deck'),
-              onTap: () {
-                _onAddNewDeck(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.add_circle),
-              title: const Text('Add New Card'),
-              onTap: () {
-                // Handle add new card
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.add_circle_outline),
-              title: const Text('Add New Template'),
-              onTap: () {
-                // Handle add new template
-                Navigator.pop(context);
-              },
-            ),
-          ],
+      builder: (_) {
+        return BlocProvider.value(
+          value: context.read<MainScreenBloc>(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.add_box),
+                title: const Text('Add New Deck'),
+                onTap: () {
+                  _onAddNewDeck(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_circle),
+                title: const Text('Add New Card'),
+                onTap: () {
+                  // Handle add new card
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_circle_outline),
+                title: const Text('Add New Template'),
+                onTap: () {
+                  // Handle add new template
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         );
       },
     );
@@ -146,17 +149,20 @@ class _MainScreenView extends StatelessWidget {
   void _onAddNewDeck(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AddNewDeckPopup(
-          onAddDeck: (deckName, deckDescription) {
-            // emit the MainScreenAddNewDeckSubmit event
-            context.read<MainScreenBloc>().add(
-                  MainScreenAddNewDeckSubmit(
-                    deckName: deckName,
-                    deckDescription: deckDescription,
-                  ),
-                );
-          },
+      builder: (_) {
+        return BlocProvider.value(
+          value: context.read<MainScreenBloc>(),
+          child: AddNewDeckPopup(
+            onAddDeck: (deckName, deckDescription) {
+              // emit the MainScreenAddNewDeckSubmit event
+              context.read<MainScreenBloc>().add(
+                    MainScreenAddNewDeckSubmit(
+                      deckName: deckName,
+                      deckDescription: deckDescription,
+                    ),
+                  );
+            },
+          ),
         );
       },
     );
