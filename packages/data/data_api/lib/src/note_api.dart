@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'package:data_source/src/model/note.dart';
+import './model/note.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class NoteApi {
