@@ -6,10 +6,12 @@ class DeckItem extends StatelessWidget {
   const DeckItem({
     Key? key,
     required this.deck,
+    required this.description,
     required this.onTap,
   }) : super(key: key);
 
   final String deck;
+  final String description;
   final VoidCallback onTap;
 
   @override
@@ -20,9 +22,9 @@ class DeckItem extends StatelessWidget {
         children: [
           ListTile(
             title: Text(deck),
-            subtitle: const Text('Brief description of the deck'),
+            subtitle: Text(description),
           ),
-          ButtonBar(
+          OverflowBar(
             alignment: MainAxisAlignment.start,
             children: [
               TextButton(
