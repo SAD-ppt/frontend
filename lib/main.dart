@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:main_screen/main_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 void main() {
   runApp(const MyApp());
 }

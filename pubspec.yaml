@@ -37,6 +37,12 @@ dependencies:
   components:
     path: 'packages/ui/components'
 
+  card_browser:
+    path: 'packages/ui/card_browser'
+
+  add_new_template:
+    path: 'packages/ui/add_new_template'
+
   main_screen:
     path: 'packages/ui/main_screen'
 
@@ -47,6 +53,8 @@ dependencies:
   flutter_bloc: ^8.1.5
   bloc: ^8.1.4
   equatable: ^2.0.5
+  sqflite: ^2.3.3
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
