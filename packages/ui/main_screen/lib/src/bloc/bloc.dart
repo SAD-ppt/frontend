@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'package:main_screen/main_screen.dart';
-import 'package:data_api/repos/repos.dart';
+// import 'package:repos/repos.dart';
 
 class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
-  DeckRepo deckRepo;
+  // DeckRepo deckRepo;
 
-  MainScreenBloc({required this.deckRepo}) : super(const MainScreenState()) {
-    
+  MainScreenBloc(/* {required this.deckRepo} */) : super(const MainScreenState()) {
     on<MainScreenInitial>(_onInitial);
     on<MainScreenAddButtonPressed>(_onAddButtonPressed);
     on<MainScreenAddNewDeck>(_onAddNewDeck);
