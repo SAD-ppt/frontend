@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:main_screen/main_screen.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:login_screen/login_screen.dart';
+import 'package:register_screen/register_screen.dart';
+// import 'package:main_screen/main_screen.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: const RegisterScreen(),
     );
   }
 }

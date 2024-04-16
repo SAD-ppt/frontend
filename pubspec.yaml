@@ -30,6 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  login_screen:
+    path: 'packages/ui/login_screen'
+
+  register_screen:
+    path: 'packages/ui/register_screen'
 
   add_new_card:
     path: 'packages/ui/add_new_card'
