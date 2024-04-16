@@ -7,17 +7,28 @@ sealed class MainScreenEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class MainScreenInitialEvent extends MainScreenEvent {
+class MainScreenAddButtonPressed extends MainScreenEvent {
+  const MainScreenAddButtonPressed();
 }
 
-class MainScreenAddNewDeckEvent extends MainScreenEvent {
-  final String deck;
+class MainScreenInitial extends MainScreenEvent {
+  const MainScreenInitial();
+}
 
-  MainScreenAddNewDeckEvent({required this.deck});
+class MainScreenAddNewDeck extends MainScreenEvent {}
+class MainScreenAddNewDeckSubmit extends MainScreenEvent {
+  final String deckName;
+  final String deckDescription;
+
+  const MainScreenAddNewDeckSubmit({
+    required this.deckName,
+    required this.deckDescription,
+  });
 
   @override
-  List<Object> get props => [deck];
+  List<Object> get props => [deckName, deckDescription];
 }
 
-class MainScreenAddNewDeckPopupEvent extends MainScreenEvent {
+class MainScreenAddNewDeckCancel extends MainScreenEvent {
+  const MainScreenAddNewDeckCancel();
 }
