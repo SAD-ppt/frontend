@@ -19,7 +19,7 @@ class _RegisterScreenView extends StatelessWidget {
             image: AssetImage('images/register_background.png',
                 package: 'register_screen'),
             fit: BoxFit.cover,
-            opacity: 0.3,
+            opacity: 0.4,
           ),
         ),
         child: Center(
