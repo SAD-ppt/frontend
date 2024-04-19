@@ -14,6 +14,11 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
   FutureOr<void> _onLoginButtonPressed(
       OnLoginButtonPressed event, Emitter<LoginScreenState> emit) async {
     emit(const LoginScreenState(state: LoginState.loading));
+    // Validate the email and password fields
+    if (event.email.isEmpty || event.password.isEmpty) {
+      emit(const LoginScreenState(state: LoginState.emptyFields));
+      return;
+    }
     // Call the login service
     // If the login is successful, emit(LoginState.success)
     // wait 2 seconds to simulate a network request
@@ -26,10 +31,12 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
   FutureOr<void> _onRegisterPressed(
       OnRegisterPressed event, Emitter<LoginScreenState> emit) {
     // Navigate to the register screen
+    emit(const LoginScreenState(state: LoginState.register));
   }
 
   FutureOr<void> _onForgotPasswordPressed(
       OnForgotPasswordPressed event, Emitter<LoginScreenState> emit) {
     // Navigate to the forgot password screen
+    emit(const LoginScreenState(state: LoginState.forgotPassword));
   }
 }

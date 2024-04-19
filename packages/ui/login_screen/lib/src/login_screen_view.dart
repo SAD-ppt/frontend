@@ -86,6 +86,12 @@ class _LoginScreenView extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
+              // If text field is empty, show a notification overlay alert
+              if (state.state == LoginState.emptyFields)
+                const Text(
+                  'Email and password fields cannot be empty.',
+                  style: TextStyle(color: Colors.red),
+                ),
               // Add a notification overlay alert if login fails
               if (state.state == LoginState.failure)
                 const Text(
@@ -99,7 +105,7 @@ class _LoginScreenView extends StatelessWidget {
                   const Text('Don\'t have an account? '),
                   TextButton(
                     onPressed: () {
-                      context.read().add(const OnRegisterPressed());
+                      context.read<LoginScreenBloc>().add(const OnRegisterPressed());
                     },
                     child: const Text('Register'),
                   ),
@@ -108,7 +114,7 @@ class _LoginScreenView extends StatelessWidget {
               // Text with link to forgot password screen
               TextButton(
                 onPressed: () {
-                  context.read().add(const OnForgotPasswordPressed());
+                  context.read<LoginScreenBloc>().add(const OnForgotPasswordPressed());
                 },
                 child: const Text('Forgot password?'),
               ),
