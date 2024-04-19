@@ -55,6 +55,8 @@ class _LoginScreenView extends StatelessWidget {
               SizedBox(
                 width: 300,
                 child: TextField(
+                  // obscure text to hide password
+                  obscureText: true,
                   controller: passwordController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
