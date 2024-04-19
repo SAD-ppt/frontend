@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:login_screen/src/bloc/bloc.dart';
+import 'package:login_screen/src/bloc/event.dart';
+import 'package:login_screen/src/bloc/state.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -12,8 +16,9 @@ class LoginScreen extends StatelessWidget {
 class _LoginScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return BlocBuilder<LoginScreenBloc, LoginScreenState>(
+        builder: (context, state) {
+      return Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('images/login_background.png',
@@ -56,7 +61,9 @@ class _LoginScreenView extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/main_screen');
+                  context.read<LoginScreenBloc>().add(
+                      const OnLoginButtonPressed(
+                          email: "aaa", password: "bbb"));
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size.fromWidth(300),
@@ -67,9 +74,17 @@ class _LoginScreenView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                child: const Text('Login', style: TextStyle(color: Colors.white),),
+                child: const Text(
+                  'Login',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-              const SizedBox(height: 20),
+              // Add a notification overlay alert if login fails
+              if (state.state == LoginState.failure)
+                const Text(
+                  'Login failed, please try again.', // will be replaced with the message from the server later
+                  style: TextStyle(color: Colors.red),
+                ),
               // Text with link to register screen
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +92,7 @@ class _LoginScreenView extends StatelessWidget {
                   const Text('Don\'t have an account? '),
                   TextButton(
                     onPressed: () {
-                      // Navigator.pushNamed(context, '/register_screen');
+                      context.read().add(const OnRegisterPressed());
                     },
                     child: const Text('Register'),
                   ),
@@ -86,14 +101,15 @@ class _LoginScreenView extends StatelessWidget {
               // Text with link to forgot password screen
               TextButton(
                 onPressed: () {
-                  // Navigator.pushNamed(context, '/forgot_password_screen');
+                  context.read().add(const OnForgotPasswordPressed());
                 },
                 child: const Text('Forgot password?'),
               ),
             ],
           ),
         ),
-      ),
-    );
+        // Add a notification overlay alert if login fails  
+      );
+    });
   }
 }

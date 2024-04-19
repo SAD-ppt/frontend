@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_screen/login_screen.dart';
 // import 'package:login_screen/login_screen.dart';
 import 'package:register_screen/register_screen.dart';
 // import 'package:main_screen/main_screen.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const RegisterScreen(),
+      home: const LoginScreenLayout()
     );
   }
 }
