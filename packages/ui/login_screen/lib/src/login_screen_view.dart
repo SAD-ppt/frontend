@@ -70,9 +70,9 @@ class _LoginScreenView extends StatelessWidget {
                   // get the email and password from the text fields
                   String getEmailFromField = emailController.text;
                   String getPasswordFromField = passwordController.text;
-                  context.read<LoginScreenBloc>().add(
-                      OnLoginButtonPressed(
-                          email: getEmailFromField, password: getPasswordFromField));
+                  context.read<LoginScreenBloc>().add(OnLoginButtonPressed(
+                      email: getEmailFromField,
+                      password: getPasswordFromField));
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size.fromWidth(300),
@@ -107,7 +107,9 @@ class _LoginScreenView extends StatelessWidget {
                   const Text('Don\'t have an account? '),
                   TextButton(
                     onPressed: () {
-                      context.read<LoginScreenBloc>().add(const OnRegisterPressed());
+                      context
+                          .read<LoginScreenBloc>()
+                          .add(const OnRegisterPressed());
                     },
                     child: const Text('Register'),
                   ),
@@ -116,14 +118,16 @@ class _LoginScreenView extends StatelessWidget {
               // Text with link to forgot password screen
               TextButton(
                 onPressed: () {
-                  context.read<LoginScreenBloc>().add(const OnForgotPasswordPressed());
+                  context
+                      .read<LoginScreenBloc>()
+                      .add(const OnForgotPasswordPressed());
                 },
                 child: const Text('Forgot password?'),
               ),
             ],
           ),
         ),
-        // Add a notification overlay alert if login fails  
+        // Add a notification overlay alert if login fails
       );
     });
   }

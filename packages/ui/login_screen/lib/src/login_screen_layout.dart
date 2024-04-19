@@ -11,7 +11,8 @@ class LoginScreenLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => LoginScreenBloc(), child: const _LoginScreenLayout());
+        create: (context) => LoginScreenBloc(),
+        child: const _LoginScreenLayout());
   }
 }
 

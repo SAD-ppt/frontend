@@ -1,6 +1,14 @@
 import 'package:equatable/equatable.dart';
 
-enum LoginState { initial, loading, success, failure, emptyFields, forgotPassword, register }
+enum LoginState {
+  initial,
+  loading,
+  success,
+  failure,
+  emptyFields,
+  forgotPassword,
+  register
+}
 
 class LoginScreenState extends Equatable {
   final LoginState state;

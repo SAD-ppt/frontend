@@ -8,17 +8,16 @@ class LoginLoading extends StatelessWidget {
     return
         // Add background picture
         Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('images/login_background.png',
-              package: 'login_screen'),
-          fit: BoxFit.cover,
-          opacity: 0.3,
-        ),
-      ),
-      child: const Center(
-        child: CircularProgressIndicator(),
-      )
-    );
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/login_background.png',
+                    package: 'login_screen'),
+                fit: BoxFit.cover,
+                opacity: 0.3,
+              ),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ));
   }
 }
