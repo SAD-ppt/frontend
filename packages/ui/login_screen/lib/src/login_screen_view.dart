@@ -16,6 +16,8 @@ class LoginScreen extends StatelessWidget {
 class _LoginScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
     return BlocBuilder<LoginScreenBloc, LoginScreenState>(
         builder: (context, state) {
       return Container(
@@ -38,10 +40,11 @@ class _LoginScreenView extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               // Username field, width 300
-              const SizedBox(
+              SizedBox(
                 width: 300,
                 child: TextField(
-                  decoration: InputDecoration(
+                  controller: emailController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
                   ),
@@ -49,10 +52,11 @@ class _LoginScreenView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               // Password field, width 300
-              const SizedBox(
+              SizedBox(
                 width: 300,
                 child: TextField(
-                  decoration: InputDecoration(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                   ),
@@ -61,9 +65,12 @@ class _LoginScreenView extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  // get the email and password from the text fields
+                  String getEmailFromField = emailController.text;
+                  String getPasswordFromField = passwordController.text;
                   context.read<LoginScreenBloc>().add(
-                      const OnLoginButtonPressed(
-                          email: "aaa", password: "bbb"));
+                      OnLoginButtonPressed(
+                          email: getEmailFromField, password: getPasswordFromField));
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size.fromWidth(300),
