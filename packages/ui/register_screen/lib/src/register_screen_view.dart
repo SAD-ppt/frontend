@@ -99,7 +99,11 @@ class _RegisterScreenView extends StatelessWidget {
                 onPressed: () {
                   String getEmailFromField = emailController.text;
                   String getPasswordFromField = passwordController.text;
-                  context.read<RegisterScreenBloc>().add(OnRegisterButtonPressed(email: getEmailFromField , password: getPasswordFromField, confirmPassword: confirmPasswordController.text));
+                  context.read<RegisterScreenBloc>().add(
+                      OnRegisterButtonPressed(
+                          email: getEmailFromField,
+                          password: getPasswordFromField,
+                          confirmPassword: confirmPasswordController.text));
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size.fromWidth(300),

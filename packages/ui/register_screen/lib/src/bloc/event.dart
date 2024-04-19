@@ -12,7 +12,10 @@ class OnRegisterButtonPressed extends RegisterScreenEvent {
   final String password;
   final String confirmPassword;
 
-  const OnRegisterButtonPressed({required this.email, required this.password, required this.confirmPassword});
+  const OnRegisterButtonPressed(
+      {required this.email,
+      required this.password,
+      required this.confirmPassword});
 
   @override
   List<Object> get props => [email, password, confirmPassword];

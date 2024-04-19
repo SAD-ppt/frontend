@@ -23,7 +23,8 @@ class _RegisterScreenLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RegisterScreenBloc, RegisterScreenState>(builder: (context, state) {
+    return BlocBuilder<RegisterScreenBloc, RegisterScreenState>(
+        builder: (context, state) {
       if (state.state == RegisterState.loading) {
         return const Scaffold(
           body: RegisterLoading(key: Key('register_loading')),

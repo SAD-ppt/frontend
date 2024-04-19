@@ -2,7 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:register_screen/src/bloc/event.dart';
 import 'package:register_screen/src/bloc/state.dart';
 
-class RegisterScreenBloc extends Bloc<RegisterScreenEvent, RegisterScreenState> {
+class RegisterScreenBloc
+    extends Bloc<RegisterScreenEvent, RegisterScreenState> {
   RegisterScreenBloc() : super(const RegisterScreenState()) {
     on<OnRegisterButtonPressed>(_onRegisterButtonPressed);
   }
@@ -11,7 +12,9 @@ class RegisterScreenBloc extends Bloc<RegisterScreenEvent, RegisterScreenState> 
       OnRegisterButtonPressed event, Emitter<RegisterScreenState> emit) async {
     emit(const RegisterScreenState(state: RegisterState.loading));
     // Check if any of the fields are empty
-    if (event.email.isEmpty || event.password.isEmpty || event.confirmPassword.isEmpty) {
+    if (event.email.isEmpty ||
+        event.password.isEmpty ||
+        event.confirmPassword.isEmpty) {
       emit(const RegisterScreenState(state: RegisterState.emptyFields));
       return;
     }
