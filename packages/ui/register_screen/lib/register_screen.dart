@@ -1,3 +1,3 @@
 library register_screen;
 
-export 'src/register_screen_view.dart';
+export 'src/register_screen_layout.dart';

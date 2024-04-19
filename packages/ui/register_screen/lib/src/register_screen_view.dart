@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:register_screen/src/bloc/bloc.dart';
+import 'package:register_screen/src/bloc/event.dart';
+import 'package:register_screen/src/bloc/state.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -12,8 +16,12 @@ class RegisterScreen extends StatelessWidget {
 class _RegisterScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController confirmPasswordController = TextEditingController();
+    return BlocBuilder<RegisterScreenBloc, RegisterScreenState>(
+        builder: (context, state) {
+      return Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('images/register_background.png',
@@ -33,10 +41,11 @@ class _RegisterScreenView extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               // Username field, width 300
-              const SizedBox(
+              SizedBox(
                 width: 300,
                 child: TextField(
-                  decoration: InputDecoration(
+                  controller: emailController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
                   ),
@@ -44,29 +53,53 @@ class _RegisterScreenView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               // Password field, width 300
-              const SizedBox(
+              SizedBox(
                 width: 300,
                 child: TextField(
-                  decoration: InputDecoration(
+                  obscureText: true,
+                  controller: passwordController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              const SizedBox(
+              SizedBox(
                 width: 300,
                 child: TextField(
-                  decoration: InputDecoration(
+                  obscureText: true,
+                  controller: confirmPasswordController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Confirm Password',
                   ),
                 ),
               ),
+              // If any field is empty, show error message
+              if (state.state == RegisterState.emptyFields)
+                const Text(
+                  'Please fill in all fields',
+                  style: TextStyle(color: Colors.red),
+                ),
+              // If password and confirm password do not match, show error message
+              if (state.state == RegisterState.confirmNotMatch)
+                const Text(
+                  'Passwords do not match',
+                  style: TextStyle(color: Colors.red),
+                ),
+              // If register fails, show error message
+              if (state.state == RegisterState.failure)
+                const Text(
+                  'Register failed, please try again',
+                  style: TextStyle(color: Colors.red),
+                ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Navigator.pushNamed(context, '/main_screen');
+                  String getEmailFromField = emailController.text;
+                  String getPasswordFromField = passwordController.text;
+                  context.read<RegisterScreenBloc>().add(OnRegisterButtonPressed(email: getEmailFromField , password: getPasswordFromField, confirmPassword: confirmPasswordController.text));
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size.fromWidth(300),
@@ -77,12 +110,15 @@ class _RegisterScreenView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                child: const Text('Register', style: TextStyle(color: Colors.white),),
+                child: const Text(
+                  'Register',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
