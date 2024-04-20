@@ -1,17 +1,15 @@
 import 'package:data_api/data_api.dart' as api;
-import 'package:data_api/data_api.dart'
-    show NoteTemplateApi, CardTemplateApi, CardSide;
 import 'package:repos/src/models/note_template.dart';
 import 'package:uuid/uuid.dart';
 
 class NoteTemplateRepo {
-  final NoteTemplateApi noteTemplateApi;
-  final CardTemplateApi cardTemplateApi;
+  final api.NoteTemplateApi noteTemplateApi;
+  final api.CardTemplateApi cardTemplateApi;
 
   NoteTemplateRepo(
       {required this.noteTemplateApi, required this.cardTemplateApi});
 
-  void validateCardTemplates(
+  void _validateCardTemplates(
     String name,
     List<String> noteFields,
     List<(List<String> frontFields, List<String> backFields)> cardTemplates,
@@ -41,14 +39,25 @@ class NoteTemplateRepo {
       }
     }
 
+    /// Create a new note template with the given [name], [noteFields], and
+    /// [cardTemplates]. The [noteFields] are the fields that the note template
+    /// will have. The [cardTemplates] are the templates for the cards that will
+    /// be created from the note template. Each card template is a tuple of
+    /// [frontFields] and [backFields]. The [frontFields] are the fields that
+    /// will be shown on the front of the card, and the [backFields] are the
+    /// fields that will be shown on the back of the card.
+    /// Fields in [frontFields] and [backFields] must be in [noteFields],
+    /// otherwise an [ArgumentError] will be thrown.
     Future<void> createNewNoteTemplate(
       String name,
       List<String> noteFields,
       List<(List<String> frontFields, List<String> backFields)> cardTemplates,
     ) async {
-      validateCardTemplates(name, noteFields, cardTemplates);
-      var (newNoteTemplate, fields) =
-          await noteTemplateApi.createNoteTemplate(name, noteFields);
+      _validateCardTemplates(name, noteFields, cardTemplates);
+      var (
+        api.NoteTemplate newNoteTemplate,
+        List<api.NoteTemplateField> fields
+      ) = await noteTemplateApi.createNoteTemplate(name, noteFields);
       var noteFieldsIndexMap = <String, int>{};
       for (var i = 0; i < noteFields.length; i++) {
         noteFieldsIndexMap[noteFields[i]] = i;
@@ -88,6 +97,14 @@ class NoteTemplateRepo {
   }
 
   Stream<List<NoteTemplate>> getAllNoteTemplates() {
+    throw UnimplementedError();
+  }
+
+  Future<NoteTemplate> getNoteTemplate(Uuid id) {
+    throw UnimplementedError();
+  }
+
+  Future<void> deleteNoteTemplateField(Uuid id, int orderNumber) {
     throw UnimplementedError();
   }
 }
