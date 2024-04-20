@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RegisterLoading extends StatelessWidget {
-  const RegisterLoading({required Key key}) : super(key: key);
+  const RegisterLoading({super.key});
 
   @override
   Widget build(BuildContext context) {

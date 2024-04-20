@@ -25,11 +25,11 @@ class _LoginScreenLayout extends StatelessWidget {
       builder: (context, state) {
         if (state.state == LoginState.loading) {
           return const Scaffold(
-            body: LoginLoading(key: Key('login_loading')),
+            body: LoginLoading(),
           );
         } else {
           return const Scaffold(
-            body: LoginScreen(key: Key('login_screen')),
+            body: LoginScreen(),
           );
         }
       },

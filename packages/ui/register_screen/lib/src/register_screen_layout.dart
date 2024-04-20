@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:register_screen/register_screen.dart';
 import 'package:register_screen/src/bloc/bloc.dart';
 import 'package:register_screen/src/bloc/state.dart';
 import 'package:register_screen/src/register_loading.dart';
@@ -27,11 +25,11 @@ class _RegisterScreenLayout extends StatelessWidget {
         builder: (context, state) {
       if (state.state == RegisterState.loading) {
         return const Scaffold(
-          body: RegisterLoading(key: Key('register_loading')),
+          body: RegisterLoading(),
         );
       } else {
         return const Scaffold(
-          body: RegisterScreen(key: Key('register_screen')),
+          body: RegisterScreen(),
         );
       }
     });
