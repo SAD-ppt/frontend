@@ -7,7 +7,7 @@ class Note extends Equatable {
   final Uuid id;
   get getId => id;
 
-  final Map<String, String> fields;
+  final List<(String name, String value)> fields;
 
   const Note({
     required this.id,
