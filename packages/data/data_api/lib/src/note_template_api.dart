@@ -1,8 +1,8 @@
-import 'package:data_source/src/model/note_template.dart';
+import 'model/note_template.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class NoteTemplateApi {
-  Stream<Map<NoteTemplate, List<NoteTemplateField>>> getNoteTemplates();
+  Stream<List<NoteTemplateDetail>> getNoteTemplates();
 
   Future<(NoteTemplate template, List<NoteTemplateField> fields)>
       getNoteTemplate(Uuid id);
