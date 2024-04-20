@@ -28,3 +28,16 @@ class NoteTemplate extends Equatable {
   @override
   List<Object> get props => [id, name];
 }
+
+class NoteTemplateDetail extends Equatable {
+  final NoteTemplate noteTemplate;
+  final List<NoteTemplateField> fields;
+
+  const NoteTemplateDetail({
+    required this.noteTemplate,
+    required this.fields,
+  });
+
+  @override
+  List<Object> get props => [noteTemplate, fields];
+}
