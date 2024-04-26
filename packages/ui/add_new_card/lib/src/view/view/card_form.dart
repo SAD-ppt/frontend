@@ -16,12 +16,14 @@ class CardForm extends StatelessWidget {
   final Function(List<String>) onCardTypesChanged;
   final Function(List<String>) onFieldsChanged;
   final Function(List<String>) onTagsChanged;
+  final Function(List<String>) onTagsTriggered;
   const CardForm(
       {super.key,
       required this.deck,
       required this.onDeckChanged,
       required this.noteTemplate,
       required this.onTagsChanged,
+      required this.onTagsTriggered,
       required this.tagsList,
       required this.cardTypes,
       required this.fieldNames,
@@ -52,7 +54,7 @@ class CardForm extends StatelessWidget {
                   ))
               .toList(),
         ),
-        Tags(tags: tagsList, onTagsChanged: onTagsChanged),
+        Tags(tags: tagsList, onTagsChanged: onTagsChanged, onTagsTriggered: () {}),
       ],
     );
   }
