@@ -19,3 +19,7 @@ final class RevealCardEvent extends LearningScreenEvent {
   const RevealCardEvent();
 }
 
+final class SubmitButtonsPressed extends LearningScreenEvent {
+  final String difficulty;
+  const SubmitButtonsPressed({required this.difficulty});
+}
