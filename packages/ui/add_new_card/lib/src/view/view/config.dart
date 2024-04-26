@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class Config extends StatelessWidget {
   final List<String> availableDecks;
@@ -21,29 +20,47 @@ class Config extends StatelessWidget {
   Widget build(BuildContext context) {
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     var chooseDeckTitle = Text("Deck", style: fieldHeaderTextStyle);
-    var chooseDeck = DropdownMenu(
-        textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
-        expandedInsets: EdgeInsets.zero,
-        dropdownMenuEntries: availableDecks
-            .map((e) => DropdownMenuEntry(value: e, label: e))
-            .toList());
+    var chooseDeck = CustomDropdown<String>.search(
+      hideSelectedFieldWhenExpanded: true,
+      hintText: 'Choose deck',
+      items: availableDecks,
+      onChanged: (p0) => onDeckChanged(p0),
+      decoration: CustomDropdownDecoration(
+        closedBorder: Border.all(color: Colors.grey),
+        expandedBorder: Border.all(color: Colors.grey),
+        closedBorderRadius: BorderRadius.zero,
+        expandedBorderRadius: BorderRadius.zero,
+      ),
+    );
     var chooseTemplateTitle = Text("Template", style: fieldHeaderTextStyle);
     var chooseCardTypesTitle = Text("Card types", style: fieldHeaderTextStyle);
-    var chooseTemplate = DropdownMenu(
-      textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
-      expandedInsets: EdgeInsets.zero,
-      dropdownMenuEntries: availableNoteTemplates
-          .map((e) => DropdownMenuEntry(value: e, label: e))
-          .toList(),
+    var chooseTemplate = CustomDropdown<String>.search(
+      hideSelectedFieldWhenExpanded: true,
+      hintText: 'Choose template',
+      items: availableNoteTemplates,
+      onChanged: (p0) => onNoteTemplateChanged(p0),
+      decoration: CustomDropdownDecoration(
+        closedBorder: Border.all(color: Colors.grey),
+        expandedBorder: Border.all(color: Colors.grey),
+        closedBorderRadius: BorderRadius.zero,
+        expandedBorderRadius: BorderRadius.zero,
+      ),
     );
-    var chooseCardTypes = DropdownMenu(
-        expandedInsets: EdgeInsets.zero,
-        textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
-        dropdownMenuEntries: availableCardTypes
-            .map((e) => DropdownMenuEntry(value: e, label: e))
-            .toList());
+    var chooseCardTypes = CustomDropdown<String>.multiSelectSearch(
+      hideSelectedFieldWhenExpanded: true,
+      hintText: 'Choose card type(s)',
+      items: availableCardTypes,
+      onListChanged: (p0) => onCardTypesChanged(p0),
+      decoration: CustomDropdownDecoration(
+        closedBorder: Border.all(color: Colors.grey),
+        expandedBorder: Border.all(color: Colors.grey),
+        closedBorderRadius: BorderRadius.zero,
+        expandedBorderRadius: BorderRadius.zero,
+      ),
+    );
     return Column(
       children: [
+        const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -64,6 +81,7 @@ class Config extends StatelessWidget {
           Flexible(flex: 2, child: chooseCardTypesTitle),
           Flexible(flex: 4, child: chooseCardTypes),
         ]),
+        const SizedBox(height: 20),
       ],
     );
   }
