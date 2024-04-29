@@ -21,6 +21,7 @@ class Config extends StatelessWidget {
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     var chooseDeckTitle = Text("Deck", style: fieldHeaderTextStyle);
     var chooseDeck = CustomDropdown<String>.search(
+      initialItem: availableDecks.first,
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose deck',
       items: availableDecks,
@@ -35,6 +36,7 @@ class Config extends StatelessWidget {
     var chooseTemplateTitle = Text("Template", style: fieldHeaderTextStyle);
     var chooseCardTypesTitle = Text("Card types", style: fieldHeaderTextStyle);
     var chooseTemplate = CustomDropdown<String>.search(
+      initialItem: availableNoteTemplates.first,
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose template',
       items: availableNoteTemplates,

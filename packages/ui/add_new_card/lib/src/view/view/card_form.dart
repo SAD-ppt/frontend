@@ -1,5 +1,6 @@
 import 'package:add_new_card/src/view/view/config.dart';
-import 'package:components/components.dart';
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
+// import 'package:components/components.dart';
 import 'package:flutter/material.dart';
 
 class CardForm extends StatelessWidget {
@@ -11,20 +12,22 @@ class CardForm extends StatelessWidget {
   final List<String> availableCardTypes;
   final List<String> fieldNames;
   final List<String> tagsList;
+  final List<String> availableTagsList;
   final Function(String) onDeckChanged;
   final Function(String) onNoteTemplateChanged;
   final Function(List<String>) onCardTypesChanged;
   final Function(List<String>) onFieldsChanged;
   final Function(List<String>) onTagsChanged;
-  final Function(List<String>) onTagsTriggered;
+  // final VoidCallback onTagsTriggered;
   const CardForm(
       {super.key,
       required this.deck,
       required this.onDeckChanged,
       required this.noteTemplate,
       required this.onTagsChanged,
-      required this.onTagsTriggered,
+      // required this.onTagsTriggered,
       required this.tagsList,
+      required this.availableTagsList,
       required this.cardTypes,
       required this.fieldNames,
       required this.onNoteTemplateChanged,
@@ -50,11 +53,36 @@ class CardForm extends StatelessWidget {
           children: fieldNames
               .map((e) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(e), TextField()],
+                    children: [Text(e), const TextField()],
                   ))
               .toList(),
         ),
-        Tags(tags: tagsList, onTagsChanged: onTagsChanged, onTagsTriggered: () {}),
+        const Divider(),
+        const Row(
+          children: [
+            Text('Tags',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        const SizedBox(height: 10),
+        // Tags(tags: tagsList, onTagsChanged: onTagsChanged),
+        CustomDropdown.multiSelectSearch(
+          hideSelectedFieldWhenExpanded: true,
+          hintText: 'Choose tag(s)',
+          items: availableTagsList,
+          initialItems: tagsList,
+          onListChanged: (p0) => {
+            // sort tags alphabetically
+            p0.sort(),
+            onTagsChanged(p0)
+          },
+          decoration: CustomDropdownDecoration(
+            closedBorder: Border.all(color: Colors.grey),
+            expandedBorder: Border.all(color: Colors.grey),
+            closedBorderRadius: BorderRadius.zero,
+            expandedBorderRadius: BorderRadius.zero,
+          ),
+        )
       ],
     );
   }

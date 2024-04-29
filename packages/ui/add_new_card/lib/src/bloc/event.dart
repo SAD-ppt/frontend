@@ -40,13 +40,31 @@ class CardTypesChanged extends AddNewCardEvent {
   List<Object> get props => [cardTypes];
 }
 
-class RemoveTag extends AddNewCardEvent {
-  final String tag;
+// class RemoveTag extends AddNewCardEvent {
+//   final List<String> tagsList;
 
-  const RemoveTag(this.tag);
+//   const RemoveTag(this.tagsList);
+
+//   @override
+//   List<Object> get props => [tagsList];
+// }
+
+// class AddTag extends AddNewCardEvent {
+//   final List<String> tagsList;
+
+//   const AddTag(this.tagsList);
+
+//   @override
+//   List<Object> get props => [tagsList];
+// }
+
+class TagsChanged extends AddNewCardEvent {
+  final List<String> tagsList;
+
+  const TagsChanged(this.tagsList);
 
   @override
-  List<Object> get props => [tag];
+  List<Object> get props => [tagsList];
 }
 
 class TagsTriggered extends AddNewCardEvent {
