@@ -9,6 +9,7 @@ enum Status {
   adding,
   changing,
   changed,
+  newAvailableTagAdding,
   tagsTriggered
 }
 

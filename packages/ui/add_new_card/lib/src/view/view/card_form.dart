@@ -18,6 +18,7 @@ class CardForm extends StatelessWidget {
   final Function(List<String>) onCardTypesChanged;
   final Function(List<String>) onFieldsChanged;
   final Function(List<String>) onTagsChanged;
+  final Function(String) onAddNewAvailableTag;
   // final VoidCallback onTagsTriggered;
   const CardForm(
       {super.key,
@@ -35,9 +36,12 @@ class CardForm extends StatelessWidget {
       required this.onFieldsChanged,
       required this.availableDecks,
       required this.availableNoteTemplates,
-      required this.availableCardTypes});
+      required this.availableCardTypes,
+      required this.onAddNewAvailableTag,});
   @override
   Widget build(BuildContext context) {
+    var controller = TextEditingController();
+    var newTagTextField = TextField(controller: controller);
     return ListView(
       children: [
         Config(
@@ -51,7 +55,6 @@ class CardForm extends StatelessWidget {
           onNoteTemplateChanged: onNoteTemplateChanged,
           onDeckChanged: onDeckChanged,
         ),
-        const Divider(),
         Column(
           children: fieldNames
               .map((e) => Column(
@@ -60,11 +63,43 @@ class CardForm extends StatelessWidget {
                   ))
               .toList(),
         ),
-        const Divider(),
-        const Row(
+        const SizedBox(height: 10),
+        Row(
           children: [
-            Text('Tags',
+            const Text('Tags',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            IconButton(onPressed: () {
+              // Show a dialog to add a new tag
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Add new tag'),
+                      content: newTagTextField,
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel')),
+                        TextButton(
+                            onPressed: () {
+                              if (controller.text.isNotEmpty) {
+                                onAddNewAvailableTag(controller.text);
+                              }
+                              else {
+                                // Show a snackbar to inform the user that the tag name is empty
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Tag name cannot be empty'),
+                                  ),
+                                );
+                              }
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Add')),
+                      ],
+                    );
+                  });
+            }, icon: const Icon(Icons.add)),
           ],
         ),
         const SizedBox(height: 10),

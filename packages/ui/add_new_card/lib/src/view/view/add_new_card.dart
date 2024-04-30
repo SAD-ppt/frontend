@@ -61,6 +61,9 @@ class _AddNewCardView extends StatelessWidget {
               onTagsChanged: (p0) {
                 context.read<AddNewCardBloc>().add(TagsChanged(p0));
               },
+              onAddNewAvailableTag: (p0) {
+                context.read<AddNewCardBloc>().add(AddNewAvailableTag(p0));
+              },
               // onTagsTriggered: () {
               //   context.read<AddNewCardBloc>().add(TagsTriggered());
               // },

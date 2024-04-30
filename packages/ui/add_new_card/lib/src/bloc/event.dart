@@ -67,5 +67,14 @@ class TagsChanged extends AddNewCardEvent {
   List<Object> get props => [tagsList];
 }
 
+class AddNewAvailableTag extends AddNewCardEvent {
+  final String tag;
+
+  const AddNewAvailableTag(this.tag);
+
+  @override
+  List<Object> get props => [tag];
+}
+
 class TagsTriggered extends AddNewCardEvent {
 }

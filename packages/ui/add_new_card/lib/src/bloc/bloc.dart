@@ -42,6 +42,7 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     // on<RemoveTag>(_onRemoveTag);
     // on<AddTag>(_onAddTag);
     on<TagsChanged>(_onTagsChanged);
+    on<AddNewAvailableTag>(_onAddNewAvailableTag);
     on<TagsTriggered>(_onTagsTriggered);
   }
 
@@ -100,6 +101,15 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
   // void _onAddTag(AddTag event, Emitter<AddNewCardState> emit) {
   //   emit(state.copyWith(tagsList: event.tagsList));
   // }
+
+  FutureOr<void> _onAddNewAvailableTag(
+      AddNewAvailableTag event, Emitter<AddNewCardState> emit) async {
+    emit(state.copyWith(status: Status.newAvailableTagAdding));
+    await Future.delayed(const Duration(seconds: 1));
+    emit(state.copyWith(
+        status: Status.loaded,
+        availableTagsList: [...state.availableTagsList, event.tag]));
+  }
 
   void _onTagsTriggered(TagsTriggered event, Emitter<AddNewCardState> emit) {
     emit(state.copyWith(status: Status.tagsTriggered));
