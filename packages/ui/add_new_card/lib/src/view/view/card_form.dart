@@ -41,6 +41,9 @@ class CardForm extends StatelessWidget {
     return ListView(
       children: [
         Config(
+          deck: deck,
+          noteTemplate: noteTemplate,
+          cardTypes: cardTypes,
           availableDecks: availableDecks,
           availableNoteTemplates: availableNoteTemplates,
           availableCardTypes: availableCardTypes,

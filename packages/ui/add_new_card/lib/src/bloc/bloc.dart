@@ -74,7 +74,7 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
   FutureOr<void> _onNoteTemplateChanged(
       NoteTemplateChanged event, Emitter<AddNewCardState> emit) async {
     emit(state.copyWith(status: Status.changing));
-    Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 500));
     emit(state.copyWith(
         status: Status.changed,
         noteTemplate: event.noteTemplate,

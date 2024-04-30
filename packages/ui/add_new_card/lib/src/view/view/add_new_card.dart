@@ -41,9 +41,9 @@ class _AddNewCardView extends StatelessWidget {
           body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: CardForm(
-              deck: 'deck',
-              noteTemplate: 'noteTemplate',
-              cardTypes: const ['cardTypes'],
+              deck: state.deck,
+              noteTemplate: state.noteTemplate,
+              cardTypes: state.cardTypes,
               fieldNames: state.fieldNames,
               onDeckChanged: (value) =>
                   {context.read<AddNewCardBloc>().add(DeckChanged(value))},
