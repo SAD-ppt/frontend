@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:card_browser/src/body_card_browser.dart';
+import 'package:card_browser/src/component/body_card_browser.dart';
 
 class CardBrowserScreen extends StatelessWidget {
   const CardBrowserScreen({super.key});

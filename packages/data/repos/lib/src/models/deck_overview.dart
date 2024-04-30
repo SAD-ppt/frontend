@@ -1,6 +1,3 @@
-import 'dart:ffi';
-
-import 'package:data_api/data_api.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
