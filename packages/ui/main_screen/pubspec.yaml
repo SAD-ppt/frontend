@@ -1,23 +1,20 @@
-name: add_new_card
+name: main_screen
 description: "A new Flutter package project."
 version: 0.0.1
-publish_to: none
-homepage:
+homepage: 
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
+  repos: 
+    path: '../../data/repos'
+  equatable: ^2.0.5
+  flutter_bloc: ^8.1.4
+  bloc: ^8.0.1
   flutter:
     sdk: flutter
-
-  components:
-    path: '../components'
-  bloc: ^8.1.4
-  equatable: ^2.0.5
-  flutter_bloc: ^8.1.5
-  animated_custom_dropdown: ^3.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,73 +1,82 @@
-import 'package:flutter/cupertino.dart';
+import 'package:add_new_card/src/bloc/bloc.dart';
+import 'package:add_new_card/src/bloc/event.dart';
+import 'package:add_new_card/src/bloc/state.dart';
+import 'package:add_new_card/src/view/view/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import './card_form.dart';
 
 class AddNewCardPage extends StatelessWidget {
   const AddNewCardPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return _AddNewCardView();
+    return BlocProvider(
+        create: (context) => AddNewCardBloc()..add(InitialEvent()),
+        child: _AddNewCardView());
   }
 }
 
 class _AddNewCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: _TitleBar(
-          onBack: () => null,
-          onMore: () => null,
-        ),
-        leading: const BackButton(),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CardForm(
-          deck: 'deck',
-          noteTemplate: 'noteTemplate',
-          cardTypes: ['cardTypes'],
-          fieldNames: [
-            'field1',
-            'field2',
-            'field3',
-            'field4',
-            'field5',
-            'field6',
-            'field7',
-          ],
-          onDeckChanged: (value) => null,
-          onNoteTemplateChanged: (value) => null,
-          onCardTypesChanged: (value) => null,
-          onFieldsChanged: (value) => null,
-          availableDecks: [
-            'Deck1',
-            'Deck2',
-          ],
-          availableNoteTemplates: [
-            'Template1',
-            'Template2',
-            'Template3',
-          ],
-          availableCardTypes: ['availableCardTypes1', 'availableCardTypes2'],
-          tagsList: [
-            "English",
-            "Chinese",
-            "日本語",
-          ],
-          onTagsChanged: (p0) {},
-        ),
-      ),
-    );
+    return BlocBuilder<AddNewCardBloc, AddNewCardState>(
+        builder: (context, state) {
+      if (state.status == Status.loading || state.status == Status.changing) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Add new card'),
+            leading: const BackButton(),
+          ),
+          body: const Loading(),
+        );
+      } else {
+        return Scaffold(
+          appBar: AppBar(
+            title: _TitleBar(
+              onDone: () => context.read<AddNewCardBloc>().add(SubmitCard()),
+              onMore: () => null,
+            ),
+            leading: const BackButton(),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CardForm(
+              deck: state.deck,
+              noteTemplate: state.noteTemplate,
+              cardTypes: state.cardTypes,
+              fieldNames: state.fieldNames,
+              onDeckChanged: (value) =>
+                  {context.read<AddNewCardBloc>().add(DeckChanged(value))},
+              onNoteTemplateChanged: (value) => {
+                context.read<AddNewCardBloc>().add(NoteTemplateChanged(value))
+              },
+              onCardTypesChanged: (value) =>
+                  {context.read<AddNewCardBloc>().add(CardTypesChanged(value))},
+              onFieldsChanged: (value) => null,
+              availableDecks: state.availableDecks,
+              availableNoteTemplates: state.availableNoteTemplates,
+              availableCardTypes: state.availableCardTypes,
+              availableTagsList: state.availableTagsList,
+              tagsList: state.tagsList,
+              onTagsChanged: (p0) {
+                context.read<AddNewCardBloc>().add(TagsChanged(p0));
+              },
+              // onTagsTriggered: () {
+              //   context.read<AddNewCardBloc>().add(TagsTriggered());
+              // },
+            ),
+          ),
+        );
+      }
+    });
   }
 }
 
 class _TitleBar extends StatelessWidget {
-  final Function() onBack;
+  final Function() onDone;
   final Function() onMore;
   const _TitleBar({
-    required this.onBack,
+    required this.onDone,
     required this.onMore,
   });
   @override
@@ -78,7 +87,7 @@ class _TitleBar extends StatelessWidget {
         const Text('Add new card'),
         Row(
           children: [
-            IconButton(onPressed: onBack, icon: const Icon(Icons.done)),
+            IconButton(onPressed: onDone, icon: const Icon(Icons.done)),
             IconButton(onPressed: onMore, icon: const Icon(Icons.more_vert)),
           ],
         )

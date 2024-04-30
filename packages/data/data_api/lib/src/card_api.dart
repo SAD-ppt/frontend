@@ -1,7 +1,6 @@
 import 'package:uuid/uuid.dart';
 
 import 'model/card.dart';
-import 'model/note.dart';
 
 abstract interface class CardApi {
   Stream<List<CardDetail>> getCardsOfDeck(Uuid deckId);
