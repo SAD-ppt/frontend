@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 
 class NoteTemplateField extends Equatable {
   final Uuid noteTemplateId;
-  final String orderNumber;
+  final int orderNumber;
   final String name;
 
   const NoteTemplateField({

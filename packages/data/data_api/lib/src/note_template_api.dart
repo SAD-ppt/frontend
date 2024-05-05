@@ -12,9 +12,6 @@ abstract interface class NoteTemplateApi {
 
   Future<NoteTemplate> updateNoteTemplate(NoteTemplate noteTemplate);
 
-  Future<NoteTemplate> updateNoteFields(
-      String noteTemplateId, List<NoteTemplateField> noteFields);
-
   Future<void> deleteNoteField(Uuid id);
 
   Future<void> deleteNoteTemplate(Uuid id);
