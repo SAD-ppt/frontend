@@ -1,5 +1,5 @@
 import 'package:data_api/data_api.dart' as api;
-import 'package:repos/src/models/note_template.dart';
+import 'package:repos/repos.dart';
 import 'package:uuid/uuid.dart';
 
 class NoteTemplateRepo {
@@ -8,6 +8,59 @@ class NoteTemplateRepo {
 
   NoteTemplateRepo(
       {required this.noteTemplateApi, required this.cardTemplateApi});
+
+  /// Creates a new card template with the given [name] and [front] and [back]
+  Future<void> createNewCardTemplate(
+    Uuid noteTemplateId,
+    String name,
+    List<String> front,
+    List<String> back,
+  ) async {
+    throw UnimplementedError();
+  }
+
+  /// Deletes the note template with the given [id]. This will also delete all
+  /// fields and card templates associated with the note template.
+  Future<void> deleteNoteTemplate(Uuid id) async {
+    throw UnimplementedError();
+  }
+
+  Future<void> deleteNoteTemplateField(Uuid id, int orderNumber) {
+    throw UnimplementedError();
+  }
+
+  /// Gets all note templates.
+  Stream<List<NoteTemplate>> getAllNoteTemplates() {
+    final noteTemplates = noteTemplateApi.getNoteTemplates();
+    noteTemplates.map((noteTemplate) {
+      return noteTemplate.map((nt) async {
+        final cardTemplates =
+            await cardTemplateApi.getCardTemplates(nt.noteTemplate.id).first;
+        final mapped = cardTemplates.map((ct) {
+          return CardTemplate(
+              id: ct.cardTemplate.id,
+              name: ct.cardTemplate.name,
+              front: ct.frontFields
+                  .map((e) => nt.fields[e.orderNumber].name)
+                  .toList(),
+              back: ct.backFields
+                  .map((e) => nt.fields[e.orderNumber].name)
+                  .toList());
+        }).toList();
+        return NoteTemplate(
+          id: nt.noteTemplate.id,
+          name: nt.noteTemplate.name,
+          fieldNames: nt.fields.map((f) => f.name).toList(),
+          associatedCardTemplates: mapped,
+        );
+      }).toList();
+    });
+    throw UnimplementedError();
+  }
+
+  Future<NoteTemplate> getNoteTemplate(Uuid id) {
+    throw UnimplementedError();
+  }
 
   void _validateCardTemplates(
     String name,
@@ -78,33 +131,5 @@ class NoteTemplateRepo {
         );
       }
     }
-  }
-
-  /// Creates a new card template with the given [name] and [front] and [back]
-  Future<void> createNewCardTemplate(
-    Uuid noteTemplateId,
-    String name,
-    List<String> front,
-    List<String> back,
-  ) async {
-    throw UnimplementedError();
-  }
-
-  /// Deletes the note template with the given [id]. This will also delete all
-  /// fields and card templates associated with the note template.
-  Future<void> deleteNoteTemplate(Uuid id) async {
-    throw UnimplementedError();
-  }
-
-  Stream<List<NoteTemplate>> getAllNoteTemplates() {
-    throw UnimplementedError();
-  }
-
-  Future<NoteTemplate> getNoteTemplate(Uuid id) {
-    throw UnimplementedError();
-  }
-
-  Future<void> deleteNoteTemplateField(Uuid id, int orderNumber) {
-    throw UnimplementedError();
   }
 }
