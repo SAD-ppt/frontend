@@ -1,5 +1,6 @@
 import 'package:data_api/data_api.dart' as api;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:repos/repos.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/v4.dart';
 
@@ -19,7 +20,7 @@ class MockedDatabase
   var noteTemplateFields = <api.NoteTemplateField>[];
 
   @override
-  Future<void> addNewFieldToCardTemplate(
+  Future<api.CardTemplateField> addNewFieldToCardTemplate(
       String cardTemplateId, int orderNumber, api.CardSide side) {
     cardTemplates.firstWhere((element) => element.id == cardTemplateId,
         orElse: () => throw Exception('Card template not found'));
@@ -29,7 +30,7 @@ class MockedDatabase
       side: side,
     );
     cardTemplateFields.add(field);
-    return Future.value();
+    return Future.value(field);
   }
 
   @override
@@ -52,28 +53,15 @@ class MockedDatabase
   }
 
   @override
-  Future<api.CardTemplate> createEmptyCardTemplate(
-      String noteTemplateId, String name) {
-    // check if note template exists
-    noteTemplates.firstWhere((element) => element.id == noteTemplateId,
-        orElse: () => throw Exception('Note template not found'));
-    var cardTemplate = api.CardTemplate(
-      id: const UuidV4().generate(),
-      name: name,
-      noteTemplateId: noteTemplateId,
-    );
-    cardTemplates.add(cardTemplate);
-    return Future.value(cardTemplate);
-  }
-
-  @override
   Future<api.CardTemplate> createNewCardTemplate(
       String noteTemplateId, String name, List<(api.CardSide, int)> fields) {
     // check if note template exists
     noteTemplates.firstWhere((element) => element.id == noteTemplateId,
         orElse: () => throw Exception('Note template not found'));
     var cardTemplate = api.CardTemplate(
-        id: const UuidV4().generate(), name: name, noteTemplateId: noteTemplateId);
+        id: const UuidV4().generate(),
+        name: name,
+        noteTemplateId: noteTemplateId);
     cardTemplates.add(cardTemplate);
     for (var field in fields) {
       addNewFieldToCardTemplate(cardTemplate.id, field.$2, field.$1);
@@ -95,7 +83,7 @@ class MockedDatabase
   }
 
   @override
-  Future<(api.NoteTemplate, List<api.NoteTemplateField>)> createNoteTemplate(
+  Future<api.NoteTemplateDetail> createNoteTemplate(
       String name, List<String> noteFieldNames) {
     var noteTemplate = api.NoteTemplate(
       id: const UuidV4().generate(),
@@ -114,7 +102,10 @@ class MockedDatabase
         .values
         .toList();
     this.noteTemplateFields.addAll(noteTemplateFields);
-    return Future.value((noteTemplate, noteTemplateFields));
+    return Future.value(api.NoteTemplateDetail(
+      noteTemplate: noteTemplate,
+      fields: noteTemplateFields,
+    ));
   }
 
   @override
@@ -227,14 +218,16 @@ class MockedDatabase
   }
 
   @override
-  Future<(api.NoteTemplate, List<api.NoteTemplateField>)> getNoteTemplate(
-      String id) {
+  Future<api.NoteTemplateDetail> getNoteTemplate(String id) {
     for (var noteTemplate in noteTemplates) {
       if (noteTemplate.id == id) {
         var fields = noteTemplateFields
             .where((element) => element.noteTemplateId == id)
             .toList();
-        return Future.value((noteTemplate, fields));
+        return Future.value(api.NoteTemplateDetail(
+          noteTemplate: noteTemplate,
+          fields: fields,
+        ));
       }
     }
     throw Exception('Note template not found');

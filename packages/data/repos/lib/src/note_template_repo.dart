@@ -1,7 +1,5 @@
 import 'package:data_api/data_api.dart' as api;
 import 'package:repos/repos.dart';
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 
 class NoteTemplateRepo {
   final api.NoteTemplateApi noteTemplateApi;
@@ -73,7 +71,8 @@ class NoteTemplateRepo {
   }
 
   Future<NoteTemplateDetail> getNoteTemplateDetail(String id) async {
-    final (nt, fields) = await noteTemplateApi.getNoteTemplate(id);
+    final ntd = await noteTemplateApi.getNoteTemplate(id);
+    final (nt, fields) = (ntd.noteTemplate, ntd.fields);
     final cardTemplates = await cardTemplateApi.getCardTemplates(nt.id).first;
     return NoteTemplateDetail(
         noteTemplate: NoteTemplate(
@@ -111,8 +110,8 @@ class NoteTemplateRepo {
     List<(List<String> frontFields, List<String> backFields)> cardTemplates,
   ) async {
     _validateCardTemplates(name, noteFields, cardTemplates);
-    var (api.NoteTemplate newNoteTemplate, List<api.NoteTemplateField> fields) =
-        await noteTemplateApi.createNoteTemplate(name, noteFields);
+    final ntd = await noteTemplateApi.createNoteTemplate(name, noteFields);
+    final newNoteTemplate = ntd.noteTemplate;
     var noteFieldsIndexMap = <String, int>{};
     for (var i = 0; i < noteFields.length; i++) {
       noteFieldsIndexMap[noteFields[i]] = i;
