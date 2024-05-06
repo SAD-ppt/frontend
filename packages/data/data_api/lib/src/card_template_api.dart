@@ -5,7 +5,7 @@ import 'model/card_template.dart';
 abstract interface class CardTemplateApi {
   /// Returns a stream of all card templates associated with a note template.
   /// If [noteTemplateId] is null, returns all card templates.
-  Stream<List<CardTemplate>> getCardTemplates(Uuid? noteTemplateId);
+  Stream<List<CardTemplateDetail>> getCardTemplates(Uuid? noteTemplateId);
 
   /// Create a new card template with the given [noteTemplateId] and [name].
   Future<CardTemplate> createEmptyCardTemplate(

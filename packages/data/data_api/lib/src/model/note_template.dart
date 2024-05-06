@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 
 class NoteTemplateField extends Equatable {
   final Uuid noteTemplateId;
-  final String orderNumber;
+  final int orderNumber;
   final String name;
 
   const NoteTemplateField({
@@ -27,4 +27,17 @@ class NoteTemplate extends Equatable {
 
   @override
   List<Object> get props => [id, name];
+}
+
+class NoteTemplateDetail extends Equatable {
+  final NoteTemplate noteTemplate;
+  final List<NoteTemplateField> fields;
+
+  const NoteTemplateDetail({
+    required this.noteTemplate,
+    required this.fields,
+  });
+
+  @override
+  List<Object> get props => [noteTemplate, fields];
 }

@@ -5,7 +5,6 @@ import 'model/card.dart';
 abstract interface class CardApi {
   Stream<List<CardDetail>> getCardsOfDeck(Uuid deckId);
   Future<CardDetail> getCard(Uuid id);
-  Future<CardDetail> getDeck(String id);
   Future<Card> createCard(Card card);
   Future<Card> updateCard(Card card);
   Future<void> deleteCard(Uuid id);
