@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
-import 'model/deck.dart';
+import '../data_api.dart';
 
 abstract interface class DeckApi {
   Stream<List<Deck>> getDecks();
   Stream<List<(Deck deck, Card card)>> getDecksAndCards();
-  Future<Deck> getDeck(Uuid id);
-  Future<Deck> getDeckAndCards(Uuid id);
+  Future<Deck> getDeck(String id);
+  Future<Deck> getDeckAndCards(String id);
   Future<Deck> createDeck(String name, String description);
   Future<Deck> updateDeck(Deck deck);
-  Future<void> deleteDeck(Uuid id);
+  Future<void> deleteDeck(String id);
 }

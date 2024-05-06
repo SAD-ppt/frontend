@@ -1,7 +1,7 @@
 import 'package:data_api/data_api.dart' as api;
-import 'package:flutter/src/material/card.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 class MockedDatabase
     implements
@@ -13,13 +13,23 @@ class MockedDatabase
   var decks = <api.Deck>[];
   var cards = <api.Card>[];
   var cardTemplates = <api.CardTemplate>[];
+  var cardTemplateFields = <api.CardTemplateField>[];
   var notes = <api.Note>[];
   var noteTemplates = <api.NoteTemplate>[];
+  var noteTemplateFields = <api.NoteTemplateField>[];
 
   @override
   Future<void> addNewFieldToCardTemplate(
-      Uuid cardTemplateId, api.CardSide side) {
-    throw UnimplementedError();
+      String cardTemplateId, int orderNumber, api.CardSide side) {
+    cardTemplates.firstWhere((element) => element.id == cardTemplateId,
+        orElse: () => throw Exception('Card template not found'));
+    var field = api.CardTemplateField(
+      cardTemplateId: cardTemplateId,
+      orderNumber: orderNumber,
+      side: side,
+    );
+    cardTemplateFields.add(field);
+    return Future.value();
   }
 
   @override
@@ -30,25 +40,25 @@ class MockedDatabase
 
   @override
   Future<api.Note> updateNoteFields(
-      Uuid noteId, List<api.NoteField> noteFields) {
+      String noteId, List<api.NoteField> noteFields) {
     throw UnimplementedError();
   }
 
   @override
   Future<api.Deck> createDeck(String name, String description) {
-    var deck = api.Deck(id: const Uuid(), name: name);
+    var deck = api.Deck(id: const UuidV4().generate(), name: name);
     decks.add(deck);
     return Future.value(deck);
   }
 
   @override
   Future<api.CardTemplate> createEmptyCardTemplate(
-      Uuid noteTemplateId, String name) {
+      String noteTemplateId, String name) {
     // check if note template exists
     noteTemplates.firstWhere((element) => element.id == noteTemplateId,
         orElse: () => throw Exception('Note template not found'));
     var cardTemplate = api.CardTemplate(
-      id: const Uuid(),
+      id: const UuidV4().generate(),
       name: name,
       noteTemplateId: noteTemplateId,
     );
@@ -58,27 +68,27 @@ class MockedDatabase
 
   @override
   Future<api.CardTemplate> createNewCardTemplate(
-      Uuid noteTemplateId, String name, List<(api.CardSide, int)> fields) {
+      String noteTemplateId, String name, List<(api.CardSide, int)> fields) {
     // check if note template exists
     noteTemplates.firstWhere((element) => element.id == noteTemplateId,
         orElse: () => throw Exception('Note template not found'));
     var cardTemplate = api.CardTemplate(
-        id: const Uuid(), name: name, noteTemplateId: noteTemplateId);
+        id: const UuidV4().generate(), name: name, noteTemplateId: noteTemplateId);
     cardTemplates.add(cardTemplate);
     for (var field in fields) {
-      addNewFieldToCardTemplate(cardTemplate.id, field.$1);
+      addNewFieldToCardTemplate(cardTemplate.id, field.$2, field.$1);
     }
     return Future.value(cardTemplate);
   }
 
   @override
-  Future<api.Note> createNote(Uuid noteTemplateId, List<String> fieldValues) {
+  Future<api.Note> createNote(String noteTemplateId, List<String> fieldValues) {
     // check if note template exists
     noteTemplates.firstWhere((element) => element.id == noteTemplateId,
         orElse: () => throw Exception('Note template not found'));
     var note = api.Note(
-      id: const Uuid(),
-      noteTemplateId: noteTemplateId.v4(),
+      id: const Uuid().v4(),
+      noteTemplateId: noteTemplateId.toString(),
     );
     notes.add(note);
     return Future.value(note);
@@ -88,7 +98,7 @@ class MockedDatabase
   Future<(api.NoteTemplate, List<api.NoteTemplateField>)> createNoteTemplate(
       String name, List<String> noteFieldNames) {
     var noteTemplate = api.NoteTemplate(
-      id: const Uuid(),
+      id: const UuidV4().generate(),
       name: name,
     );
     noteTemplates.add(noteTemplate);
@@ -103,94 +113,109 @@ class MockedDatabase
             )))
         .values
         .toList();
+    this.noteTemplateFields.addAll(noteTemplateFields);
     return Future.value((noteTemplate, noteTemplateFields));
   }
 
   @override
-  Future<void> deleteCard(Uuid id) {
+  Future<void> deleteCard(String id) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteCardTemplate(Uuid id) {
+  Future<void> deleteCardTemplate(String id) {
     // TODO: implement deleteCardTemplate
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteDeck(Uuid id) {
+  Future<void> deleteDeck(String id) {
     // TODO: implement deleteDeck
     throw UnimplementedError();
   }
 
   @override
   Future<void> deleteFieldFromCardTemplate(
-      Uuid cardTemplateId, int orderNumber, api.CardSide side) {
+      String cardTemplateId, int orderNumber, api.CardSide side) {
     // TODO: implement deleteFieldFromCardTemplate
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteNote(Uuid id) {
+  Future<void> deleteNote(String id) {
     // TODO: implement deleteNote
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteNoteField(Uuid id) {
+  Future<void> deleteNoteField(String id) {
     // TODO: implement deleteNoteField
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteNoteTemplate(Uuid id) {
+  Future<void> deleteNoteTemplate(String id) {
     // TODO: implement deleteNoteTemplate
     throw UnimplementedError();
   }
 
   @override
-  Future<api.CardDetail> getCard(Uuid id) {
+  Future<api.CardDetail> getCard(String id) {
     // TODO: implement getCard
     throw UnimplementedError();
   }
 
   @override
-  Stream<List<api.CardDetail>> getCardsOfDeck(Uuid deckId) {
+  Stream<List<api.CardDetail>> getCardsOfDeck(String deckId) {
     // TODO: implement getCardsOfDeck
     throw UnimplementedError();
   }
 
   @override
-  Stream<List<api.CardTemplateDetail>> getCardTemplates(Uuid? noteTemplateId) {
-    // TODO: implement getCardTemplates
-    throw UnimplementedError();
+  Stream<List<api.CardTemplateDetail>> getCardTemplates(
+      String? noteTemplateId) {
+    return Stream.value(cardTemplates.map((ct) {
+      var frontFields = cardTemplateFields
+          .where((element) =>
+              element.cardTemplateId == ct.id &&
+              element.side == api.CardSide.front)
+          .toList();
+      var backFields = cardTemplateFields
+          .where((element) =>
+              element.cardTemplateId == ct.id &&
+              element.side == api.CardSide.back)
+          .toList();
+      return api.CardTemplateDetail(
+        cardTemplate: ct,
+        frontFields: frontFields,
+        backFields: backFields,
+      );
+    }).toList());
   }
 
   @override
-  Future<api.Deck> getDeckAndCards(Uuid id) {
+  Future<api.Deck> getDeckAndCards(String id) {
     // TODO: implement getDeckAndCards
     throw UnimplementedError();
   }
 
   @override
-  Future<api.Deck> getDeck(Uuid id) {
-    throw UnimplementedError();
+  Future<api.Deck> getDeck(String id) {
+    for (var deck in decks) {
+      if (deck.id == id) {
+        return Future.value(deck);
+      }
+    }
+    throw Exception('Deck not found');
   }
 
   @override
   Stream<List<api.Deck>> getDecks() {
-    // TODO: implement getDecks
-    throw UnimplementedError();
+    return Stream.value(decks);
   }
 
   @override
-  Stream<List<(api.Deck, Card)>> getDecksAndCards() {
-    // TODO: implement getDecksAndCards
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<api.NoteDetail> getNote(Uuid id) {
+  Future<api.NoteDetail> getNote(String id) {
     // TODO: implement getNote
     throw UnimplementedError();
   }
@@ -203,21 +228,39 @@ class MockedDatabase
 
   @override
   Future<(api.NoteTemplate, List<api.NoteTemplateField>)> getNoteTemplate(
-      Uuid id) {
-    // TODO: implement getNoteTemplate
-    throw UnimplementedError();
+      String id) {
+    for (var noteTemplate in noteTemplates) {
+      if (noteTemplate.id == id) {
+        var fields = noteTemplateFields
+            .where((element) => element.noteTemplateId == id)
+            .toList();
+        return Future.value((noteTemplate, fields));
+      }
+    }
+    throw Exception('Note template not found');
   }
 
   @override
   Stream<List<api.NoteTemplateDetail>> getNoteTemplates() {
-    // TODO: implement getNoteTemplates
-    throw UnimplementedError();
+    return Stream.value(noteTemplates.map((nt) {
+      var fields = noteTemplateFields
+          .where((element) => element.noteTemplateId == nt.id)
+          .toList();
+      return api.NoteTemplateDetail(
+        noteTemplate: nt,
+        fields: fields,
+      );
+    }).toList());
   }
 
   @override
-  Future<int> getNumCardsInDeck(Uuid id) {
-    // TODO: implement getNumCardsInDeck
-    throw UnimplementedError();
+  Future<int> getNumCardsInDeck(String id) {
+    for (var card in cards) {
+      if (card.deckId == id) {
+        return Future.value(cards.length);
+      }
+    }
+    return Future.value(0);
   }
 
   @override
@@ -239,14 +282,14 @@ class MockedDatabase
   }
 
   @override
-  Future<void> updateFieldOrder(Uuid cardTemplateId, int oldOrderNumber,
+  Future<void> updateFieldOrder(String cardTemplateId, int oldOrderNumber,
       int newOrderNumber, api.CardSide side) {
     // TODO: implement updateFieldOrder
     throw UnimplementedError();
   }
 
   @override
-  Future<api.Note> updateNoteField(Uuid noteId, int idx, String value) {
+  Future<api.Note> updateNoteField(String noteId, int idx, String value) {
     // TODO: implement updateNoteField
     throw UnimplementedError();
   }
@@ -254,6 +297,12 @@ class MockedDatabase
   @override
   Future<api.NoteTemplate> updateNoteTemplate(api.NoteTemplate noteTemplate) {
     // TODO: implement updateNoteTemplate
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<(api.Deck, api.Card)>> getDecksAndCards() {
+    // TODO: implement getDecksAndCards
     throw UnimplementedError();
   }
 }

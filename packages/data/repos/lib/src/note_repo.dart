@@ -1,5 +1,6 @@
 import 'package:data_api/data_api.dart' as api;
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 import 'models/note.dart';
 
 class NoteRepo {
@@ -8,7 +9,7 @@ class NoteRepo {
 
   NoteRepo({required this.noteApi, required this.noteTemplateApi});
 
-  Stream<Iterable<Note>> getNotesOfDeck(Uuid deckId) {
+  Stream<Iterable<Note>> getNotesOfDeck(String deckId) {
     return noteApi.getNotes().asyncMap((List<api.NoteDetail> notes) async {
       // Get note templates to get field names, this functionality should be
       // moved to the API, but it's working ok because numbers of note templates
@@ -34,7 +35,7 @@ class NoteRepo {
 
   /// Creates a note from a note template.
   Future<void> createNote(
-      Uuid noteTemplateId, List<(int order, String value)> fieldValues) {
+      String noteTemplateId, List<(int order, String value)> fieldValues) {
     Set<int> orderNumbers = fieldValues.map((fv) => fv.$1).toSet();
     if (orderNumbers.length != fieldValues.length) {
       throw ArgumentError('Order numbers must be unique.');

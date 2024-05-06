@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 @immutable
 class CardTemplate extends Equatable {
-  final Uuid id;
+  final String id;
   get getId => id;
   final String name;
   final List<String> front;

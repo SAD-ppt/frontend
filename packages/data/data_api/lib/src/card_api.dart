@@ -1,13 +1,13 @@
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 import 'model/card.dart';
-import 'model/note.dart';
 
 abstract interface class CardApi {
-  Stream<List<CardDetail>> getCardsOfDeck(Uuid deckId);
-  Future<CardDetail> getCard(Uuid id);
+  Stream<List<CardDetail>> getCardsOfDeck(String deckId);
+  Future<CardDetail> getCard(String id);
   Future<Card> createCard(Card card);
   Future<Card> updateCard(Card card);
-  Future<void> deleteCard(Uuid id);
-  Future<int> getNumCardsInDeck(Uuid id);
+  Future<void> deleteCard(String id);
+  Future<int> getNumCardsInDeck(String id);
 }

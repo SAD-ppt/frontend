@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 enum CardSide { front, back }
 
 @immutable
 class CardTemplateField extends Equatable {
-  final Uuid cardTemplateId;
+  final String cardTemplateId;
   final int orderNumber;
   final CardSide side;
 
@@ -22,8 +22,8 @@ class CardTemplateField extends Equatable {
 
 @immutable
 class CardTemplate extends Equatable {
-  final Uuid id;
-  final Uuid noteTemplateId;
+  final String id;
+  final String noteTemplateId;
   final String name;
 
   const CardTemplate({

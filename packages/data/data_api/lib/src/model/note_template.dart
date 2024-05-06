@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 class NoteTemplateField extends Equatable {
-  final Uuid noteTemplateId;
+  final String noteTemplateId;
   final int orderNumber;
   final String name;
 
@@ -17,7 +18,7 @@ class NoteTemplateField extends Equatable {
 }
 
 class NoteTemplate extends Equatable {
-  final Uuid id;
+  final String id;
   final String name;
 
   const NoteTemplate({

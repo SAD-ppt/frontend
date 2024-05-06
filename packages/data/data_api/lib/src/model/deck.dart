@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 class Deck extends Equatable {
-  final Uuid id;
+  final String id;
   final String name;
 
   const Deck({

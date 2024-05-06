@@ -3,6 +3,8 @@ import 'package:uuid/uuid.dart';
 import 'package:data_api/data_api.dart' as api;
 import 'dart:math';
 
+import 'package:uuid/v4.dart';
+
 class CardRepo {
   final api.CardApi cardApi;
   final api.CardTemplateApi cardTemplateApi;
@@ -11,7 +13,7 @@ class CardRepo {
 
   /// Get the next card for review in the deck with the given [deckId].
   /// The card will be the first card in the deck that is due for review.
-  Future<Card> nextCardForReview(Uuid deckId) async {
+  Future<Card> nextCardForReview(String deckId) async {
     var cards = await cardApi.getCardsOfDeck(deckId).first;
     Random random = Random();
     var selectedCard = cards[random.nextInt(cards.length)];
@@ -41,7 +43,7 @@ class CardRepo {
   }
 
   /// Create a new card with the given [deckId] and [cardTemplateId].
-  Stream<List<Card>> getCardsOfDeck(Uuid deckId) {
+  Stream<List<Card>> getCardsOfDeck(String deckId) {
     return cardApi
         .getCardsOfDeck(deckId)
         .asyncMap((List<api.CardDetail> cards) {

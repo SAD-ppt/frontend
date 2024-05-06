@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 @immutable
 class Note extends Equatable {
-  final Uuid id;
+  final String id;
   get getId => id;
 
   final List<(String name, String value)> fields;
