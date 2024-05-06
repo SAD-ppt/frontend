@@ -1,7 +1,4 @@
-import 'package:uuid/v4.dart';
-
 import './model/note.dart';
-import 'package:uuid/uuid.dart';
 
 abstract interface class NoteApi {
   /// Get all notes, with their fields.

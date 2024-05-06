@@ -1,7 +1,4 @@
-import 'package:uuid/v4.dart';
-
 import 'model/note_template.dart';
-import 'package:uuid/uuid.dart';
 
 abstract interface class NoteTemplateApi {
   Stream<List<NoteTemplateDetail>> getNoteTemplates();

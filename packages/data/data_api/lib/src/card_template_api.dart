@@ -1,6 +1,3 @@
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
-
 import 'model/card_template.dart';
 
 abstract interface class CardTemplateApi {

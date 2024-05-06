@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 
 class NoteTemplateField extends Equatable {
   final String noteTemplateId;

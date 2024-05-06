@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:uuid/v4.dart';
 
 import 'card_template.dart';
 import 'note_template.dart';

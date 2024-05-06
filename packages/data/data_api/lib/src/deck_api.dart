@@ -1,6 +1,3 @@
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
-
 import '../data_api.dart';
 
 abstract interface class DeckApi {
