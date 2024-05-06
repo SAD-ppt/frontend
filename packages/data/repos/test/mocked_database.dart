@@ -1,6 +1,5 @@
 import 'package:data_api/data_api.dart' as api;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:repos/repos.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/v4.dart';
 
@@ -47,7 +46,8 @@ class MockedDatabase
 
   @override
   Future<api.Deck> createDeck(String name, String description) {
-    var deck = api.Deck(id: const UuidV4().generate(), name: name);
+    var deck = api.Deck(
+        id: const UuidV4().generate(), name: name, description: description);
     decks.add(deck);
     return Future.value(deck);
   }
