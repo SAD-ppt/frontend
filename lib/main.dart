@@ -1,7 +1,8 @@
-import 'package:add_new_card/add_new_card.dart';
 import 'package:flutter/material.dart';
+// import 'package:add_new_card/add_new_card.dart';
 // import 'package:main_screen/main_screen.dart';
-import 'package:card_browser/card_browser.dart';
+// import 'package:card_browser/card_browser.dart';
+import 'package:testing_setup/testing_setup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const AddNewCardPage(),
-      home: const CardBrowserScreen(),
+      // home: const CardBrowserScreen(),
+      home: const TestingSetupScreen(),
     );
   }
 }

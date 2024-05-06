@@ -3,13 +3,11 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:card_browser/src/bloc/state.dart';
 import 'package:card_browser/src/bloc/event.dart';
-import 'package:logging/logging.dart';
 
 // Testing Data
 
 class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
   // final CardRepository cardRepository;
-  final log = Logger('VicLuu/CardBrowserBloc');
 
   CardBrowserBloc(/*{required this.cardRepository}*/) : super(const CardBrowserState()) {
     on<InitialEvent>(_onInitial);

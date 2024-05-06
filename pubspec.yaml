@@ -46,6 +46,9 @@ dependencies:
   add_new_template:
     path: 'packages/ui/add_new_template'
 
+  testing_setup:
+    path: 'packages/ui/testing_setup'
+
   repos:
     path: 'packages/data/repos'
 
