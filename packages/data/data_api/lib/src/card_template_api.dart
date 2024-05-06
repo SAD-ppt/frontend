@@ -6,13 +6,10 @@ abstract interface class CardTemplateApi {
   Stream<List<CardTemplateDetail>> getCardTemplates(String? noteTemplateId);
 
   /// Create a new card template with the given [noteTemplateId] and [name].
-  Future<CardTemplate> createEmptyCardTemplate(
-      String noteTemplateId, String name);
-
   Future<CardTemplate> createNewCardTemplate(String noteTemplateId, String name,
       List<(CardSide side, int orderNumber)> fields);
 
-  Future<void> addNewFieldToCardTemplate(
+  Future<CardTemplateField> addNewFieldToCardTemplate(
       String cardTemplateId, int orderNumber, CardSide side);
 
   Future<void> deleteFieldFromCardTemplate(
