@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-class CardTag extends Equatable {
+class NoteTag extends Equatable {
   final String name;
   final String cardId;
   final String? color;
 
-  const CardTag({
+  const NoteTag({
     required this.name,
     required this.cardId,
     this.color,
