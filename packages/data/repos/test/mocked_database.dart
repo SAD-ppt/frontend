@@ -268,17 +268,6 @@ class MockedDatabase
   }
 
   @override
-  Future<int> getNumTagsOfCard(String cardId) {
-    final cnt = tags.fold(0, (previousValue, element) {
-      if (element.cardId == cardId) {
-        return previousValue + 1;
-      }
-      return previousValue;
-    });
-    return Future.value(cnt);
-  }
-
-  @override
   Future<api.Card> updateCard(api.Card card) {
     // TODO: implement updateCard
     throw UnimplementedError();
@@ -365,5 +354,11 @@ class MockedDatabase
     }
     return Future.value(
         tags.where((element) => element.cardId == cardId).toList());
+  }
+
+  @override
+  Future<int> getNumTagsOfNote(String noteId) {
+    // TODO: implement getNumTagsOfNote
+    throw UnimplementedError();
   }
 }
