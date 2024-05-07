@@ -70,6 +70,7 @@ class NoteTemplateRepo {
     }
   }
 
+  /// Gets the note template with the given [id] and all associated card templates.
   Future<NoteTemplateDetail> getNoteTemplateDetail(String id) async {
     final ntd = await noteTemplateApi.getNoteTemplate(id);
     final (nt, fields) = (ntd.noteTemplate, ntd.fields);
