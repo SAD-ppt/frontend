@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:uuid/uuid.dart';
 
 import 'card_template.dart';
+import 'note_template.dart';
 import 'note.dart';
 
 @immutable
 class Card extends Equatable {
-  final Uuid deckId;
-  final Uuid id;
+  final String deckId;
+  final String id;
   final String cardTemplateId;
   final DateTime lastReviewed;
   final DateTime nextReview;
@@ -31,13 +31,17 @@ class CardDetail extends Equatable {
   final Card card;
   final CardTemplateDetail cardTemplate;
   final NoteDetail note;
+  final NoteTemplateDetail noteTemplate;
+
+  get id => card.id;
 
   const CardDetail({
     required this.card,
     required this.cardTemplate,
     required this.note,
+    required this.noteTemplate,
   });
 
   @override
-  List<Object> get props => [card, cardTemplate, note];
+  List<Object> get props => [card, cardTemplate, note, noteTemplate];
 }
