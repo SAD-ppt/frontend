@@ -9,7 +9,7 @@ abstract interface class NoteApi {
 
   /// Creates a note from a note template, with the given field values. Order of
   /// field values should match the order of fields in the note template.
-  Future<Note> createNote(String noteTemplateId, List<String> fieldValues);
+  Future<Note> createNote(String deckId, String noteTemplateId, List<String> fieldValues);
 
   /// Updates the fields of a note. Order of fields should match the order of
   /// fields in the note template.
