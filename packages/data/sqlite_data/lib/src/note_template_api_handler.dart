@@ -2,7 +2,7 @@ import 'package:data_api/data_api.dart';
 import 'package:sqflite/sqflite.dart';
 
 class NoteTemplateApiHandler implements NoteTemplateApi {
-  final Database db;
+  final Future<Database> db;
   const NoteTemplateApiHandler({required this.db});
 
   @override

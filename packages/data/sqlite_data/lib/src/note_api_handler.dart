@@ -2,7 +2,7 @@ import 'package:data_api/data_api.dart';
 import 'package:sqflite/sqflite.dart';
 
 class NoteApiHandler implements NoteApi {
-  final Database db;
+  final Future<Database> db;
   const NoteApiHandler({required this.db});
   @override
   Future<Note> createNote(String noteTemplateId, List<String> fieldValues) {

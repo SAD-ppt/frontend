@@ -2,7 +2,7 @@ import 'package:data_api/data_api.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CardTemplateApiHandler implements CardTemplateApi {
-  final Database db;
+  final Future<Database> db;
   const CardTemplateApiHandler({required this.db});
   @override
   Future<CardTemplateField> addNewFieldToCardTemplate(

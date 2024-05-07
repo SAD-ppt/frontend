@@ -2,7 +2,7 @@ import 'package:data_api/data_api.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DeckApiHandler implements DeckApi {
-  final Database db;
+  final Future<Database> db;
   const DeckApiHandler({required this.db});
   @override
   Future<Deck> createDeck(String name, String description) {

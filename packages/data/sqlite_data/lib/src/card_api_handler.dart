@@ -2,7 +2,7 @@ import 'package:data_api/data_api.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CardApiHandler implements CardApi {
-  final Database db;
+  final Future<Database> db;
   const CardApiHandler({required this.db});
   @override
   Future<Card> createCard(Card card) {
@@ -17,6 +17,7 @@ class CardApiHandler implements CardApi {
   @override
   Future<CardDetail> getCard(String id) {
     // TODO: implement getCard
+    // throw UnimplementedError();
     throw UnimplementedError();
   }
   @override
