@@ -1,8 +1,8 @@
+import 'package:data_api/data_api.dart';
 import 'package:flutter/material.dart';
-// import 'package:add_new_card/add_new_card.dart';
-// import 'package:main_screen/main_screen.dart';
-// import 'package:card_browser/card_browser.dart';
-import 'package:testing_setup/testing_setup.dart';
+import 'package:main_screen/main_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repos/repos.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,9 +35,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: const AddNewCardPage(),
-      // home: const CardBrowserScreen(),
-      home: const TestingSetupScreen(),
+      home: RepositoryProvider(
+        create: (context) => DeckRepo(
+          deckApi: DeckApi(),
+          cardApi: CardApi(),
+        ),
+        child: const MainScreen()
+      ),
     );
   }
 }
