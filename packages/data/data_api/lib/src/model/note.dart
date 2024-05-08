@@ -33,12 +33,14 @@ class Note extends Equatable {
 class NoteDetail extends Equatable {
   final Note note;
   final List<NoteField> fields;
+  final List<String> tags;
 
   const NoteDetail({
     required this.note,
     required this.fields,
+    required this.tags,
   });
 
   @override
-  List<Object> get props => [note, fields];
+  List<Object> get props => [note, fields, tags];
 }

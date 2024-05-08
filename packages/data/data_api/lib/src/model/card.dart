@@ -42,16 +42,14 @@ class CardDetail extends Equatable {
   final CardTemplateDetail cardTemplate;
   final NoteDetail note;
   final NoteTemplateDetail noteTemplate;
-  final List<String> tags;
 
   const CardDetail({
     required this.card,
     required this.cardTemplate,
     required this.note,
     required this.noteTemplate,
-    required this.tags,
   });
 
   @override
-  List<Object> get props => [card, cardTemplate, note, noteTemplate, tags];
+  List<Object> get props => [card, cardTemplate, note, noteTemplate];
 }
