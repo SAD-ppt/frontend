@@ -36,7 +36,6 @@ class CardRepo {
             ))
         .toList();
     return Card(
-      id: card.card.id,
       front: front,
       back: back,
     );
