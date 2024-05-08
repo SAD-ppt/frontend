@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
 
 class NoteField extends Equatable {
-  final Uuid noteId;
-  final String orderNumber;
+  final String noteId;
+  final int orderNumber;
   final String value;
 
   const NoteField({
@@ -18,7 +17,7 @@ class NoteField extends Equatable {
 }
 
 class Note extends Equatable {
-  final Uuid id;
+  final String id;
   final String noteTemplateId;
 
   const Note({
@@ -34,12 +33,14 @@ class Note extends Equatable {
 class NoteDetail extends Equatable {
   final Note note;
   final List<NoteField> fields;
+  final List<String> tags;
 
   const NoteDetail({
     required this.note,
     required this.fields,
+    required this.tags,
   });
 
   @override
-  List<Object> get props => [note, fields];
+  List<Object> get props => [note, fields, tags];
 }

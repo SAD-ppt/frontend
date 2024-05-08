@@ -1,15 +1,27 @@
-import 'dart:ffi';
-
-import './model/note.dart';
-import 'package:uuid/uuid.dart';
+import '../data_api.dart';
 
 abstract interface class NoteApi {
-  Stream<Map<Note, List<NoteField>>> getNotes();
-  Future<(Note template, List<NoteField> fields)> getNote(Uuid id);
-  Future<Note> createNote(Note note, List<NoteField> noteFields);
-  Future<Note> updateNote(Note note);
-  Future<Note> updateNoteFields(Uuid noteId, List<NoteField> noteFields);
-  Future<Note> updateNoteField(NoteField noteField);
-  Future<void> deleteNoteField(Uuid id, Int orderNumber);
+  /// Get all notes, with their fields.
+  Stream<List<NoteDetail>> getNotesStream() => throw NotSupportedError();
+
+  /// Get all notes, with their fields.
+  Future<List<NoteDetail>> getNotes();
+
+  /// Get a note, with its fields.
+  Future<NoteDetail?> getNote(String id);
+
+  /// Creates a note from a note template, with the given field values. Order of
+  /// field values should match the order of fields in the note template.
+  Future<Note> createNote(
+      String deckId, String noteTemplateId, List<String> fieldValues);
+
+  /// Updates the fields of a note. Order of fields should match the order of
+  /// fields in the note template.
+  Future<Note> updateNoteFields(String noteId, List<NoteField> noteFields);
+
+  /// Updates a single field of a note by index.
+  Future<Note> updateNoteField(String noteId, int idx, String value);
+
+  /// Delete a note
   Future<void> deleteNote(String id);
 }

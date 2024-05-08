@@ -16,13 +16,16 @@ class DeckRepo {
         return DeckOverview(
             id: deck.id,
             name: deck.name,
-            description: "TODO: Implement description",
+            description: deck.description,
             numberOfCards: cardCounts[index]);
       }).toList();
     });
   }
 
   Future<void> createNewDeck(String name, String description) async {
+    if (name.isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
     await deckApi.createDeck(name, description);
   }
 }

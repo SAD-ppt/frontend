@@ -1,15 +1,16 @@
 import 'package:equatable/equatable.dart';
-import 'package:uuid/uuid.dart';
 
 class Deck extends Equatable {
-  final Uuid id;
+  final String id;
   final String name;
+  final String description;
 
   const Deck({
     required this.id,
     required this.name,
+    required this.description,
   });
 
   @override
-  List<Object> get props => [id, name];
+  List<Object> get props => [id, name, description];
 }
