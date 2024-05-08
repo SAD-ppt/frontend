@@ -10,6 +10,9 @@ abstract interface class CardTemplateApi {
   /// If [noteTemplateId] is null, returns all card templates.
   Future<List<CardTemplateDetail>> getCardTemplates(String? noteTemplateId);
 
+  /// Returns a card template with the given [id].
+  Future<CardTemplateDetail?> getCardTemplate(String id);
+
   /// Create a new card template with the given [noteTemplateId] and [name].
   Future<CardTemplate> createNewCardTemplate(String noteTemplateId, String name,
       List<(CardSide side, int orderNumber)> fields);

@@ -8,7 +8,7 @@ abstract interface class NoteApi {
   Future<List<NoteDetail>> getNotes();
 
   /// Get a note, with its fields.
-  Future<NoteDetail> getNote(String id);
+  Future<NoteDetail?> getNote(String id);
 
   /// Creates a note from a note template, with the given field values. Order of
   /// field values should match the order of fields in the note template.

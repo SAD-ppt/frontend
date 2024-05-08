@@ -2,15 +2,15 @@ import 'package:equatable/equatable.dart';
 
 class NoteTag extends Equatable {
   final String name;
-  final String cardId;
+  final String noteId;
   final String? color;
 
   const NoteTag({
     required this.name,
-    required this.cardId,
+    required this.noteId,
     this.color,
   });
 
   @override
-  List<Object> get props => [cardId, name];
+  List<Object> get props => [noteId, name];
 }

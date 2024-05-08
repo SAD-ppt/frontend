@@ -3,10 +3,10 @@ import 'package:data_api/src/not_supported_error.dart';
 import 'model/note_template.dart';
 
 abstract interface class NoteTemplateApi {
-  Stream<List<NoteTemplateDetail>> getNoteTemplates() =>
+  Stream<List<NoteTemplateDetail>> getNoteTemplatesStream() =>
       throw NotSupportedError();
 
-  Future<List<NoteTemplateDetail>> getNoteTemplatesList();
+  Future<List<NoteTemplateDetail>> getNoteTemplates();
 
   Future<NoteTemplateDetail> getNoteTemplate(String id);
 
