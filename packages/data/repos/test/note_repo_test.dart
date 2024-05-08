@@ -10,9 +10,16 @@ void main() {
     final noteTemplateRepo = NoteTemplateRepo(
         noteTemplateApi: mockedDatabase, cardTemplateApi: mockedDatabase);
     final noteRepo = NoteRepo(
+        cardTemplateApi: mockedDatabase,
+        cardApi: mockedDatabase,
         noteApi: mockedDatabase,
         noteTemplateApi: mockedDatabase,
         noteTagApi: mockedDatabase);
+
+    final cardRepo = CardRepo(
+        cardApi: mockedDatabase,
+        cardTemplateApi: mockedDatabase,
+        learningStatApi: mockedDatabase);
 
     noteTemplateRepo.createNewNoteTemplate("noteTemplate1", [
       "field1",
@@ -21,16 +28,17 @@ void main() {
       (["field1"], ["field2"]),
     ]);
     deckRepo.createNewDeck("deck1", "deck1");
-    final deck = (await deckRepo.getDeckOverviews().first).first;
-    final noteTemplate =
-        (await noteTemplateRepo.getAllNoteTemplates().first).first;
+    final deck = (await deckRepo.getDeckOverviews()).first;
+    final noteTemplate = (await noteTemplateRepo.getAllNoteTemplates()).first;
+    await noteRepo.createNewTag("tag1");
+    await noteRepo.createNewTag("tag2");
     await noteRepo.createNote(
       deck.id,
       noteTemplate.id,
       ["value1", "value2"],
       tags: ["tag1"],
     );
-    final notes = await noteRepo.getNotesOfDeck(deck.id).first;
+    final notes = await noteRepo.getNotesOfDeck(deck.id);
     expect(notes.first.fields, [
       ("field1", "value1"),
       ("field2", "value2"),
@@ -40,7 +48,16 @@ void main() {
       notes.first.id,
       "tag2",
     );
-    final updatedNotes = await noteRepo.getNotesOfDeck(deck.id).first;
+    final updatedNotes = await noteRepo.getNotesOfDeck(deck.id);
     expect(updatedNotes.first.tags.toSet(), {"tag1", "tag2"});
+
+    final cards = await cardRepo.getCardsOfDeck(deck.id);
+    expect(cards.length, 1);
+    expect(cards.first.front, [
+      ("field1", "value1", true),
+    ]);
+    expect(cards.first.back, [
+      ("field2", "value2", false),
+    ]);
   });
 }
