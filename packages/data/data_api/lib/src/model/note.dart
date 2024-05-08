@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 class NoteField extends Equatable {
   final String noteId;
-  final String orderNumber;
+  final int orderNumber;
   final String value;
 
   const NoteField({
