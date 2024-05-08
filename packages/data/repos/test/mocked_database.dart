@@ -11,6 +11,7 @@ class MockedDatabase
         api.CardTemplateApi,
         api.NoteApi,
         api.NoteTagApi,
+        api.LearningStatApi,
         api.NoteTemplateApi {
   var decks = <api.Deck>[];
   var cards = <api.Card>[];
@@ -115,11 +116,6 @@ class MockedDatabase
   }
 
   @override
-  Future<void> deleteCard(String id) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> deleteCardTemplate(String id) {
     // TODO: implement deleteCardTemplate
     throw UnimplementedError();
@@ -157,21 +153,28 @@ class MockedDatabase
   }
 
   @override
-  Future<api.CardDetail> getCard(String id) {
-    // TODO: implement getCard
-    throw UnimplementedError();
+  Future<api.CardDetail> getCard(api.CardKey key) async {
+    final card = cards.firstWhere(
+        (card) =>
+            card.cardTemplateId == key.cardTemplateId &&
+            card.deckId == key.deckId &&
+            card.noteId == key.noteId,
+        orElse: () => throw Exception('Card not found'));
+    final note = await getNote(key.noteId);
+    final cardTemplate = await getCardTemplate(card.cardTemplateId);
+    final noteTemplate = await getNoteTemplate(note.note.noteTemplateId);
+    return Future.value(api.CardDetail(
+      card: card,
+      note: note,
+      cardTemplate: cardTemplate!,
+      noteTemplate: noteTemplate,
+    ));
   }
 
   @override
-  Stream<List<api.CardDetail>> getCardsOfDeck(String deckId) {
-    // TODO: implement getCardsOfDeck
-    throw UnimplementedError();
-  }
-
-  @override
-  Stream<List<api.CardTemplateDetail>> getCardTemplates(
+  Future<List<api.CardTemplateDetail>> getCardTemplates(
       String? noteTemplateId) {
-    return Stream.value(cardTemplates.map((ct) {
+    return Future.value(cardTemplates.map((ct) {
       var frontFields = cardTemplateFields
           .where((element) =>
               element.cardTemplateId == ct.id &&
@@ -207,8 +210,8 @@ class MockedDatabase
   }
 
   @override
-  Stream<List<api.Deck>> getDecks() {
-    return Stream.value(decks);
+  Future<List<api.Deck>> getDecks() {
+    return Future.value(decks);
   }
 
   @override
@@ -218,12 +221,16 @@ class MockedDatabase
   }
 
   @override
-  Stream<List<api.NoteDetail>> getNotes() {
-    return Stream.value(notes.map((note) {
+  Future<List<api.NoteDetail>> getNotes() {
+    return Future.value(notes.map((note) {
       return api.NoteDetail(
         note: note,
         fields:
             noteFields.where((element) => element.noteId == note.id).toList(),
+        tags: tags
+            .where((tag) => tag.noteId == note.id)
+            .map((e) => e.name)
+            .toList(),
       );
     }).toList());
   }
@@ -245,8 +252,8 @@ class MockedDatabase
   }
 
   @override
-  Stream<List<api.NoteTemplateDetail>> getNoteTemplates() {
-    return Stream.value(noteTemplates.map((nt) {
+  Future<List<api.NoteTemplateDetail>> getNoteTemplates() {
+    return Future.value(noteTemplates.map((nt) {
       var fields = noteTemplateFields
           .where((element) => element.noteTemplateId == nt.id)
           .toList();
@@ -313,7 +320,7 @@ class MockedDatabase
   @override
   Future<NoteTag> updateTag(NoteTag tag) {
     final idx = tags.indexWhere(
-        (element) => element.cardId == tag.cardId && element.name == tag.name);
+        (element) => element.noteId == tag.noteId && element.name == tag.name);
     if (idx == -1) {
       throw Exception('Tag not found');
     }
@@ -324,27 +331,7 @@ class MockedDatabase
   @override
   Future<NoteTag> getTagsOfNoteByName(String cardId, String name) {
     return Future.value(tags.firstWhere(
-        (element) => element.cardId == cardId && element.name == name));
-  }
-
-  @override
-  Future<void> deleteTag(String cardId, String name) {
-    // TODO: implement deleteTag
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<api.CardDetail>> getCardsOfDeckByTag(
-      String deckId, String tagName) {
-    // TODO: implement getCardsOfDeckByTag
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<NoteTag> createTag(String cardId, String name, {String? color}) {
-    final tag = NoteTag(cardId: cardId, name: name, color: color);
-    tags.add(tag);
-    return Future.value(tag);
+        (element) => element.noteId == cardId && element.name == name));
   }
 
   @override
@@ -353,12 +340,147 @@ class MockedDatabase
       return Future.value(tags);
     }
     return Future.value(
-        tags.where((element) => element.cardId == cardId).toList());
+        tags.where((element) => element.noteId == cardId).toList());
   }
 
   @override
   Future<int> getNumTagsOfNote(String noteId) {
     // TODO: implement getNumTagsOfNote
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<api.CardTemplateDetail>> getCardTemplatesStream(
+      String? noteTemplateId) {
+    // TODO: implement getCardTemplatesStream
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<api.CardDetail>> getCards({String? deckId, String? tagId}) async {
+    return cards.map((card) {
+      final note = notes.firstWhere((note) => note.id == card.noteId);
+      final noteTemplate = noteTemplates
+          .firstWhere((noteTemplate) => noteTemplate.id == note.noteTemplateId);
+      final cardTemplate = cardTemplates
+          .firstWhere((cardTemplate) => cardTemplate.id == card.cardTemplateId);
+      final ctfields = cardTemplateFields.where((element) {
+        return element.cardTemplateId == card.cardTemplateId;
+      }).toList();
+      final cardTemplateDetail = api.CardTemplateDetail(
+        cardTemplate: cardTemplate,
+        frontFields: ctfields
+            .where((element) => element.side == api.CardSide.front)
+            .toList(),
+        backFields: ctfields
+            .where((element) => element.side == api.CardSide.back)
+            .toList(),
+      );
+      return api.CardDetail(
+        card: card,
+        note: api.NoteDetail(
+          note: note,
+          fields: noteFields
+              .where((noteField) => noteField.noteId == note.id)
+              .toList(),
+          tags: tags
+              .where((tag) => tag.noteId == note.id)
+              .map((tag) => tag.name)
+              .toList(),
+        ),
+        cardTemplate: cardTemplateDetail,
+        noteTemplate: api.NoteTemplateDetail(
+          noteTemplate: noteTemplate,
+          fields: noteTemplateFields
+              .where((noteTemplateField) =>
+                  noteTemplateField.noteTemplateId == note.noteTemplateId)
+              .toList(),
+        ),
+      );
+    }).toList();
+  }
+
+  @override
+  Stream<List<api.CardDetail>> getCardsStream({String? deckId, String? tagId}) {
+    // TODO: implement getCardsStream
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<api.Deck>> getDecksStream() {
+    // TODO: implement getDecksStream
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<api.NoteDetail>> getNotesStream() {
+    // TODO: implement getNotesStream
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<api.CardTemplateDetail?> getCardTemplate(String id) {
+    // TODO: implement getCardTemplate
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteCard(api.CardKey key) {
+    // TODO: implement deleteCard
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<api.NoteTemplateDetail>> getNoteTemplatesStream() {
+    // TODO: implement getNoteTemplatesStream
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addLearningResult(api.CardKey key, String result,
+      {DateTime? time}) {
+    // TODO: implement addLearningResult
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> createLearningStat(api.CardKey key) {
+    // TODO: implement createLearningStat
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteLearningStat(api.CardKey key) {
+    // TODO: implement deleteLearningStat
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<api.LearningStatDetail?> getLearningStatOfCard(api.CardKey key) {
+    // TODO: implement getLearningStatOfCard
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addTagToNote(String noteId, String name) async {
+    final tgs = await getTags(null);
+    if (tgs.any((element) => element.name == name)) {
+      tgs.add(NoteTag(noteId: noteId, name: name));
+    } else {
+      throw Exception('Tag not found');
+    }
+  }
+
+  @override
+  Future<api.NoteTag> createTag(String name, {String? color}) {
+    final tag = NoteTag(noteId: "", name: name, color: color);
+    tags.add(tag);
+    return Future.value(tag);
+  }
+
+  @override
+  Future<void> removeTagFromNote(String noteId, String name) {
+    // TODO: implement removeTagFromNote
     throw UnimplementedError();
   }
 }

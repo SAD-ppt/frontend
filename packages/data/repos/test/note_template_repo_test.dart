@@ -18,7 +18,7 @@ void main() {
       (["field1", "field3"], ["field2", "field4"]),
     ]);
     late String id;
-    await noteTemplateRepo.getAllNoteTemplates().first.then((value) {
+    await noteTemplateRepo.getAllNoteTemplates().then((value) {
       expect(value.length, 1);
       expect(value[0].name, "template1");
       expect(value[0].fieldNames, ["field1", "field2", "field3", "field4"]);
@@ -76,7 +76,7 @@ void main() {
       (["field1", "field2"], ["field3", "field4"]),
       (["field1", "field3"], ["field2", "field4"]),
     ]);
-    await noteTemplateRepo.getAllNoteTemplates().first.then((value) {
+    await noteTemplateRepo.getAllNoteTemplates().then((value) {
       expect(value.length, 2);
       final resultTemplateNames = value.map((nt) => nt.name).toList();
       resultTemplateNames.sort();

@@ -9,15 +9,15 @@ class DeckOverview extends Equatable {
   final String id;
   final String name;
   final String description;
-  final int numberOfCards;
+  final int? numberOfCards;
 
   const DeckOverview({
     required this.id,
     required this.name,
     required this.description,
-    required this.numberOfCards,
+    this.numberOfCards,
   });
 
   @override
-  List<Object> get props => [id, name, description, numberOfCards];
+  List<Object> get props => [id, name, description];
 }
