@@ -10,7 +10,7 @@ void main() {
     final deckRepo = DeckRepo(deckApi: mockedDatabase, cardApi: mockedDatabase);
     deckRepo.createNewDeck("deck1", "deck1 description");
     deckRepo.createNewDeck("deck2", "deck2 description");
-    deckRepo.getDeckOverviews().first.then((value) {
+    deckRepo.getDeckOverviews().then((value) {
       expect(value.length, 2);
     });
   });

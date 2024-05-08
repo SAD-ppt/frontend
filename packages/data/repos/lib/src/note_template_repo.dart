@@ -19,9 +19,9 @@ class NoteTemplateRepo {
   }
 
   /// Gets all note templates.
-  Stream<List<NoteTemplate>> getAllNoteTemplates() {
+  Future<List<NoteTemplate>> getAllNoteTemplates() {
     final noteTemplates = noteTemplateApi.getNoteTemplates();
-    final rs = noteTemplates.asyncMap((nts) async {
+    final rs = noteTemplates.then((nts) async {
       return nts.map((nt) {
         return NoteTemplate(
           id: nt.noteTemplate.id,
@@ -74,7 +74,7 @@ class NoteTemplateRepo {
   Future<NoteTemplateDetail> getNoteTemplateDetail(String id) async {
     final ntd = await noteTemplateApi.getNoteTemplate(id);
     final (nt, fields) = (ntd.noteTemplate, ntd.fields);
-    final cardTemplates = await cardTemplateApi.getCardTemplates(nt.id).first;
+    final cardTemplates = await cardTemplateApi.getCardTemplates(nt.id);
     return NoteTemplateDetail(
         noteTemplate: NoteTemplate(
             id: nt.id,

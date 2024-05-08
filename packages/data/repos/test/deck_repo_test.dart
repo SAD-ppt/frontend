@@ -9,11 +9,11 @@ void main() {
     final mockedDatabase = MockedDatabase();
     final deckRepo = DeckRepo(deckApi: mockedDatabase, cardApi: mockedDatabase);
     deckRepo.createNewDeck("deck1", "description1");
-    await deckRepo.getDeckOverviews().first.then((value) {
+    await deckRepo.getDeckOverviews().then((value) {
       expect(value.length, 1);
       expect(value[0].name, "deck1");
       expect(value[0].description, "description1");
-      expect(value[0].numberOfCards, 0);
+      expect(value[0].numberOfCards, null);
     });
   });
 
@@ -29,7 +29,7 @@ void main() {
     final deckRepo = DeckRepo(deckApi: mockedDatabase, cardApi: mockedDatabase);
     deckRepo.createNewDeck("deck1", "description1");
     deckRepo.createNewDeck("deck2", "description2");
-    await deckRepo.getDeckOverviews().first.then((value) {
+    await deckRepo.getDeckOverviews().then((value) {
       expect(value.length, 2);
       final names = {"deck1", "deck2"};
       final descriptions = {"description1", "description2"};
