@@ -28,14 +28,11 @@ class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
     await Future.delayed(const Duration(seconds: 1));
 
     // Get the cards of the deck
-    StreamSubscription cardSubscription = cardRepository.getCardsOfDeck(state.deckID).listen((event) {
-      emit(state.copyWith(cardList: event));
-    });
-    
-    // Set the status to loaded
-    cardSubscription.onDone(() {
-      emit(state.copyWith(status: CardBrowserStatus.loaded));
-    });
+    List<Card> cardList = await cardRepository.getCardsOfDeck(state.deckID);
+    emit(state.copyWith(
+      status: CardBrowserStatus.loaded,
+      cardList: cardList
+    ));
   }
 
   FutureOr<void> _onReview(ReviewEvent event, Emitter<CardBrowserState> emit) {
