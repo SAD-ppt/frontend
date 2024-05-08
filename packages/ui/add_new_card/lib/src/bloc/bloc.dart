@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:add_new_card/src/bloc/event.dart';
 import 'package:add_new_card/src/bloc/state.dart';
 import 'package:bloc/bloc.dart';
+import 'package:repos/repos.dart';
 
 // Mock Data
 var deckList = ['Deck 1', 'Deck 2', 'Deck 3'];
@@ -28,12 +29,20 @@ var cardTypeList = [
 var tagsList = ['Tag 1', 'Tag 2', 'Tag 3'];
 var availableTagsList = ['Tag 1', 'Tag 2', 'Tag 3', 'Tag 4', 'Tag 5'];
 
-List<String> getFieldsForNoteTemplate(String noteTemplate) {
-  return fieldsList[noteTemplateList.indexOf(noteTemplate)];
-}
+// List<String> getFieldsForNoteTemplate(String noteTemplate) {
+//   return fieldsList[noteTemplateList.indexOf(noteTemplate)];
+// }
 
 class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
-  AddNewCardBloc() : super(const AddNewCardState()) {
+
+  final DeckRepo deckRepository;
+  final NoteTemplateRepo noteTemplateRepository;
+
+  AddNewCardBloc({
+    required this.deckRepository,
+    required this.noteTemplateRepository,
+  }) : super(const AddNewCardState()) {
+
     on<InitialEvent>(_onInitial);
     on<SubmitCard>(_onSubmitCard);
     on<DeckChanged>(_onDeckChanged);
@@ -44,6 +53,7 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     on<TagsChanged>(_onTagsChanged);
     on<AddNewAvailableTag>(_onAddNewAvailableTag);
     on<TagsTriggered>(_onTagsTriggered);
+  
   }
 
   FutureOr<void> _onInitial(
@@ -51,17 +61,33 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     emit(state.copyWith(status: Status.loading));
     await Future.delayed(const Duration(seconds: 1));
     // Success loaded with mock data
+    // emit(state.copyWith(
+    //     status: Status.loaded,
+    //     deck: deckList[0],
+    //     noteTemplate: noteTemplateList[0],
+    //     fieldNames: fieldsList[0],
+    //     tagsList: tagsList,
+    //     cardTypes: cardTypeList[0],
+    //     availableDecks: deckList,
+    //     availableNoteTemplates: noteTemplateList,
+    //     availableCardTypes: cardTypeList[0],
+    //     availableTagsList: availableTagsList));
+
+    // Load data from repository
+    List<DeckOverview> deckList = await deckRepository.getDeckOverviews();
+    List<NoteTemplate> noteTemplateList = await noteTemplateRepository.getAllNoteTemplates();
     emit(state.copyWith(
         status: Status.loaded,
-        deck: deckList[0],
-        noteTemplate: noteTemplateList[0],
+        deckName: deckList.isNotEmpty ? deckList[0].name : '',
+        noteTemplateName: noteTemplateList.isNotEmpty ? noteTemplateList[0].name : '',
         fieldNames: fieldsList[0],
         tagsList: tagsList,
         cardTypes: cardTypeList[0],
         availableDecks: deckList,
         availableNoteTemplates: noteTemplateList,
         availableCardTypes: cardTypeList[0],
-        availableTagsList: availableTagsList));
+        availableTagsList: availableTagsList
+    ));
   }
 
   void _onSubmitCard(SubmitCard event, Emitter<AddNewCardState> emit) {
@@ -69,7 +95,7 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
   }
 
   void _onDeckChanged(DeckChanged event, Emitter<AddNewCardState> emit) {
-    emit(state.copyWith(deck: event.deck));
+    emit(state.copyWith(deckName: event.deckName));
   }
 
   FutureOr<void> _onNoteTemplateChanged(
@@ -78,11 +104,10 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     await Future.delayed(const Duration(milliseconds: 500));
     emit(state.copyWith(
         status: Status.changed,
-        noteTemplate: event.noteTemplate,
-        fieldNames: getFieldsForNoteTemplate(event.noteTemplate),
+        noteTemplateName: event.noteTemplateName,
+        fieldNames: getFieldsForNoteTemplate(event.noteTemplateName, state.noteTemplateList),
         cardTypes: const [],
-        availableCardTypes:
-            cardTypeList[noteTemplateList.indexOf(event.noteTemplate)]));
+        availableCardTypes: const []));
   }
 
   void _onCardTypesChanged(
@@ -113,5 +138,10 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
 
   void _onTagsTriggered(TagsTriggered event, Emitter<AddNewCardState> emit) {
     emit(state.copyWith(status: Status.tagsTriggered));
+  }
+
+  // Helper function
+  List<String> getFieldsForNoteTemplate(String noteTemplateName, List<NoteTemplate> noteTemplateList) {
+    return noteTemplateList.firstWhere((noteTemplate) => noteTemplate.name == noteTemplateName).fieldNames;
   }
 }

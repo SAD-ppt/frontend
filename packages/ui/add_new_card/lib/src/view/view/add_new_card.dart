@@ -4,6 +4,7 @@ import 'package:add_new_card/src/bloc/state.dart';
 import 'package:add_new_card/src/view/view/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repos/repos.dart';
 import './card_form.dart';
 
 class AddNewCardPage extends StatelessWidget {
@@ -11,7 +12,10 @@ class AddNewCardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => AddNewCardBloc()..add(InitialEvent()),
+        create: (context) => AddNewCardBloc(
+          deckRepository: context.read<DeckRepo>(),
+          noteTemplateRepository: context.read<NoteTemplateRepo>(),
+        )..add(InitialEvent()),
         child: _AddNewCardView());
   }
 }
@@ -41,8 +45,8 @@ class _AddNewCardView extends StatelessWidget {
           body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: CardForm(
-              deck: state.deck,
-              noteTemplate: state.noteTemplate,
+              deckName: state.deckName,
+              noteTemplateName: state.noteTemplateName,
               cardTypes: state.cardTypes,
               fieldNames: state.fieldNames,
               onDeckChanged: (value) =>

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:repos/repos.dart';
 
 enum Status {
   initial,
@@ -15,22 +16,22 @@ enum Status {
 
 class AddNewCardState extends Equatable {
   final Status status;
-  final String deck;
-  final String noteTemplate;
-  final List<String> deckList;
-  final List<String> noteTemplateList;
-  final List<String> cardTypes;
+  final String deckName;
+  final String noteTemplateName;
+  final List<DeckOverview> deckList;
+  final List<NoteTemplate> noteTemplateList;
+  final List<String> cardTypes;               // Still remain
   final List<String> fieldNames;
   final List<String> tagsList;
   final List<String> availableTagsList;
-  final List<String> availableDecks;
-  final List<String> availableNoteTemplates;
-  final List<String> availableCardTypes;
+  final List<DeckOverview> availableDecks;
+  final List<NoteTemplate> availableNoteTemplates;
+  final List<String> availableCardTypes;      // Still remain
 
   const AddNewCardState({
     this.status = Status.initial,
-    this.deck = '',
-    this.noteTemplate = '',
+    this.deckName = '',
+    this.noteTemplateName = '',
     this.deckList = const [],
     this.noteTemplateList = const [],
     this.cardTypes = const [],
@@ -45,8 +46,8 @@ class AddNewCardState extends Equatable {
   @override
   List<Object> get props => [
         status,
-        deck,
-        noteTemplate,
+        deckName,
+        noteTemplateName,
         cardTypes,
         fieldNames,
         tagsList,
@@ -58,20 +59,20 @@ class AddNewCardState extends Equatable {
 
   AddNewCardState copyWith({
     Status? status,
-    String? deck,
-    String? noteTemplate,
+    String? deckName,
+    String? noteTemplateName,
     List<String>? cardTypes,
     List<String>? fieldNames,
     List<String>? tagsList,
     List<String>? availableTagsList,
-    List<String>? availableDecks,
-    List<String>? availableNoteTemplates,
+    List<DeckOverview>? availableDecks,
+    List<NoteTemplate>? availableNoteTemplates,
     List<String>? availableCardTypes,
   }) {
     return AddNewCardState(
       status: status ?? this.status,
-      deck: deck ?? this.deck,
-      noteTemplate: noteTemplate ?? this.noteTemplate,
+      deckName: deckName ?? this.deckName,
+      noteTemplateName: noteTemplateName ?? this.noteTemplateName,
       cardTypes: cardTypes ?? this.cardTypes,
       fieldNames: fieldNames ?? this.fieldNames,
       tagsList: tagsList ?? this.tagsList,

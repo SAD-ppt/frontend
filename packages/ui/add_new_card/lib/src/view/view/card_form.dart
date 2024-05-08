@@ -2,13 +2,14 @@ import 'package:add_new_card/src/view/view/config.dart';
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 // import 'package:components/components.dart';
 import 'package:flutter/material.dart';
+import 'package:repos/repos.dart';
 
 class CardForm extends StatelessWidget {
-  final String deck;
-  final String noteTemplate;
+  final String deckName;
+  final String noteTemplateName;
   final List<String> cardTypes;
-  final List<String> availableDecks;
-  final List<String> availableNoteTemplates;
+  final List<DeckOverview> availableDecks;
+  final List<NoteTemplate> availableNoteTemplates;
   final List<String> availableCardTypes;
   final List<String> fieldNames;
   final List<String> tagsList;
@@ -22,9 +23,9 @@ class CardForm extends StatelessWidget {
   // final VoidCallback onTagsTriggered;
   const CardForm(
       {super.key,
-      required this.deck,
+      required this.deckName,
       required this.onDeckChanged,
-      required this.noteTemplate,
+      required this.noteTemplateName,
       required this.onTagsChanged,
       // required this.onTagsTriggered,
       required this.tagsList,
@@ -45,8 +46,8 @@ class CardForm extends StatelessWidget {
     return ListView(
       children: [
         Config(
-          deck: deck,
-          noteTemplate: noteTemplate,
+          deckName: deckName,
+          noteTemplateName: noteTemplateName,
           cardTypes: cardTypes,
           availableDecks: availableDecks,
           availableNoteTemplates: availableNoteTemplates,

@@ -1,20 +1,21 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:repos/repos.dart';
 
 class Config extends StatelessWidget {
-  final String deck;
-  final String noteTemplate;
+  final String deckName;
+  final String noteTemplateName;
   final List<String> cardTypes;
-  final List<String> availableDecks;
-  final List<String> availableNoteTemplates;
+  final List<DeckOverview> availableDecks;
+  final List<NoteTemplate> availableNoteTemplates;
   final List<String> availableCardTypes;
   final Function(String) onDeckChanged;
   final Function(String) onNoteTemplateChanged;
   final Function(List<String>) onCardTypesChanged;
-  Config(
+  const Config(
       {super.key,
-      required this.deck,
-      required this.noteTemplate,
+      required this.deckName,
+      required this.noteTemplateName,
       required this.cardTypes,
       required this.availableDecks,
       required this.availableNoteTemplates,
@@ -27,10 +28,10 @@ class Config extends StatelessWidget {
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     var chooseDeckTitle = Text("Deck", style: fieldHeaderTextStyle);
     var chooseDeck = CustomDropdown<String>.search(
-      initialItem: deck,
+      initialItem: deckName,
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose deck',
-      items: availableDecks,
+      items: availableDecks.map((deck) => deck.name).toList(),
       onChanged: (p0) => onDeckChanged(p0),
       decoration: CustomDropdownDecoration(
         closedBorder: Border.all(color: Colors.grey),
@@ -42,10 +43,10 @@ class Config extends StatelessWidget {
     var chooseTemplateTitle = Text("Template", style: fieldHeaderTextStyle);
     var chooseCardTypesTitle = Text("Card types", style: fieldHeaderTextStyle);
     var chooseTemplate = CustomDropdown<String>.search(
-      initialItem: noteTemplate,
+      initialItem: noteTemplateName,
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose template',
-      items: availableNoteTemplates,
+      items: availableNoteTemplates.map((noteTemplate) => noteTemplate.name).toList(),
       onChanged: (p0) => {
         // update the item selected
         onNoteTemplateChanged(p0),
