@@ -3,26 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:repos/repos.dart';
 
 class Config extends StatelessWidget {
+  
   final String deckName;
   final String noteTemplateName;
-  final List<String> cardTypes;
+  final List<String> selectedCardTypes;
+
   final List<DeckOverview> availableDecks;
   final List<NoteTemplate> availableNoteTemplates;
-  final List<String> availableCardTypes;
+  final List<CardTemplate> availableCardTypes;
+
   final Function(String) onDeckChanged;
   final Function(String) onNoteTemplateChanged;
   final Function(List<String>) onCardTypesChanged;
+
   const Config(
       {super.key,
       required this.deckName,
       required this.noteTemplateName,
-      required this.cardTypes,
+      required this.selectedCardTypes,
       required this.availableDecks,
       required this.availableNoteTemplates,
       required this.availableCardTypes,
       required this.onDeckChanged,
       required this.onNoteTemplateChanged,
       required this.onCardTypesChanged});
+
   @override
   Widget build(BuildContext context) {
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
@@ -61,7 +66,7 @@ class Config extends StatelessWidget {
     var chooseCardTypes = CustomDropdown<String>.multiSelectSearch(
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose card type(s)',
-      items: availableCardTypes,
+      items: availableCardTypes.map((cardTemplate) => cardTemplate.name).toList(),
       onListChanged: (p0) => onCardTypesChanged(p0),
       decoration: CustomDropdownDecoration(
         closedBorder: Border.all(color: Colors.grey),

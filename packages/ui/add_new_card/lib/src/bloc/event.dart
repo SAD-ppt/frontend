@@ -32,12 +32,12 @@ class NoteTemplateChanged extends AddNewCardEvent {
 }
 
 class CardTypesChanged extends AddNewCardEvent {
-  final List<String> cardTypes;
+  final List<String> selectedCardTypes;
 
-  const CardTypesChanged(this.cardTypes);
+  const CardTypesChanged(this.selectedCardTypes);
 
   @override
-  List<Object> get props => [cardTypes];
+  List<Object> get props => [selectedCardTypes];
 }
 
 // class RemoveTag extends AddNewCardEvent {

@@ -5,21 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:repos/repos.dart';
 
 class CardForm extends StatelessWidget {
+
   final String deckName;
   final String noteTemplateName;
-  final List<String> cardTypes;
-  final List<DeckOverview> availableDecks;
-  final List<NoteTemplate> availableNoteTemplates;
-  final List<String> availableCardTypes;
+  final List<String> selectedCardTypes;
   final List<String> fieldNames;
   final List<String> tagsList;
+
+  final List<DeckOverview> availableDecks;
+  final List<NoteTemplate> availableNoteTemplates;
+  final List<CardTemplate> availableCardTypes;
   final List<String> availableTagsList;
+
   final Function(String) onDeckChanged;
   final Function(String) onNoteTemplateChanged;
   final Function(List<String>) onCardTypesChanged;
   final Function(List<String>) onFieldsChanged;
   final Function(List<String>) onTagsChanged;
   final Function(String) onAddNewAvailableTag;
+
   // final VoidCallback onTagsTriggered;
   const CardForm(
       {super.key,
@@ -30,7 +34,7 @@ class CardForm extends StatelessWidget {
       // required this.onTagsTriggered,
       required this.tagsList,
       required this.availableTagsList,
-      required this.cardTypes,
+      required this.selectedCardTypes,
       required this.fieldNames,
       required this.onNoteTemplateChanged,
       required this.onCardTypesChanged,
@@ -48,7 +52,7 @@ class CardForm extends StatelessWidget {
         Config(
           deckName: deckName,
           noteTemplateName: noteTemplateName,
-          cardTypes: cardTypes,
+          selectedCardTypes: selectedCardTypes,
           availableDecks: availableDecks,
           availableNoteTemplates: availableNoteTemplates,
           availableCardTypes: availableCardTypes,

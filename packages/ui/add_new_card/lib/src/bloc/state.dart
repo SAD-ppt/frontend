@@ -18,23 +18,19 @@ class AddNewCardState extends Equatable {
   final Status status;
   final String deckName;
   final String noteTemplateName;
-  final List<DeckOverview> deckList;
-  final List<NoteTemplate> noteTemplateList;
-  final List<String> cardTypes;               // Still remain
+  final List<String> selectedCardTypes;
   final List<String> fieldNames;
   final List<String> tagsList;
   final List<String> availableTagsList;
   final List<DeckOverview> availableDecks;
   final List<NoteTemplate> availableNoteTemplates;
-  final List<String> availableCardTypes;      // Still remain
+  final List<CardTemplate> availableCardTypes;
 
   const AddNewCardState({
     this.status = Status.initial,
     this.deckName = '',
     this.noteTemplateName = '',
-    this.deckList = const [],
-    this.noteTemplateList = const [],
-    this.cardTypes = const [],
+    this.selectedCardTypes = const [],
     this.fieldNames = const [],
     this.tagsList = const [],
     this.availableTagsList = const [],
@@ -48,38 +44,38 @@ class AddNewCardState extends Equatable {
         status,
         deckName,
         noteTemplateName,
-        cardTypes,
+        selectedCardTypes,
         fieldNames,
         tagsList,
         availableTagsList,
         availableDecks,
         availableNoteTemplates,
-        availableCardTypes,
+        // availableCardTypes,
       ];
 
   AddNewCardState copyWith({
     Status? status,
     String? deckName,
     String? noteTemplateName,
-    List<String>? cardTypes,
+    List<String>? selectedCardTypes,
     List<String>? fieldNames,
     List<String>? tagsList,
+
     List<String>? availableTagsList,
     List<DeckOverview>? availableDecks,
     List<NoteTemplate>? availableNoteTemplates,
-    List<String>? availableCardTypes,
+    List<CardTemplate>? availableCardTypes,
   }) {
     return AddNewCardState(
       status: status ?? this.status,
       deckName: deckName ?? this.deckName,
       noteTemplateName: noteTemplateName ?? this.noteTemplateName,
-      cardTypes: cardTypes ?? this.cardTypes,
+      selectedCardTypes: selectedCardTypes ?? this.selectedCardTypes,
       fieldNames: fieldNames ?? this.fieldNames,
       tagsList: tagsList ?? this.tagsList,
       availableTagsList: availableTagsList ?? this.availableTagsList,
       availableDecks: availableDecks ?? this.availableDecks,
-      availableNoteTemplates:
-          availableNoteTemplates ?? this.availableNoteTemplates,
+      availableNoteTemplates: availableNoteTemplates ?? this.availableNoteTemplates,
       availableCardTypes: availableCardTypes ?? this.availableCardTypes,
     );
   }
