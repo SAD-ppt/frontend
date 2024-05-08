@@ -3,7 +3,12 @@ import 'model/card_template.dart';
 abstract interface class CardTemplateApi {
   /// Returns a stream of all card templates associated with a note template.
   /// If [noteTemplateId] is null, returns all card templates.
-  Stream<List<CardTemplateDetail>> getCardTemplates(String? noteTemplateId);
+  Stream<List<CardTemplateDetail>> getCardTemplatesStream(
+      String? noteTemplateId) => throw UnimplementedError();
+
+  /// Returns a list of all card templates associated with a note template.
+  /// If [noteTemplateId] is null, returns all card templates.
+  Future<List<CardTemplateDetail>> getCardTemplates(String? noteTemplateId);
 
   /// Create a new card template with the given [noteTemplateId] and [name].
   Future<CardTemplate> createNewCardTemplate(String noteTemplateId, String name,

@@ -7,6 +7,7 @@ export 'src/deck_api.dart';
 export 'src/card_template_api.dart';
 export 'src/note_tag_api.dart';
 export 'src/learning_stat_api.dart';
+export 'src/not_supported_error.dart';
 
 export 'src/model/card.dart';
 export 'src/model/deck.dart';
