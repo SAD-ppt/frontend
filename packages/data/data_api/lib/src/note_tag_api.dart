@@ -1,7 +1,8 @@
 import 'model/note_tag.dart';
 
 abstract interface class NoteTagApi {
-  /// Returns tags associated with a note. If [noteId] is null, returns all card tags.
+  /// Returns tags associated with a note. If [noteId] is null, 
+  /// return all unique tags.
   Future<List<NoteTag>> getTags(String? noteId);
   Future<NoteTag> getTagsOfNoteByName(String noteId, String name);
   Future<NoteTag> createTag(String name, {String? color});
