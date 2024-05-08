@@ -4,8 +4,8 @@ abstract interface class NoteApi {
   /// Get all notes, with their fields.
   Stream<List<NoteDetail>> getNotesStream() => throw NotSupportedError();
 
-  /// Get all notes, with their fields.
-  Future<List<NoteDetail>> getNotes();
+  /// Get all notes, with their fields. Optionally filter by deckId or tags.
+  Future<List<NoteDetail>> getNotes({String? deckId, List<String>? tags});
 
   /// Get a note, with its fields.
   Future<NoteDetail?> getNote(String id);
