@@ -5,6 +5,21 @@ import 'card_template.dart';
 import 'note_template.dart';
 import 'note.dart';
 
+class CardKey extends Equatable {
+  final String deckId;
+  final String noteId;
+  final String cardTemplateId;
+
+  const CardKey({
+    required this.deckId,
+    required this.noteId,
+    required this.cardTemplateId,
+  });
+
+  @override
+  List<Object> get props => [deckId, noteId, cardTemplateId];
+}
+
 @immutable
 class Card extends Equatable {
   final String deckId;
@@ -15,12 +30,10 @@ class Card extends Equatable {
     required this.deckId,
     required this.noteId,
     required this.cardTemplateId,
-
   });
 
   @override
-  List<Object> get props =>
-      [noteId, deckId, cardTemplateId];
+  List<Object> get props => [noteId, deckId, cardTemplateId];
 }
 
 @immutable
