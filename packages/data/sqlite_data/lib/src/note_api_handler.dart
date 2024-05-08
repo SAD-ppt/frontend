@@ -66,8 +66,8 @@ class NoteApiHandler implements NoteApi {
     throw Exception('Note not found');
   }
 
-  @override
-  Future<List<NoteDetail>> getNotes() {
+  Future<List<NoteDetail>> getNotesRaw() {
+    // Get all notes, asscoiated fields and tags with them
     List<NoteDetail> notes = [];
     db.query('Note').then((value) {
       for (Map<String, dynamic> row in value) {
@@ -101,6 +101,137 @@ class NoteApiHandler implements NoteApi {
       }
     });
     return Future.value(notes);
+  }
+
+  Future<List<NoteDetail>> getNotesByDeckId(String deckId) {
+    // Get all notes, asscoiated fields and tags with them
+    List<NoteDetail> notes = [];
+    db.query('Note', where: 'DeckID = ?', whereArgs: [deckId]).then((value) {
+      for (Map<String, dynamic> row in value) {
+        Note note = Note(
+          id: row['UniqueID'].toString(),
+          noteTemplateId: row['NoteTemplateID'].toString(),
+        );
+        List<NoteField> fields = [];
+        List<NoteTag> tags = [];
+        db.query('NoteField', where: 'NoteID = ?', whereArgs: [note.id]).then(
+            (value) {
+          for (Map<String, dynamic> row in value) {
+            fields.add(NoteField(
+              noteId: row['NoteID'],
+              orderNumber: row['OrderNumber'],
+              value: row['RichDataText'],
+            ));
+          }
+        });
+        db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+            (value) {
+          for (Map<String, dynamic> row in value) {
+            tags.add(NoteTag(
+              noteId: row['NoteID'],
+              name: row['Name'],
+              color: row['Color'],
+            ));
+          }
+        });
+        notes.add(NoteDetail(note: note, fields: fields, tags: tags));
+      }
+    });
+    return Future.value(notes);
+  }
+
+  Future<List<NoteDetail>> getNotesByTags(List<String> tags) {
+    // Select the notes that have all the tags, by joining the Note and Tag tables
+    db.rawQuery(
+        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN ? GROUP BY NoteID HAVING COUNT(*) = ?)',
+        [tags, tags.length]).then((value) {
+      List<NoteDetail> notes = [];
+      for (Map<String, dynamic> row in value) {
+        Note note = Note(
+          id: row['UniqueID'].toString(),
+          noteTemplateId: row['NoteTemplateID'].toString(),
+        );
+        List<NoteField> fields = [];
+        List<NoteTag> tags = [];
+        db.query('NoteField', where: 'NoteID = ?', whereArgs: [note.id]).then(
+            (value) {
+          for (Map<String, dynamic> row in value) {
+            fields.add(NoteField(
+              noteId: row['NoteID'],
+              orderNumber: row['OrderNumber'],
+              value: row['RichDataText'],
+            ));
+          }
+        });
+        db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+            (value) {
+          for (Map<String, dynamic> row in value) {
+            tags.add(NoteTag(
+              noteId: row['NoteID'],
+              name: row['Name'],
+              color: row['Color'],
+            ));
+          }
+        });
+        notes.add(NoteDetail(note: note, fields: fields, tags: tags));
+      }
+      return notes;
+    });
+    throw Exception('No notes found');
+  }
+
+  Future<List<NoteDetail>> getNotesByDeckIdAndTags(
+      String deckId, List<String> tags) {
+    // Select the notes in the deckID deck, that have all the tags, by joining the Note, Tag and Card tables
+    db.rawQuery(
+        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN ? GROUP BY NoteID HAVING COUNT(*) = ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
+        [tags, tags.length, deckId]).then((value) {
+      List<NoteDetail> notes = [];
+      for (Map<String, dynamic> row in value) {
+        Note note = Note(
+          id: row['UniqueID'].toString(),
+          noteTemplateId: row['NoteTemplateID'].toString(),
+        );
+        List<NoteField> fields = [];
+        List<NoteTag> tags = [];
+        db.query('NoteField', where: 'NoteID = ?', whereArgs: [note.id]).then(
+            (value) {
+          for (Map<String, dynamic> row in value) {
+            fields.add(NoteField(
+              noteId: row['NoteID'],
+              orderNumber: row['OrderNumber'],
+              value: row['RichDataText'],
+            ));
+          }
+        });
+        db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+            (value) {
+          for (Map<String, dynamic> row in value) {
+            tags.add(NoteTag(
+              noteId: row['NoteID'],
+              name: row['Name'],
+              color: row['Color'],
+            ));
+          }
+        });
+        notes.add(NoteDetail(note: note, fields: fields, tags: tags));
+      }
+      return notes;
+    });
+    throw Exception('No notes found');
+  }
+
+  @override
+  Future<List<NoteDetail>> getNotes({String? deckId, List<String>? tags}) {
+    if (deckId == null && tags == null) {
+      return getNotesRaw();
+    } else if (deckId != null && tags == null) {
+      return getNotesByDeckId(deckId);
+    } else if (deckId == null && tags != null) {
+      return getNotesByTags(tags);
+    } else {
+      return getNotesByDeckIdAndTags(deckId!, tags!);
+    }
   }
 
   @override
@@ -143,6 +274,5 @@ class NoteApiHandler implements NoteApi {
       );
     });
     throw Exception('Note not found');
-    
   }
 }
