@@ -3,23 +3,39 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:card_browser/src/bloc/state.dart';
 import 'package:card_browser/src/bloc/event.dart';
+import 'package:repos/repos.dart';
 
 // Testing Data
 
 class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
-  // final CardRepository cardRepository;
+  
+  final DeckRepo deckRepository;
+  final CardRepo cardRepository;
 
-  CardBrowserBloc(/*{required this.cardRepository}*/) : super(const CardBrowserState()) {
+  CardBrowserBloc({
+    required this.deckRepository,
+    required this.cardRepository
+  }) : super(const CardBrowserState()) {
     on<InitialEvent>(_onInitial);
     on<TestEvent>(_onTest);
     on<AddCardEvent>(_onAddCard);
     on<ReviewEvent>(_onReview);
   }
   Future<FutureOr<void>> _onInitial(InitialEvent event, Emitter<CardBrowserState> emit) async {
+
+    // Set the status to loading
     emit(state.copyWith(status: CardBrowserStatus.loading));
     await Future.delayed(const Duration(seconds: 1));
-    // final cardList = await cardRepository.getCards(deckID: state.deckID);
-    // emit(state.copyWith(status: CardBrowserStatus.loaded, cardList: cardList));
+
+    // Get the cards of the deck
+    StreamSubscription cardSubscription = cardRepository.getCardsOfDeck(state.deckID).listen((event) {
+      emit(state.copyWith(cardList: event));
+    });
+    
+    // Set the status to loaded
+    cardSubscription.onDone(() {
+      emit(state.copyWith(status: CardBrowserStatus.loaded));
+    });
   }
 
   FutureOr<void> _onReview(ReviewEvent event, Emitter<CardBrowserState> emit) {

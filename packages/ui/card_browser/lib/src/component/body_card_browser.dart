@@ -1,13 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:repos/repos.dart' as repos;
 import 'package:card_browser/src/component/status_bar.dart';
+
 
 const double cardSize = 150;
 
 class BodyCardBrowser extends StatelessWidget {
   
-  final List<String> content;
+  final List<repos.Card> content;
 
   final int total;
   final int memorized;
@@ -56,12 +58,15 @@ class BodyCardBrowser extends StatelessWidget {
   }
 }
 
-List<Widget> createScrollView(List<String> content, int maxCard) {
+List<Widget> createScrollView(List<repos.Card> content, int maxCard) {
   List<_CardRow> result = [];
   for( int i = 0; i < content.length; i += maxCard ) {
     List<_CardWidget> row = [];
     for( int j = i; j < min( content.length, i + maxCard); ++j ) {
-      row.add(_CardWidget(name: content[j], definition: maxCard.toString()));
+      row.add(_CardWidget(
+        name: content[j].front[0].$2, 
+        definition: content[j].back[0].$2,
+      ));
     }
     result.add(_CardRow(cards: row, maxCard: maxCard));
   }

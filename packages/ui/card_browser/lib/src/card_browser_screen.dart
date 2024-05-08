@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:card_browser/src/component/body_card_browser.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:card_browser/src/bloc/event.dart';
+import 'package:repos/repos.dart';
 
 class CardBrowserScreen extends StatelessWidget {
   const CardBrowserScreen({super.key});
@@ -11,7 +12,10 @@ class CardBrowserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CardBrowserBloc(),
+      create: (context) => CardBrowserBloc(
+        deckRepository: context.read<DeckRepo>(), 
+        cardRepository: context.read<CardRepo>()
+      ),
       child: _CardBrowserScreenView(),
     );
   }
@@ -41,7 +45,7 @@ class _CardBrowserScreenView extends StatelessWidget {
 
           body: 
             BodyCardBrowser(
-              content: content, 
+              content: state.cardList, 
               total: totalCard, 
               memorized: memorizedCard,
               onReview: () => context.read<CardBrowserBloc>().add(ReviewEvent()),
