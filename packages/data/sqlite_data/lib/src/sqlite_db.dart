@@ -26,7 +26,7 @@ Future<Database> initializeDB() async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS CardTemplateField(CardTemplateID TEXT, OrderNumber INTEGER, NoteTemplateFieldID TEXT, Side INTEGER, PRIMARY KEY(CardTemplateID, OrderNumber), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(NoteTemplateFieldID) REFERENCES NoteTemplateField(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS Card(UniqueID TEXT PRIMARY KEY, CardTemplateID TEXT, DeckID TEXT, NoteID TEXT, FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(DeckID) REFERENCES Deck(UniqueID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
+        'CREATE TABLE IF NOT EXISTS Card(CardTemplateID TEXT, DeckID TEXT, NoteID TEXT, PRIMARY KEY(CardTemplateID, DeckID, NoteID), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(DeckID) REFERENCES Deck(UniqueID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Tag(Name TEXT, NoteID TEXT, Color TEXT, PRIMARY KEY(Name, NoteID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID)');
   });
