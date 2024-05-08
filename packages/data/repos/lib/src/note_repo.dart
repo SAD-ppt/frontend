@@ -1,24 +1,26 @@
 import 'package:data_api/data_api.dart' as api;
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 import 'models/note.dart';
 
 class NoteRepo {
+  final api.CardApi cardApi;
+  final api.CardTemplateApi cardTemplateApi;
   final api.NoteTagApi noteTagApi;
   final api.NoteApi noteApi;
   final api.NoteTemplateApi noteTemplateApi;
 
   NoteRepo(
-      {required this.noteApi,
+      {required this.cardApi,
+      required this.noteApi,
+      required this.cardTemplateApi,
       required this.noteTemplateApi,
       required this.noteTagApi});
 
-  Stream<Iterable<Note>> getNotesOfDeck(String deckId) {
-    return noteApi.getNotes().asyncMap((List<api.NoteDetail> notes) async {
+  Future<Iterable<Note>> getNotesOfDeck(String deckId) {
+    return noteApi.getNotes().then((List<api.NoteDetail> notes) async {
       // Get note templates to get field names, this functionality should be
       // moved to the API, but it's working ok because numbers of note templates
       // is small.
-      var noteTemplates = await noteTemplateApi.getNoteTemplates().first;
+      var noteTemplates = await noteTemplateApi.getNoteTemplates();
       return Future.wait(notes.map((note) async {
         var noteTemplate = noteTemplates.firstWhere(((ntd) =>
             ntd.noteTemplate.id.toString() == note.note.noteTemplateId));
@@ -41,8 +43,28 @@ class NoteRepo {
     });
   }
 
-  Future<void> addTagToNote(String noteId, String name) {
+  Future<void> createNewTag(String name, {String? color}) {
     return noteTagApi.createTag(
+      name,
+      color: color,
+    );
+  }
+
+  Future<void> addTagToNote(
+    String noteId,
+    String name,
+  ) {
+    return noteTagApi.addTagToNote(
+      noteId,
+      name,
+    );
+  }
+
+  Future<void> removeTagFromNote(
+    String noteId,
+    String name,
+  ) {
+    return noteTagApi.removeTagFromNote(
       noteId,
       name,
     );
@@ -64,6 +86,15 @@ class NoteRepo {
             tag,
           );
         }
+      }
+      final cardTemplates =
+          await cardTemplateApi.getCardTemplates(note.noteTemplateId);
+      for (var cardTemplate in cardTemplates) {
+        await cardApi.createCard(api.Card(
+          deckId: deckId,
+          noteId: note.id,
+          cardTemplateId: cardTemplate.cardTemplate.id,
+        ));
       }
     });
   }
