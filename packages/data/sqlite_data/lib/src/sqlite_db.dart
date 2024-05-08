@@ -3,7 +3,9 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqlite_data/src/card_api_handler.dart';
 import 'package:sqlite_data/src/card_template_api_handler.dart';
 import 'package:sqlite_data/src/deck_api_handler.dart';
+import 'package:sqlite_data/src/learning_stat_api_handler.dart';
 import 'package:sqlite_data/src/note_api_handler.dart';
+import 'package:sqlite_data/src/note_tag_api_handler.dart';
 import 'package:sqlite_data/src/note_template_api_handler.dart';
 
 Future<Database> initializeDB() async {
@@ -29,6 +31,8 @@ Future<Database> initializeDB() async {
         'CREATE TABLE IF NOT EXISTS Card(CardTemplateID TEXT, DeckID TEXT, NoteID TEXT, PRIMARY KEY(CardTemplateID, DeckID, NoteID), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(DeckID) REFERENCES Deck(UniqueID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Tag(Name TEXT, NoteID TEXT, Color TEXT, PRIMARY KEY(Name, NoteID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID)');
+    await db.execute(
+        'CREATE TABLE IF NOT EXISTS LearningResult(CardID TEXT, Time TEXT, Result TEXT, PRIMARY KEY(CardID, Time), FOREIGN KEY(CardID) REFERENCES Card(UniqueID))');
   });
 }
 
@@ -39,6 +43,8 @@ class SqliteDB {
   late DeckApiHandler deckApiHandler;
   late NoteApiHandler noteApiHandler;
   late NoteTemplateApiHandler noteTemplateApiHandler;
+  late LearningStatApiHandler learningStatApiHandler;
+  late NoteTagApiHandler noteTagApiHandler;
 
   Future<void> init() async {
     _db = await initializeDB();
@@ -47,5 +53,7 @@ class SqliteDB {
     deckApiHandler = DeckApiHandler(db: _db);
     noteApiHandler = NoteApiHandler(db: _db);
     noteTemplateApiHandler = NoteTemplateApiHandler(db: _db);
+    learningStatApiHandler = LearningStatApiHandler(db: _db);
+    noteTagApiHandler = NoteTagApiHandler(db: _db);
   }
 }
