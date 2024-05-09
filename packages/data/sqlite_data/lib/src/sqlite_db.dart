@@ -22,7 +22,7 @@ Future<Database> initializeDB() async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Note(UniqueID TEXT PRIMARY KEY, NoteTemplateID TEXT, FOREIGN KEY(NoteTemplateID) REFERENCES NoteTemplate(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS NoteField(NoteID TEXT, OrderNumber INTEGER, RichDataText TEXT, PRIMARY KEY(NoteID, OrderNumber), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID)), FOREIGN KEY(OrderNumber) REFERENCES NoteTemplateField(OrderNumber))');
+        'CREATE TABLE IF NOT EXISTS NoteField(NoteID TEXT, OrderNumber INTEGER, RichDataText TEXT, PRIMARY KEY(NoteID, OrderNumber), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID), FOREIGN KEY(OrderNumber) REFERENCES NoteTemplateField(OrderNumber))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS CardTemplate(UniqueID TEXT PRIMARY KEY, NoteTemplateID TEXT, Name TEXT, FOREIGN KEY(NoteTemplateID) REFERENCES NoteTemplate(UniqueID))');
     await db.execute(
@@ -30,7 +30,7 @@ Future<Database> initializeDB() async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Card(CardTemplateID TEXT, DeckID TEXT, NoteID TEXT, PRIMARY KEY(CardTemplateID, DeckID, NoteID), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(DeckID) REFERENCES Deck(UniqueID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS Tag(Name TEXT, NoteID TEXT, Color TEXT, PRIMARY KEY(Name, NoteID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID)');
+        'CREATE TABLE IF NOT EXISTS Tag(Name TEXT, NoteID TEXT, Color TEXT, PRIMARY KEY(Name, NoteID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS LearningResult(CardID TEXT, Time TEXT, Result TEXT, PRIMARY KEY(CardID, Time), FOREIGN KEY(CardID) REFERENCES Card(UniqueID))');
   });
@@ -55,5 +55,9 @@ class SqliteDB {
     noteTemplateApiHandler = NoteTemplateApiHandler(db: _db);
     learningStatApiHandler = LearningStatApiHandler(db: _db);
     noteTagApiHandler = NoteTagApiHandler(db: _db);
+  }
+
+  Future<void> close() async {
+    await _db.close();
   }
 }
