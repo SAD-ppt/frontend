@@ -162,14 +162,26 @@ class MockedDatabase
             card.deckId == key.deckId &&
             card.noteId == key.noteId,
         orElse: () => throw Exception('Card not found'));
-    final note = await getNote(key.noteId);
-    final cardTemplate = await getCardTemplate(card.cardTemplateId);
-    final noteTemplate = await getNoteTemplate(note.note.noteTemplateId);
+    final noteFields = this
+        .noteFields
+        .where((noteField) => noteField.noteId == card.noteId)
+        .toList();
+    final cardTemplateFields = this
+        .cardTemplateFields
+        .where((cardTemplateField) =>
+            cardTemplateField.cardTemplateId == card.cardTemplateId)
+        .toList();
+    final noteTemplateFields = this
+        .noteTemplateFields
+        .where((noteTemplateField) =>
+            noteTemplateField.noteTemplateId ==
+            notes.firstWhere((note) => note.id == card.noteId).noteTemplateId)
+        .toList();
     return Future.value(api.CardDetail(
       card: card,
-      note: note,
-      cardTemplate: cardTemplate!,
-      noteTemplate: noteTemplate,
+      cardTemplateFields: cardTemplateFields,
+      noteFields: noteFields,
+      noteTemplateFields: noteTemplateFields,
     ));
   }
 
@@ -368,43 +380,17 @@ class MockedDatabase
       {String? deckId, List<String>? tags}) async {
     return cards.map((card) {
       final note = notes.firstWhere((note) => note.id == card.noteId);
-      final noteTemplate = noteTemplates
-          .firstWhere((noteTemplate) => noteTemplate.id == note.noteTemplateId);
-      final cardTemplate = cardTemplates
-          .firstWhere((cardTemplate) => cardTemplate.id == card.cardTemplateId);
       final ctfields = cardTemplateFields.where((element) {
         return element.cardTemplateId == card.cardTemplateId;
       }).toList();
-      final cardTemplateDetail = api.CardTemplateDetail(
-        cardTemplate: cardTemplate,
-        frontFields: ctfields
-            .where((element) => element.side == api.CardSide.front)
-            .toList(),
-        backFields: ctfields
-            .where((element) => element.side == api.CardSide.back)
-            .toList(),
-      );
       return api.CardDetail(
         card: card,
-        note: api.NoteDetail(
-          note: note,
-          fields: noteFields
-              .where((noteField) => noteField.noteId == note.id)
-              .toList(),
-          tags: this
-              .tags
-              .where((tag) => tag.noteId == note.id)
-              .map((tag) => tag.name)
-              .toList(),
-        ),
-        cardTemplate: cardTemplateDetail,
-        noteTemplate: api.NoteTemplateDetail(
-          noteTemplate: noteTemplate,
-          fields: noteTemplateFields
-              .where((noteTemplateField) =>
-                  noteTemplateField.noteTemplateId == note.noteTemplateId)
-              .toList(),
-        ),
+        noteFields:
+            noteFields.where((element) => element.noteId == note.id).toList(),
+        noteTemplateFields: noteTemplateFields
+            .where((element) => element.noteTemplateId == note.noteTemplateId)
+            .toList(),
+        cardTemplateFields: ctfields,
       );
     }).toList();
   }
