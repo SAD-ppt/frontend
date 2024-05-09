@@ -5,10 +5,6 @@ abstract interface class NoteTagApi {
   /// return all unique tags.
   Future<List<NoteTag>> getTags(String? noteId);
 
-  /// Returns tags associated with a note. If [noteId] is null,
-  /// return all unique tags.
-  Future<NoteTag> getTagsOfNoteByName(String noteId, String name);
-
   /// Create a new tag with the given [name] and [color].
   Future<NoteTag> createTag(String name, {String? color});
 
