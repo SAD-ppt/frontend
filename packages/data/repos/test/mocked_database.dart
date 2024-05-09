@@ -13,6 +13,8 @@ class MockedDatabase
         api.NoteTagApi,
         api.LearningStatApi,
         api.NoteTemplateApi {
+  var learningStats = <api.LearningStat>[];
+  var learningResults = <api.LearningResult>[];
   var decks = <api.Deck>[];
   var cards = <api.Card>[];
   var cardTemplates = <api.CardTemplate>[];
@@ -221,13 +223,14 @@ class MockedDatabase
   }
 
   @override
-  Future<List<api.NoteDetail>> getNotes() {
+  Future<List<api.NoteDetail>> getNotes({String? deckId, List<String>? tags}) {
     return Future.value(notes.map((note) {
       return api.NoteDetail(
         note: note,
         fields:
             noteFields.where((element) => element.noteId == note.id).toList(),
-        tags: tags
+        tags: this
+            .tags
             .where((tag) => tag.noteId == note.id)
             .map((e) => e.name)
             .toList(),
@@ -275,12 +278,6 @@ class MockedDatabase
   }
 
   @override
-  Future<api.Card> updateCard(api.Card card) {
-    // TODO: implement updateCard
-    throw UnimplementedError();
-  }
-
-  @override
   Future<api.CardTemplate> updateCardTemplate(api.CardTemplate cardTemplate) {
     // TODO: implement updateCardTemplate
     throw UnimplementedError();
@@ -288,8 +285,13 @@ class MockedDatabase
 
   @override
   Future<api.Deck> updateDeck(api.Deck deck) {
-    // TODO: implement updateDeck
-    throw UnimplementedError();
+    for (var i = 0; i < decks.length; i++) {
+      if (decks[i].id == deck.id) {
+        decks[i] = deck;
+        return Future.value(deck);
+      }
+    }
+    throw Exception('Deck not found');
   }
 
   @override
@@ -313,8 +315,13 @@ class MockedDatabase
 
   @override
   Future<api.NoteTemplate> updateNoteTemplate(api.NoteTemplate noteTemplate) {
-    // TODO: implement updateNoteTemplate
-    throw UnimplementedError();
+    for (var i = 0; i < noteTemplates.length; i++) {
+      if (noteTemplates[i].id == noteTemplate.id) {
+        noteTemplates[i] = noteTemplate;
+        return Future.value(noteTemplate);
+      }
+    }
+    throw Exception('Note template not found');
   }
 
   @override
@@ -345,8 +352,8 @@ class MockedDatabase
 
   @override
   Future<int> getNumTagsOfNote(String noteId) {
-    // TODO: implement getNumTagsOfNote
-    throw UnimplementedError();
+    return Future.value(
+        tags.where((element) => element.noteId == noteId).length);
   }
 
   @override
@@ -357,7 +364,8 @@ class MockedDatabase
   }
 
   @override
-  Future<List<api.CardDetail>> getCards({String? deckId, String? tagId}) async {
+  Future<List<api.CardDetail>> getCards(
+      {String? deckId, List<String>? tags}) async {
     return cards.map((card) {
       final note = notes.firstWhere((note) => note.id == card.noteId);
       final noteTemplate = noteTemplates
@@ -383,7 +391,8 @@ class MockedDatabase
           fields: noteFields
               .where((noteField) => noteField.noteId == note.id)
               .toList(),
-          tags: tags
+          tags: this
+              .tags
               .where((tag) => tag.noteId == note.id)
               .map((tag) => tag.name)
               .toList(),
@@ -401,7 +410,8 @@ class MockedDatabase
   }
 
   @override
-  Stream<List<api.CardDetail>> getCardsStream({String? deckId, String? tagId}) {
+  Stream<List<api.CardDetail>> getCardsStream(
+      {String? deckId, List<String>? tags}) {
     // TODO: implement getCardsStream
     throw UnimplementedError();
   }
@@ -420,14 +430,26 @@ class MockedDatabase
 
   @override
   Future<api.CardTemplateDetail?> getCardTemplate(String id) {
-    // TODO: implement getCardTemplate
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteCard(api.CardKey key) {
-    // TODO: implement deleteCard
-    throw UnimplementedError();
+    for (var cardTemplate in cardTemplates) {
+      if (cardTemplate.id == id) {
+        var frontFields = cardTemplateFields
+            .where((element) =>
+                element.cardTemplateId == cardTemplate.id &&
+                element.side == api.CardSide.front)
+            .toList();
+        var backFields = cardTemplateFields
+            .where((element) =>
+                element.cardTemplateId == cardTemplate.id &&
+                element.side == api.CardSide.back)
+            .toList();
+        return Future.value(api.CardTemplateDetail(
+          cardTemplate: cardTemplate,
+          frontFields: frontFields,
+          backFields: backFields,
+        ));
+      }
+    }
+    throw Exception('Card template not found');
   }
 
   @override
@@ -439,26 +461,37 @@ class MockedDatabase
   @override
   Future<void> addLearningResult(api.CardKey key, String result,
       {DateTime? time}) {
-    // TODO: implement addLearningResult
-    throw UnimplementedError();
+    final learnTime = time ?? DateTime.now();
+    learningResults.add(api.LearningResult(
+      cardId: key,
+      result: result,
+      time: learnTime,
+    ));
+    return Future.value();
   }
 
   @override
   Future<void> createLearningStat(api.CardKey key) {
-    // TODO: implement createLearningStat
-    throw UnimplementedError();
+    learningStats.add(api.LearningStat(cardId: key));
+    return Future.value();
   }
 
   @override
   Future<void> deleteLearningStat(api.CardKey key) {
-    // TODO: implement deleteLearningStat
-    throw UnimplementedError();
+    learningStats.removeWhere((element) => element.cardId == key);
+    return Future.value();
   }
 
   @override
   Future<api.LearningStatDetail?> getLearningStatOfCard(api.CardKey key) {
-    // TODO: implement getLearningStatOfCard
-    throw UnimplementedError();
+    final stat = learningStats.firstWhere((element) => element.cardId == key,
+        orElse: () => throw Exception('Learning stat not found'));
+    final results =
+        learningResults.where((element) => element.cardId == key).toList();
+    return Future.value(api.LearningStatDetail(
+      learningStat: stat,
+      results: results,
+    ));
   }
 
   @override
@@ -480,7 +513,8 @@ class MockedDatabase
 
   @override
   Future<void> removeTagFromNote(String noteId, String name) {
-    // TODO: implement removeTagFromNote
-    throw UnimplementedError();
+    tags.removeWhere(
+        (element) => element.noteId == noteId && element.name == name);
+    return Future.value();
   }
 }

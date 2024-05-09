@@ -39,17 +39,18 @@ class Card extends Equatable {
 @immutable
 class CardDetail extends Equatable {
   final Card card;
-  final CardTemplateDetail cardTemplate;
-  final NoteDetail note;
-  final NoteTemplateDetail noteTemplate;
+  final List<NoteTemplateField> noteTemplateFields;
+  final List<CardTemplateField> cardTemplateFields;
+  final List<NoteField> noteFields;
 
   const CardDetail({
     required this.card,
-    required this.cardTemplate,
-    required this.note,
-    required this.noteTemplate,
+    required this.noteTemplateFields,
+    required this.cardTemplateFields,
+    required this.noteFields,
   });
 
   @override
-  List<Object> get props => [card, cardTemplate, note, noteTemplate];
+  List<Object> get props =>
+      [card, noteTemplateFields, cardTemplateFields, noteFields];
 }
