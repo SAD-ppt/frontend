@@ -30,15 +30,18 @@ class DeckApiHandler implements DeckApi {
   }
 
   @override
-  Future<Deck> getDeck(String id) async {
-    await db
-        .query('Deck', where: 'UniqueID = ?', whereArgs: [id]).then((onValue) {
+  Future<Deck> getDeck(String id) {
+    return db.rawQuery(
+        'SELECT UniqueID, Name, Description FROM Deck WHERE UniqueID = ?',
+        [id]).then((value) {
+      if (value.isEmpty) {
+        throw Exception('Deck not found');
+      }
       return Deck(
-          id: onValue[0]['UniqueID'].toString(),
-          name: onValue[0]['Name'].toString(),
-          description: onValue[0]['Description'].toString());
+          id: value[0]['UniqueID'].toString(),
+          name: value[0]['Name'].toString(),
+          description: value[0]['Description'].toString());
     });
-    throw Exception('Deck not found');
   }
 
   @override
@@ -64,14 +67,16 @@ class DeckApiHandler implements DeckApi {
 
   @override
   Future<List<Deck>> getDecks() {
-    db.query('Deck').then((onValue) {
-      return onValue
+    return db.query('Deck').then((value) {
+      if (value.isEmpty) {
+        throw Exception('No decks found');
+      }
+      return value
           .map((e) => Deck(
               id: e['UniqueID'].toString(),
               name: e['Name'].toString(),
               description: e['Description'].toString()))
           .toList();
     });
-    throw Exception('No decks found');
   }
 }

@@ -23,6 +23,13 @@ class NoteApiHandler implements NoteApi {
     );
     await db.insert('Note', note.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+    for (int i = 0; i < fieldValues.length; i++) {
+      await db.insert('NoteField', {
+        'NoteID': note.id,
+        'OrderNumber': i,
+        'RichDataText': fieldValues[i],
+      });
+    }
     return note;
   }
 
@@ -36,7 +43,11 @@ class NoteApiHandler implements NoteApi {
 
   @override
   Future<NoteDetail> getNote(String id) {
-    db.query('Note', where: 'UniqueID = ?', whereArgs: [id]).then((value) {
+    return db
+        .query('Note', where: 'UniqueID = ?', whereArgs: [id]).then((value) {
+      if (value.isEmpty) {
+        throw Exception('Note not found');
+      }
       Note note = Note(
         id: value[0]['UniqueID'].toString(),
         noteTemplateId: value[0]['NoteTemplateID'].toString(),
@@ -63,7 +74,6 @@ class NoteApiHandler implements NoteApi {
       });
       return NoteDetail(note: note, fields: fields, tags: tags);
     });
-    throw Exception('Note not found');
   }
 
   Future<List<NoteDetail>> getNotesRaw() {
@@ -241,38 +251,46 @@ class NoteApiHandler implements NoteApi {
   }
 
   @override
-  Future<Note> updateNoteField(String noteId, int idx, String value) async {
+  Future<Note> updateNoteField(String noteId, int idx, String value) {
     // Update the field in NoteField table
-    await db.update('NoteField', {'RichDataText': value},
-        where: 'NoteID = ? AND OrderNumber = ?',
-        whereArgs: [noteId, idx],
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    // Get the note from the Note table
-    db.query('Note', where: 'UniqueID = ?', whereArgs: [noteId]).then((value) {
-      return Note(
-        id: value[0]['UniqueID'].toString(),
-        noteTemplateId: value[0]['NoteTemplateID'].toString(),
-      );
+    return db
+        .update('NoteField', {'RichDataText': value},
+            where: 'NoteID = ? AND OrderNumber = ?',
+            whereArgs: [noteId, idx],
+            conflictAlgorithm: ConflictAlgorithm.replace)
+        .then((value) {
+      if (value == 0) {
+        throw Exception('Field not found');
+      } else {
+        return db.query('Note',
+            where: 'UniqueID = ?', whereArgs: [noteId]).then((value) {
+          return Note(
+            id: value[0]['UniqueID'].toString(),
+            noteTemplateId: value[0]['NoteTemplateID'].toString(),
+          );
+        });
+      }
     });
-    throw Exception('Note not found');
   }
 
   @override
-  Future<Note> updateNoteFields(String noteId, List<NoteField> noteFields) {
+  Future<Note> updateNoteFields(String noteId, List<NoteField> noteFields) async {
     // Update the fields in NoteField table
     for (NoteField field in noteFields) {
-      db.update('NoteField', {'RichDataText': field.value},
+      await db.update('NoteField', {'RichDataText': field.value},
           where: 'NoteID = ? AND OrderNumber = ?',
           whereArgs: [noteId, field.orderNumber],
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
     // Get the note from the Note table
-    db.query('Note', where: 'UniqueID = ?', whereArgs: [noteId]).then((value) {
+    return db.query('Note', where: 'UniqueID = ?', whereArgs: [noteId]).then((value) {
+      if (value.isEmpty) {
+        throw Exception('Note not found');
+      }
       return Note(
         id: value[0]['UniqueID'].toString(),
         noteTemplateId: value[0]['NoteTemplateID'].toString(),
       );
     });
-    throw Exception('Note not found');
   }
 }

@@ -29,24 +29,30 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
 
   @override
   Future<NoteTemplateDetail> createNoteTemplate(
-      String name, List<String> noteFieldNames) async {
-    String id = Uuid().v4();
+      String name, List<String> noteFieldNames) {
+    String id = const Uuid().v4();
     NoteTemplate noteTemplate = NoteTemplate(id: id, name: name);
     // Create a new note template
-    await db.insert('NoteTemplate', noteTemplate.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    return db
+        .insert('NoteTemplate', noteTemplate.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace)
+        .then((value) {
+      if (value == 0) {
+        throw Exception('Failed to create note template');
+      }
+      List<NoteTemplateField> fields = noteFieldNames
+          .asMap()
+          .entries
+          .map((e) => NoteTemplateField(
+              noteTemplateId: id, orderNumber: e.key, name: e.value))
+          .toList();
+      for (NoteTemplateField field in fields) {
+        db.insert('NoteTemplateField', field.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      return NoteTemplateDetail(noteTemplate: noteTemplate, fields: fields);
+    });
     // Create note template fields
-    List<NoteTemplateField> fields = noteFieldNames
-        .asMap()
-        .entries
-        .map((e) => NoteTemplateField(
-            noteTemplateId: id, orderNumber: e.key, name: e.value))
-        .toList();
-    for (NoteTemplateField field in fields) {
-      await db.insert('NoteTemplateField', field.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    }
-    return NoteTemplateDetail(noteTemplate: noteTemplate, fields: fields);
   }
 
   @override
@@ -56,48 +62,71 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
 
   @override
   Future<void> deleteNoteTemplate(String id) {
-    // TODO: implement deleteNoteTemplate
-    throw UnimplementedError();
+    return db.delete('NoteTemplate', where: 'UniqueID = ?', whereArgs: [id]).then(
+        (value) {
+      if (value == 0) {
+        throw Exception('Failed to delete note template');
+      }
+      return db.delete('NoteTemplateField',
+          where: 'NoteTemplateID = ?', whereArgs: [id]).then((value) {
+        if (value == 0) {
+          throw Exception('Failed to delete note template fields');
+        }
+      });
+    });
   }
 
   @override
   Future<NoteTemplateDetail> getNoteTemplate(String id) {
-    db.query('NoteTemplate', where: 'UniqueID = ?', whereArgs: [id]).then(
-        (value) {
+    return db.query('NoteTemplate',
+        where: 'UniqueID = ?', whereArgs: [id]).then((value) {
+      if (value.isEmpty) {
+        throw Exception('Note template not found');
+      }
       NoteTemplate noteTemplate = NoteTemplate(
           id: value[0]['UniqueID'].toString(),
           name: value[0]['Name'].toString());
       List<NoteTemplateField> fields = [];
-      db.query('NoteTemplateField',
+      return db.query('NoteTemplateField',
           where: 'NoteTemplateID = ?', whereArgs: [id]).then((value) {
+        if (value.isEmpty) {
+          throw Exception('No fields found for note template');
+        }
         for (Map<String, dynamic> field in value) {
           fields.add(NoteTemplateField(
               noteTemplateId: field['NoteTemplateID'],
               orderNumber: field['OrderNumber'],
               name: field['Name']));
         }
+        return Future.value(
+            NoteTemplateDetail(noteTemplate: noteTemplate, fields: fields));
       });
-      return NoteTemplateDetail(noteTemplate: noteTemplate, fields: fields);
     });
-    throw Exception('Failed to get note template');
   }
 
   @override
-  Future<NoteTemplate> updateNoteTemplate(NoteTemplate noteTemplate) async {
-    await db.update('NoteTemplate', noteTemplate.toMap(),
-        where: 'UniqueID = ?', whereArgs: [noteTemplate.id]);
-    return noteTemplate;
+  Future<NoteTemplate> updateNoteTemplate(NoteTemplate noteTemplate) {
+    return db.update('NoteTemplate', noteTemplate.toMap(),
+        where: 'UniqueID = ?', whereArgs: [noteTemplate.id]).then((value) {
+      if (value == 0) {
+        throw Exception('Failed to update note template');
+      }
+      return noteTemplate;
+    });
   }
-  
+
   @override
-  Future<List<NoteTemplateDetail>> getNoteTemplates() async {
-    await db.query('NoteTemplate').then((value) {
+  Future<List<NoteTemplateDetail>> getNoteTemplates() {
+    return db.query('NoteTemplate').then((value) {
+      if (value.isEmpty) {
+        throw Exception('No note templates found');
+      }
       List<NoteTemplateDetail> noteTemplates = [];
       for (Map<String, dynamic> noteTemplate in value) {
         List<NoteTemplateField> fields = [];
         db.query('NoteTemplateField',
-            where: 'NoteTemplateID = ?', whereArgs: [noteTemplate['UniqueID']])
-            .then((value) {
+            where: 'NoteTemplateID = ?',
+            whereArgs: [noteTemplate['UniqueID']]).then((value) {
           for (Map<String, dynamic> field in value) {
             fields.add(NoteTemplateField(
                 noteTemplateId: field['NoteTemplateID'],
@@ -112,7 +141,6 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
       }
       return noteTemplates;
     });
-    throw Exception('Failed to get note templates');
   }
 
   @override
