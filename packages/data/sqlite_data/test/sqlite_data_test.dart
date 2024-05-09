@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:data_api/data_api.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqlite_data/sqlite_data.dart';
 
 void main() {
@@ -94,6 +99,31 @@ void main() {
     for (int i = 0; i < note1FieldNames.length; i++) {
       expect(noteTemplateDetail.fields[i].name, note1FieldNames[i]);
     }
+    // update note template
+    var noteTemplate1UpdatedName = 'Note Template 1 Updated';
+    var noteTemplate1Updated = await sqlDB.noteTemplateApiHandler.updateNoteTemplate(
+      NoteTemplate(
+        id: noteTemplate1.noteTemplate.id,
+        name: noteTemplate1UpdatedName,
+      ),
+    );
+    // get note template
+    var noteTemplateDetailUpdated = await sqlDB.noteTemplateApiHandler.getNoteTemplate(noteTemplate1Updated.id);
+    expect(noteTemplateDetailUpdated.noteTemplate.id, noteTemplate1Updated.id);
+    // create note template 2 and get all note templates
+    var noteTemplate2Name = 'Note Template 2';
+    var note2FieldNames = ['Field 1', 'Field 2'];
+    await sqlDB.noteTemplateApiHandler.createNoteTemplate(noteTemplate2Name, note2FieldNames);
+    var noteTemplates = await sqlDB.noteTemplateApiHandler.getNoteTemplates();
+    expect(noteTemplates.length, 2);
+    expect(noteTemplates[0].noteTemplate.id, noteTemplate1Updated.id);
+    expect(noteTemplates[1].noteTemplate.name, noteTemplate2Name);
+    // delete note template 2
+    await sqlDB.noteTemplateApiHandler.deleteNoteTemplate(noteTemplates[1].noteTemplate.id);
+    // get all note templates
+    var noteTemplatesAfterDelete = await sqlDB.noteTemplateApiHandler.getNoteTemplates();
+    expect(noteTemplatesAfterDelete.length, 1);
+    expect(noteTemplatesAfterDelete[0].noteTemplate.id, noteTemplate1Updated.id);
     await sqlDB.close();
     await deleteDBFile();
   });
