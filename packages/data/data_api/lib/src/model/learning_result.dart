@@ -1,8 +1,9 @@
+import 'package:data_api/src/model/card.dart';
 import 'package:equatable/equatable.dart';
 
 /// Record the time which the user has learned a card, and the result of the learning.
 class LearningResult extends Equatable {
-  final String cardId;
+  final CardKey cardId;
   final DateTime time;
   final String result;
 

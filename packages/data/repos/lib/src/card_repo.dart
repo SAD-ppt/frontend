@@ -6,7 +6,7 @@ class CardRepo {
   final api.CardApi cardApi;
   final api.LearningStatApi learningStatApi;
   final api.CardTemplateApi cardTemplateApi;
-  final Map<String, List<(Card, api.LearningStatDetail)>?> _cardsDueForReview =
+  final Map<String, List<(Card, api.LearningStatDetail?)>?> _cardsDueForReview =
       {};
 
   CardRepo(
@@ -14,10 +14,13 @@ class CardRepo {
       required this.cardTemplateApi,
       required this.learningStatApi});
 
-  List<(Card, api.LearningStatDetail)> _getCardNeedReview(
-      List<(Card, api.LearningStatDetail)> processedCards) {
+  List<(Card, api.LearningStatDetail?)> _getCardNeedReview(
+      List<(Card, api.LearningStatDetail?)> processedCards) {
     final cardsDueForReview = processedCards.where((pair) {
-      var learningStat = pair.$2;
+      final learningStat = pair.$2;
+      if (learningStat == null) {
+        return true;
+      }
       if (learningStat.results.isEmpty) {
         return true;
       }
@@ -34,16 +37,37 @@ class CardRepo {
   Future<void> _updateCardsDueForReview(String deckId) async {
     final cards = await cardApi.getCards(deckId: deckId);
     final cardsWithLearningStats = await Future.wait(cards.map((card) async {
-      final cardDetail = _cardFromApiCard(card);
+      final cardDetail = card.toCard();
       final key = api.CardKey(
           deckId: deckId,
           noteId: card.card.noteId,
           cardTemplateId: card.card.cardTemplateId);
-      var learningStat = await learningStatApi.getLearningStatOfCard(key);
-      return (cardDetail, learningStat!);
+      try {
+        final learningStat = await learningStatApi.getLearningStatOfCard(key);
+        return (cardDetail, learningStat);
+      } catch (e) {
+        return (cardDetail, null);
+      }
     }));
     final cardsDueForReview = _getCardNeedReview(cardsWithLearningStats);
     _cardsDueForReview[deckId] = cardsDueForReview;
+  }
+
+  Future<void> learnCard(Card card, String result, {DateTime? time}) async {
+    final key = api.CardKey(
+        deckId: card.key.deckId,
+        noteId: card.key.noteId,
+        cardTemplateId: card.key.cardTemplateId);
+    // First check if the learning stat exists, if not create it.
+    try {
+      await learningStatApi.getLearningStatOfCard(key);
+    } catch (e) {
+      await learningStatApi.createLearningStat(key);
+      await learningStatApi.getLearningStatOfCard(key);
+    }
+    await learningStatApi.addLearningResult(key, result,
+        time: time ?? DateTime.now());
+    await _updateCardsDueForReview(card.key.deckId);
   }
 
   /// Get the next card for review in the deck with the given [deckId].
@@ -60,31 +84,10 @@ class CardRepo {
     return null;
   }
 
-  Card _cardFromApiCard(api.CardDetail card) {
-    var front = card.cardTemplate.frontFields
-        .map((field) => (
-              card.noteTemplate.fields[field.orderNumber].name,
-              card.note.fields[field.orderNumber].value,
-              true
-            ))
-        .toList();
-    var back = card.cardTemplate.backFields
-        .map((field) => (
-              card.noteTemplate.fields[field.orderNumber].name,
-              card.note.fields[field.orderNumber].value,
-              false
-            ))
-        .toList();
-    return Card(
-      front: front,
-      back: back,
-    );
-  }
-
   /// Get all cards in the deck with the given [deckId].
   Future<List<Card>> getCardsOfDeck(String deckId) {
     return cardApi
         .getCards(deckId: deckId)
-        .then((cards) => cards.map(_cardFromApiCard).toList());
+        .then((cards) => cards.map((cd) => cd.toCard()).toList());
   }
 }

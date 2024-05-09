@@ -1,8 +1,9 @@
+import 'package:data_api/src/model/card.dart';
 import 'package:data_api/src/model/learning_result.dart';
 import 'package:equatable/equatable.dart';
 
 class LearningStat extends Equatable {
-  final String cardId;
+  final CardKey cardId;
 
   const LearningStat({
     required this.cardId,
