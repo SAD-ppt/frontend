@@ -130,9 +130,11 @@ void main() async {
       ['Text for Note 1 Field 1', 'Text for Note 1 Field 2'],
     );
     // get note
-    await sqlDB.noteApiHandler.getNote(
+    await sqlDB.noteApiHandler
+        .getNote(
       note1.id,
-    ).then((value) {
+    )
+        .then((value) {
       expect(value.note.id, note1.id);
       expect(value.note.noteTemplateId, 'template1');
       expect(value.fields.length, 2);
@@ -146,9 +148,11 @@ void main() async {
       'Text for Note 1 Field 2 Updated',
     );
     // get note
-    await sqlDB.noteApiHandler.getNote(
+    await sqlDB.noteApiHandler
+        .getNote(
       note1.id,
-    ).then((value) {
+    )
+        .then((value) {
       expect(value.note.id, note1.id);
       expect(value.note.noteTemplateId, 'template1');
       expect(value.fields.length, 2);
@@ -172,9 +176,11 @@ void main() async {
       ],
     );
     // get note
-    await sqlDB.noteApiHandler.getNote(
+    await sqlDB.noteApiHandler
+        .getNote(
       note1.id,
-    ).then((value) {
+    )
+        .then((value) {
       expect(value.note.id, note1.id);
       expect(value.note.noteTemplateId, 'template1');
       expect(value.fields.length, 2);
@@ -195,8 +201,85 @@ void main() async {
     notes = await sqlDB.noteApiHandler.getNotes(tags: ['Tag1']);
     expect(notes.length, 1);
     // get notes with Tag1 and deck2
-    notes = await sqlDB.noteApiHandler.getNotes(deckId: 'deck2', tags: ['Tag1']);
+    notes =
+        await sqlDB.noteApiHandler.getNotes(deckId: 'deck2', tags: ['Tag1']);
     expect(notes.length, 0);
+    await sqlDB.close();
+    await deleteDBFile();
+  });
+  test("Card Template API Test", () async {
+    SqliteDB sqlDB = SqliteDB();
+    await sqlDB.init();
+    await createMockData(sqlDB);
+    // create new card template
+    var cardTemplate1 =
+        await sqlDB.cardTemplateApiHandler.createNewCardTemplate(
+      'template1',
+      'Card Template 1',
+      [
+        (CardSide.front, 1),
+        (CardSide.back, 2),
+      ],
+    );
+    // get card template
+    await sqlDB.cardTemplateApiHandler
+        .getCardTemplate(
+      cardTemplate1.id,
+    )
+        .then((value) {
+      expect(value?.cardTemplate.id, cardTemplate1.id);
+      expect(value?.cardTemplate.noteTemplateId, 'template1');
+      expect(value?.cardTemplate.name, 'Card Template 1');
+      expect(value?.frontFields.length, 1);
+      expect(value?.backFields.length, 1);
+    });
+    // add new field to card template
+    await sqlDB.cardTemplateApiHandler
+        .addNewFieldToCardTemplate(
+      cardTemplate1.id,
+      3,
+      CardSide.back,
+    )
+        .then(
+      (value) {
+        expect(value.cardTemplateId, cardTemplate1.id);
+        expect(value.orderNumber, 3);
+        expect(value.side, CardSide.back);
+      },
+    );
+    // get card template
+    await sqlDB.cardTemplateApiHandler
+        .getCardTemplate(
+      cardTemplate1.id,
+    )
+        .then((value) {
+      expect(value?.cardTemplate.id, cardTemplate1.id);
+      expect(value?.cardTemplate.noteTemplateId, 'template1');
+      expect(value?.cardTemplate.name, 'Card Template 1');
+      expect(value?.frontFields.length, 1);
+      expect(value?.backFields.length, 2);
+    });
+    // update field order
+    await sqlDB.cardTemplateApiHandler.updateFieldOrder(
+      cardTemplate1.id,
+      3,
+      4,
+      CardSide.back
+    );
+    // get all card templates
+    var cardTemplates = await sqlDB.cardTemplateApiHandler.getCardTemplates(
+      'template1',
+    );
+    expect(cardTemplates.length, 2);
+    // delete card template
+    await sqlDB.cardTemplateApiHandler.deleteCardTemplate(
+      cardTemplate1.id,
+    );
+    // get all card templates
+    cardTemplates = await sqlDB.cardTemplateApiHandler.getCardTemplates(
+      'template1',
+    );
+    expect(cardTemplates.length, 1);
     await sqlDB.close();
     await deleteDBFile();
   });
@@ -248,13 +331,13 @@ INSERT INTO CardTemplate (UniqueID, NoteTemplateID, Name) VALUES
     ('card_template2', 'template2', 'Card Template 2'),
     ('card_template3', 'template3', 'Card Template 3');
 
-INSERT INTO CardTemplateField (CardTemplateID, OrderNumber, NoteTemplateFieldID, Side) VALUES 
-    ('card_template1', 1, 'template1_field1', 1),
-    ('card_template1', 2, 'template1_field2', 1),
-    ('card_template2', 1, 'template2_field1', 1),
-    ('card_template2', 2, 'template2_field2', 1),
-    ('card_template3', 1, 'template3_field1', 1),
-    ('card_template3', 2, 'template3_field2', 1);
+INSERT INTO CardTemplateField (CardTemplateID, OrderNumber, Side) VALUES 
+    ('card_template1', 1, 1),
+    ('card_template1', 2, 1),
+    ('card_template2', 1, 1),
+    ('card_template2', 2, 1),
+    ('card_template3', 1, 1),
+    ('card_template3', 2, 1);
 
 INSERT INTO Card (CardTemplateID, DeckID, NoteID) VALUES 
     ('card_template1', 'deck1', 'note1'),

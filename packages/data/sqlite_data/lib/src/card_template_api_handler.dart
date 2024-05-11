@@ -27,14 +27,14 @@ class CardTemplateApiHandler implements CardTemplateApi {
   const CardTemplateApiHandler({required this.db});
   @override
   Future<CardTemplateDetail?> getCardTemplate(String id) {
-    db.query('CardTemplate', where: 'UniqueID = ?', whereArgs: [id]).then(
-        (value) {
+    return db.query('CardTemplate',
+        where: 'UniqueID = ?', whereArgs: [id]).then((value) async {
       if (value.isEmpty) {
         throw Exception('Card template not found');
       }
       List<CardTemplateField> frontFields = [];
       List<CardTemplateField> backFields = [];
-      return db.query('CardTemplateField',
+      await db.query('CardTemplateField',
           where: 'CardTemplateID = ?', whereArgs: [id]).then((value) {
         for (var field in value) {
           CardTemplateField newField = CardTemplateField(
@@ -48,18 +48,17 @@ class CardTemplateApiHandler implements CardTemplateApi {
             backFields.add(newField);
           }
         }
-        return CardTemplateDetail(
-          cardTemplate: CardTemplate(
-            id: value[0]['UniqueID'].toString(),
-            noteTemplateId: value[0]['NoteTemplateId'].toString(),
-            name: value[0]['Name'].toString(),
-          ),
-          frontFields: frontFields,
-          backFields: backFields,
-        );
       });
+      return CardTemplateDetail(
+        cardTemplate: CardTemplate(
+          id: value[0]['UniqueID'].toString(),
+          noteTemplateId: value[0]['NoteTemplateID'].toString(),
+          name: value[0]['Name'].toString(),
+        ),
+        frontFields: frontFields,
+        backFields: backFields,
+      );
     });
-    throw Exception('Card template not found');
   }
 
   @override
@@ -125,10 +124,9 @@ class CardTemplateApiHandler implements CardTemplateApi {
       String cardTemplateId, int orderNumber, CardSide side) {
     return db.delete('CardTemplateField',
         where: 'CardTemplateID = ? AND OrderNumber = ? AND Side = ?',
-        whereArgs: [cardTemplateId, orderNumber, side.index]).then(
-        (value) {
-          return Future.value();
-        });
+        whereArgs: [cardTemplateId, orderNumber, side.index]).then((value) {
+      return Future.value();
+    });
   }
 
   @override
@@ -141,22 +139,23 @@ class CardTemplateApiHandler implements CardTemplateApi {
   @override
   Future<CardTemplate> updateCardTemplate(CardTemplate cardTemplate) {
     return db.update('CardTemplate', cardTemplate.toMap(),
-        where: 'UniqueID = ?', whereArgs: [cardTemplate.id]).then(
-        (value) {
-          if (value == 0) {
-            throw Exception('Failed to update card template');
-          }
-          return Future.value(cardTemplate);
-        });
+        where: 'UniqueID = ?', whereArgs: [cardTemplate.id]).then((value) {
+      if (value == 0) {
+        throw Exception('Failed to update card template');
+      }
+      return Future.value(cardTemplate);
+    });
   }
 
   @override
   Future<void> updateFieldOrder(String cardTemplateId, int oldOrderNumber,
       int newOrderNumber, CardSide side) {
-    return db.update('CardTemplateField', {'OrderNumber': newOrderNumber},
-        where: 'CardTemplateID = ? AND OrderNumber = ? AND Side = ?',
-        whereArgs: [cardTemplateId, oldOrderNumber, side.index],
-        conflictAlgorithm: ConflictAlgorithm.replace).then((value) {
+    return db
+        .update('CardTemplateField', {'OrderNumber': newOrderNumber},
+            where: 'CardTemplateID = ? AND OrderNumber = ? AND Side = ?',
+            whereArgs: [cardTemplateId, oldOrderNumber, side.index],
+            conflictAlgorithm: ConflictAlgorithm.replace)
+        .then((value) {
       if (value == 0) {
         throw Exception('Failed to update field order');
       }
@@ -165,8 +164,7 @@ class CardTemplateApiHandler implements CardTemplateApi {
   }
 
   @override
-  Future<List<CardTemplateDetail>> getCardTemplates(
-      String? noteTemplateId) {
+  Future<List<CardTemplateDetail>> getCardTemplates(String? noteTemplateId) {
     return db.query('CardTemplate',
         where: 'NoteTemplateID = ?', whereArgs: [noteTemplateId]).then((value) {
       if (value.isEmpty) {
@@ -198,7 +196,7 @@ class CardTemplateApiHandler implements CardTemplateApi {
         cardTemplates.add(CardTemplateDetail(
           cardTemplate: CardTemplate(
             id: cardTemplate['UniqueID'].toString(),
-            noteTemplateId: cardTemplate['NoteTemplateId'].toString(),
+            noteTemplateId: cardTemplate['NoteTemplateID'].toString(),
             name: cardTemplate['Name'].toString(),
           ),
           frontFields: frontFields,
