@@ -12,6 +12,10 @@ dependencies:
     sdk: flutter
   data_api:
     path: ../data_api
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
+  sqflite_common_ffi: ^2.3.3
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:
