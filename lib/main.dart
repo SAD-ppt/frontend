@@ -1,9 +1,17 @@
+import 'package:data_api/data_api.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/login_screen.dart';
 // import 'package:login_screen/login_screen.dart';
 import 'package:register_screen/register_screen.dart';
 // import 'package:main_screen/main_screen.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:main_screen/main_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repos/repos.dart';
+import 'package:testing_setup/testing_setup.dart';
+import 'package:add_new_card/add_new_card.dart';
+import 'package:flutter/material.dart';
+// import 'package:main_screen/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -36,7 +45,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const RegisterScreenLayout(),
+      home: const MyHomePage(title: "Hello")
     );
   }
 }

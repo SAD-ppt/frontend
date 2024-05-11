@@ -1,28 +1,31 @@
 import 'package:data_api/data_api.dart' as api;
 import 'package:repos/src/models/deck_overview.dart';
 
+extension DeckOverviewFromDeck on api.Deck {
+  DeckOverview toDeckOverview() {
+    return DeckOverview(
+      id: id,
+      name: name,
+      description: description,
+    );
+  }
+}
+
 class DeckRepo {
   api.DeckApi deckApi;
   api.CardApi cardApi;
   DeckRepo({required this.deckApi, required this.cardApi});
 
-  Stream<List<DeckOverview>> getDeckOverviews() {
+  Future<List<DeckOverview>> getDeckOverviews() async {
     var stream = deckApi.getDecks();
-    return stream.asyncMap((decks) async {
-      var cardCounts = await Future.wait(
-          decks.map((deck) => cardApi.getNumCardsInDeck(deck.id)));
-      return decks.indexed.map((ele) {
-        var (index, deck) = ele;
-        return DeckOverview(
-            id: deck.id,
-            name: deck.name,
-            description: "TODO: Implement description",
-            numberOfCards: cardCounts[index]);
-      }).toList();
-    });
+    return stream
+        .then((decks) => decks.map((deck) => deck.toDeckOverview()).toList());
   }
 
   Future<void> createNewDeck(String name, String description) async {
+    if (name.isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
     await deckApi.createDeck(name, description);
   }
 }

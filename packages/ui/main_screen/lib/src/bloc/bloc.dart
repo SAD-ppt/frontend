@@ -3,15 +3,21 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'package:main_screen/main_screen.dart';
-// import 'package:repos/repos.dart';
+import 'package:repos/repos.dart';
 
 class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
-  // DeckRepo deckRepo;
+  DeckRepo deckRepo;
+  StreamSubscription? _deckSubscription;
 
-  MainScreenBloc(/* {required this.deckRepo} */) : super(const MainScreenState()) {
+  MainScreenBloc({required this.deckRepo}) : super(const MainScreenState()) {
+    _deckSubscription = deckRepo.getDeckOverviews().listen((decks) {
+      add(MainScreenDecksUpdated(decks));
+    });
     on<MainScreenInitial>(_onInitial);
+    on<MainScreenDecksUpdated>(_onDecksUpdated);
     on<MainScreenAddButtonPressed>(_onAddButtonPressed);
     on<MainScreenAddNewDeck>(_onAddNewDeck);
+    on<MainScreenDeckSelected>(_onDeckSelected);
     on<MainScreenAddNewDeckSubmit>(_onAddNewDeckSubmit);
     on<MainScreenAddNewDeckCancel>(_onAddNewDeckCancel);
   }
@@ -20,6 +26,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     MainScreenInitial event,
     Emitter<MainScreenState> emit,
   ) {
+    // Set the status to loaded
     emit(state.copyWith(status: MainScreenStatus.loaded));
   }
 
@@ -28,6 +35,22 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     Emitter<MainScreenState> emit,
   ) {
     emit(state.copyWith(currentStep: MainScreenStep.addButtonPressed));
+  }
+
+  FutureOr<void> _onDecksUpdated(
+    MainScreenDecksUpdated event,
+    Emitter<MainScreenState> emit,
+  ) {
+    var newDecks = List<DeckInfo>.empty();
+    var decks = event.decks;
+    // Map the decks to DeckInfo
+    for (var deck in decks) {
+      newDecks.add(DeckInfo(
+        name: deck.name,
+        deckDescription: deck.description,
+      ));
+    }
+    emit(state.copyWith(decks: newDecks));
   }
 
   FutureOr<void> _onAddNewDeck(
@@ -55,5 +78,12 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     Emitter<MainScreenState> emit,
   ) {
     emit(state.copyWith(currentStep: MainScreenStep.mainScreen));
+  }
+
+  FutureOr<void> _onDeckSelected(
+    MainScreenDeckSelected event,
+    Emitter<MainScreenState> emit,
+  ) {
+    throw UnimplementedError();
   }
 }
