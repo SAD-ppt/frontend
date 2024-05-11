@@ -13,6 +13,7 @@ class AddFieldsScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Add Fields'),
+          leading: const BackButton(),
         ),
         body: Column(
           children: [
