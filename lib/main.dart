@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:add_new_card/add_new_card.dart';
-import 'package:card_browser/card_browser.dart';
+import 'package:flutter/material.dart';
+// import 'package:main_screen/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -33,8 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      //home: const AddNewCardPage(),
-      home: const CardBrowserScreen(),
+      home: const AddNewCardPage(),
     );
   }
 }
