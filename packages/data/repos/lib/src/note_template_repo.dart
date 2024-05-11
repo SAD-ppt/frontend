@@ -1,6 +1,5 @@
 import 'package:data_api/data_api.dart' as api;
 import 'package:repos/repos.dart';
-import 'package:uuid/uuid.dart';
 
 class NoteTemplateRepo {
   final api.NoteTemplateApi noteTemplateApi;
@@ -9,56 +8,32 @@ class NoteTemplateRepo {
   NoteTemplateRepo(
       {required this.noteTemplateApi, required this.cardTemplateApi});
 
-  /// Creates a new card template with the given [name] and [front] and [back]
-  Future<void> createNewCardTemplate(
-    Uuid noteTemplateId,
-    String name,
-    List<String> front,
-    List<String> back,
-  ) async {
-    throw UnimplementedError();
-  }
-
   /// Deletes the note template with the given [id]. This will also delete all
   /// fields and card templates associated with the note template.
-  Future<void> deleteNoteTemplate(Uuid id) async {
+  Future<void> deleteNoteTemplate(String id) async {
     throw UnimplementedError();
   }
 
-  Future<void> deleteNoteTemplateField(Uuid id, int orderNumber) {
+  Future<void> deleteNoteTemplateField(String id, int orderNumber) {
     throw UnimplementedError();
   }
 
   /// Gets all note templates.
-  Stream<List<NoteTemplate>> getAllNoteTemplates() {
+  Future<List<NoteTemplate>> getAllNoteTemplates() {
     final noteTemplates = noteTemplateApi.getNoteTemplates();
-    noteTemplates.map((noteTemplate) {
-      return noteTemplate.map((nt) async {
-        final cardTemplates =
-            await cardTemplateApi.getCardTemplates(nt.noteTemplate.id).first;
-        final mapped = cardTemplates.map((ct) {
-          return CardTemplate(
-              id: ct.cardTemplate.id,
-              name: ct.cardTemplate.name,
-              front: ct.frontFields
-                  .map((e) => nt.fields[e.orderNumber].name)
-                  .toList(),
-              back: ct.backFields
-                  .map((e) => nt.fields[e.orderNumber].name)
-                  .toList());
-        }).toList();
+    final rs = noteTemplates.then((nts) async {
+      return nts.map((nt) {
         return NoteTemplate(
           id: nt.noteTemplate.id,
           name: nt.noteTemplate.name,
           fieldNames: nt.fields.map((f) => f.name).toList(),
-          associatedCardTemplates: mapped,
         );
       }).toList();
     });
-    throw UnimplementedError();
+    return rs;
   }
 
-  Future<NoteTemplate> getNoteTemplate(Uuid id) {
+  Future<NoteTemplate> getNoteTemplate(String id) {
     throw UnimplementedError();
   }
 
@@ -72,12 +47,14 @@ class NoteTemplateRepo {
       var (front, back) = cardTemplates[i];
       for (var field in front) {
         if (!fields.contains(field)) {
-          throw ArgumentError('All card templates must have the same fields');
+          throw ArgumentError(
+              'Fields in card templates must be in note fields');
         }
       }
       for (var field in back) {
         if (!fields.contains(field)) {
-          throw ArgumentError('All card templates must have the same fields');
+          throw ArgumentError(
+              'Fields in card templates must be in note fields');
         }
       }
       if (name.isEmpty) {
@@ -91,45 +68,69 @@ class NoteTemplateRepo {
         throw ArgumentError('frontFields and backFields cannot be empty');
       }
     }
+  }
 
-    /// Create a new note template with the given [name], [noteFields], and
-    /// [cardTemplates]. The [noteFields] are the fields that the note template
-    /// will have. The [cardTemplates] are the templates for the cards that will
-    /// be created from the note template. Each card template is a tuple of
-    /// [frontFields] and [backFields]. The [frontFields] are the fields that
-    /// will be shown on the front of the card, and the [backFields] are the
-    /// fields that will be shown on the back of the card.
-    /// Fields in [frontFields] and [backFields] must be in [noteFields],
-    /// otherwise an [ArgumentError] will be thrown.
-    Future<void> createNewNoteTemplate(
-      String name,
-      List<String> noteFields,
-      List<(List<String> frontFields, List<String> backFields)> cardTemplates,
-    ) async {
-      _validateCardTemplates(name, noteFields, cardTemplates);
-      var (
-        api.NoteTemplate newNoteTemplate,
-        List<api.NoteTemplateField> fields
-      ) = await noteTemplateApi.createNoteTemplate(name, noteFields);
-      var noteFieldsIndexMap = <String, int>{};
-      for (var i = 0; i < noteFields.length; i++) {
-        noteFieldsIndexMap[noteFields[i]] = i;
-      }
-      for (var cardTemplate in cardTemplates) {
-        var (frontFields, backFields) = cardTemplate;
-        var mappedFront = frontFields
-            .map((e) => (api.CardSide.front, noteFieldsIndexMap[e]!))
-            .toList();
-        var mappedBack = backFields
-            .map((e) => (api.CardSide.back, noteFieldsIndexMap[e]!))
-            .toList();
-        var cardTemplateFields = mappedFront + mappedBack;
-        await cardTemplateApi.createNewCardTemplate(
-          newNoteTemplate.id,
-          name,
-          cardTemplateFields,
-        );
-      }
+  /// Gets the note template with the given [id] and all associated card templates.
+  Future<NoteTemplateDetail> getNoteTemplateDetail(String id) async {
+    final ntd = await noteTemplateApi.getNoteTemplate(id);
+    final (nt, fields) = (ntd.noteTemplate, ntd.fields);
+    final cardTemplates = await cardTemplateApi.getCardTemplates(nt.id);
+    return NoteTemplateDetail(
+        noteTemplate: NoteTemplate(
+            id: nt.id,
+            name: nt.name,
+            fieldNames: fields.map((f) => f.name).toList()),
+        cardTemplates: cardTemplates.map((ct) {
+          return CardTemplate(
+            id: ct.cardTemplate.id,
+            name: ct.cardTemplate.name,
+            front: ct.frontFields
+                .where((f) => f.side == api.CardSide.front)
+                .map((f) => fields[f.orderNumber].name)
+                .toList(),
+            back: ct.backFields
+                .where((f) => f.side == api.CardSide.back)
+                .map((f) => fields[f.orderNumber].name)
+                .toList(),
+          );
+        }).toList());
+  }
+
+  /// Create a new note template with the given [name], [noteFields], and
+  /// [cardTemplates]. The [noteFields] are the fields that the note template
+  /// will have. The [cardTemplates] are the templates for the cards that will
+  /// be created from the note template. Each card template is a tuple of
+  /// [frontFields] and [backFields]. The [frontFields] are the fields that
+  /// will be shown on the front of the card, and the [backFields] are the
+  /// fields that will be shown on the back of the card.
+  /// Fields in [frontFields] and [backFields] must be in [noteFields],
+  /// otherwise an [ArgumentError] will be thrown.
+  Future<void> createNewNoteTemplate(
+    String name,
+    List<String> noteFields,
+    List<(List<String> frontFields, List<String> backFields)> cardTemplates,
+  ) async {
+    _validateCardTemplates(name, noteFields, cardTemplates);
+    final ntd = await noteTemplateApi.createNoteTemplate(name, noteFields);
+    final newNoteTemplate = ntd.noteTemplate;
+    var noteFieldsIndexMap = <String, int>{};
+    for (var i = 0; i < noteFields.length; i++) {
+      noteFieldsIndexMap[noteFields[i]] = i;
+    }
+    for (var cardTemplate in cardTemplates) {
+      var (frontFields, backFields) = cardTemplate;
+      var mappedFront = frontFields
+          .map((e) => (api.CardSide.front, noteFieldsIndexMap[e]!))
+          .toList();
+      var mappedBack = backFields
+          .map((e) => (api.CardSide.back, noteFieldsIndexMap[e]!))
+          .toList();
+      var cardTemplateFields = mappedFront + mappedBack;
+      await cardTemplateApi.createNewCardTemplate(
+        newNoteTemplate.id,
+        name,
+        cardTemplateFields,
+      );
     }
   }
 }

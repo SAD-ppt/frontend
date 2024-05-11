@@ -1,12 +1,23 @@
+import 'package:card_browser/src/bloc/bloc.dart';
+import 'package:card_browser/src/bloc/state.dart';
 import 'package:flutter/material.dart';
-import 'package:card_browser/src/body_card_browser.dart';
+import 'package:card_browser/src/component/body_card_browser.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:card_browser/src/bloc/event.dart';
+import 'package:repos/repos.dart';
 
 class CardBrowserScreen extends StatelessWidget {
   const CardBrowserScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return _CardBrowserScreenView();
+    return BlocProvider(
+      create: (context) => CardBrowserBloc(
+        deckRepository: context.read<DeckRepo>(), 
+        cardRepository: context.read<CardRepo>()
+      ),
+      child: _CardBrowserScreenView(),
+    );
   }
 }
 
@@ -19,19 +30,30 @@ const List<String> content = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 class _CardBrowserScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Tools bar
-      appBar: AppBar(
-        title: _ToolsBar(
-          onSearch: () => null,
-          onFilter: () => null,
-          onMore: () => null,
-        ),
-        leading: const BackButton(),
-      ),
+    return BlocBuilder<CardBrowserBloc, CardBrowserState>(
+      builder: (context, state) {
+        return Scaffold(
+          // Tools bar
+          appBar: AppBar(
+            title: _ToolsBar(
+              onSearch: () => null,
+              onFilter: () => null,
+              onMore: () => null,
+            ),
+            leading: const BackButton(),
+          ),
 
-      body: 
-        const BodyCardBrowser(content: content, total: totalCard, memorized: memorizedCard),
+          body: 
+            BodyCardBrowser(
+              content: state.cardList, 
+              total: totalCard, 
+              memorized: memorizedCard,
+              onReview: () => context.read<CardBrowserBloc>().add(ReviewEvent()),
+              onTest: () => context.read<CardBrowserBloc>().add(TestEvent()),
+              onAddCard: () => context.read<CardBrowserBloc>().add(AddCardEvent()),
+            ),
+        );
+      },
     );
   }
 }

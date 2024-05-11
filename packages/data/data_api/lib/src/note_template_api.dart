@@ -1,18 +1,23 @@
 import 'model/note_template.dart';
 import 'package:uuid/uuid.dart';
+import 'package:data_api/src/not_supported_error.dart';
+
+import 'model/note_template.dart';
 
 abstract interface class NoteTemplateApi {
-  Stream<List<NoteTemplateDetail>> getNoteTemplates();
+  Stream<List<NoteTemplateDetail>> getNoteTemplatesStream() =>
+      throw NotSupportedError();
 
-  Future<(NoteTemplate template, List<NoteTemplateField> fields)>
-      getNoteTemplate(Uuid id);
+  Future<List<NoteTemplateDetail>> getNoteTemplates();
 
-  Future<(NoteTemplate, List<NoteTemplateField>)> createNoteTemplate(
+  Future<NoteTemplateDetail> getNoteTemplate(String id);
+
+  Future<NoteTemplateDetail> createNoteTemplate(
       String name, List<String> noteFieldNames);
 
   Future<NoteTemplate> updateNoteTemplate(NoteTemplate noteTemplate);
 
-  Future<void> deleteNoteField(Uuid id);
+  Future<void> deleteNoteField(String id);
 
-  Future<void> deleteNoteTemplate(Uuid id);
+  Future<void> deleteNoteTemplate(String id);
 }
