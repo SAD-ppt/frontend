@@ -67,7 +67,59 @@ void main() async {
     await sqlDB.close();
     await deleteDBFile();
   });
-  
+  test("Note Template API test", () async {
+    SqliteDB sqlDB = SqliteDB();
+    await sqlDB.init();
+    await createMockData(sqlDB);
+    // create new note template
+    var noteTemplate1Name = 'Note Template 1';
+    var note1FieldNames = ['Field 1', 'Field 2', 'Field 3'];
+    var noteTemplate1 = await sqlDB.noteTemplateApiHandler
+        .createNoteTemplate(noteTemplate1Name, note1FieldNames);
+    // get note template
+    await sqlDB.noteTemplateApiHandler
+        .getNoteTemplate(
+      noteTemplate1.noteTemplate.id,
+    )
+        .then((value) {
+      expect(value.noteTemplate.id, noteTemplate1.noteTemplate.id);
+      expect(value.noteTemplate.name, noteTemplate1Name);
+      expect(value.fields.length, note1FieldNames.length);
+      for (int i = 0; i < note1FieldNames.length; i++) {
+        expect(value.fields[i].name, note1FieldNames[i]);
+      }
+    });
+    // update note template
+    await sqlDB.noteTemplateApiHandler.updateNoteTemplate(
+      NoteTemplate(
+        id: noteTemplate1.noteTemplate.id,
+        name: 'Note Template 1 Updated',
+      ),
+    );
+    // get note template
+    await sqlDB.noteTemplateApiHandler
+        .getNoteTemplate(
+      noteTemplate1.noteTemplate.id,
+    )
+        .then((value) {
+      expect(value.noteTemplate.id, noteTemplate1.noteTemplate.id);
+      expect(value.noteTemplate.name, 'Note Template 1 Updated');
+      expect(value.fields.length, note1FieldNames.length);
+      for (int i = 0; i < note1FieldNames.length; i++) {
+        expect(value.fields[i].name, note1FieldNames[i]);
+      }
+    });
+    // delete note template
+    await sqlDB.noteTemplateApiHandler.deleteNoteTemplate(
+      noteTemplate1.noteTemplate.id,
+    );
+    // get all note templates
+    var noteTemplates = await sqlDB.noteTemplateApiHandler.getNoteTemplates();
+    expect(noteTemplates.length, 3);
+    await sqlDB.close();
+    await deleteDBFile();
+  });
+
 }
 
 Future<void> deleteDBFile() async {
