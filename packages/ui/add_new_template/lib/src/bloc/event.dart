@@ -46,6 +46,16 @@ final class Cancel extends AddNewTemplateEvent {
   const Cancel();
 }
 
+final class CardTypeNameChanged extends AddNewTemplateEvent {
+  final int index;
+  final String name;
+
+  const CardTypeNameChanged(this.index, this.name);
+
+  @override
+  List<Object> get props => [index, name];
+}
+
 final class AddFieldToCardType extends AddNewTemplateEvent {
   final int index;
   final String field;
@@ -67,3 +77,4 @@ final class RemoveFieldFromCardType extends AddNewTemplateEvent {
   @override
   List<Object> get props => [index, field, isFront];
 }
+

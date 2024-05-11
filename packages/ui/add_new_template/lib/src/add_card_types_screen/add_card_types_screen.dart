@@ -1,6 +1,7 @@
 import 'package:add_new_template/src/bloc/bloc.dart';
 import 'package:add_new_template/src/bloc/event.dart';
 import 'package:add_new_template/src/bloc/state.dart';
+import 'package:add_new_template/src/template_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -34,6 +35,12 @@ class _AddCardTypes extends StatelessWidget {
               },
               child: const Text('Add Card Type'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                context.read<AddNewTemplateBloc>().add(const Submit());
+              },
+              child: const Text('Done'),
+            ),
           ],
         );
       },
@@ -48,34 +55,43 @@ class _CardTypeForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AddNewTemplateBloc, AddNewTemplateState>(
         builder: (context, state) {
-      return DragAndDropFieldsSelectForm(
-        availableFields: state.fields
-            .where((element) =>
-                !state.cardTypes[index].frontFields.contains(element) &&
-                !state.cardTypes[index].backFields.contains(element))
-            .toList(),
-        frontFields: state.cardTypes[index].frontFields,
-        backFields: state.cardTypes[index].backFields,
-        onFrontFieldAdded: (field) {
-          context.read<AddNewTemplateBloc>().add(
-                AddFieldToCardType(index, field, true),
-              );
-        },
-        onBackFieldAdded: (field) {
-          context.read<AddNewTemplateBloc>().add(
-                AddFieldToCardType(index, field, false),
-              );
-        },
-        onFrontFieldRemoved: (field) {
-          context.read<AddNewTemplateBloc>().add(
-                RemoveFieldFromCardType(index, field, true),
-              );
-        },
-        onBackFieldRemoved: (field) {
-          context.read<AddNewTemplateBloc>().add(
-                RemoveFieldFromCardType(index, field, false),
-              );
-        },
+      return Column(
+        children: [
+          TemplateName(
+              onChanged: (name) => context
+                  .read<AddNewTemplateBloc>()
+                  .add(CardTypeNameChanged(index, name))),
+          const SizedBox(height: 16),
+          DragAndDropFieldsSelectForm(
+            availableFields: state.fields
+                .where((element) =>
+                    !state.cardTypes[index].frontFields.contains(element) &&
+                    !state.cardTypes[index].backFields.contains(element))
+                .toList(),
+            frontFields: state.cardTypes[index].frontFields,
+            backFields: state.cardTypes[index].backFields,
+            onFrontFieldAdded: (field) {
+              context.read<AddNewTemplateBloc>().add(
+                    AddFieldToCardType(index, field, true),
+                  );
+            },
+            onBackFieldAdded: (field) {
+              context.read<AddNewTemplateBloc>().add(
+                    AddFieldToCardType(index, field, false),
+                  );
+            },
+            onFrontFieldRemoved: (field) {
+              context.read<AddNewTemplateBloc>().add(
+                    RemoveFieldFromCardType(index, field, true),
+                  );
+            },
+            onBackFieldRemoved: (field) {
+              context.read<AddNewTemplateBloc>().add(
+                    RemoveFieldFromCardType(index, field, false),
+                  );
+            },
+          )
+        ],
       );
     });
   }
