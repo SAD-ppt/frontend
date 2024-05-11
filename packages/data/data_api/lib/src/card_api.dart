@@ -1,10 +1,20 @@
-import 'model/card.dart';
+import '../data_api.dart';
 
 abstract interface class CardApi {
-  Stream<List<CardDetail>> getCardsOfDeck(String deckId);
-  Future<CardDetail> getCard(String id);
+  /// Get stream of cards in the deck. Optionally filter by deckId or tagId.
+  Stream<List<CardDetail>> getCardsStream(
+          {String? deckId, List<String>? tags}) =>
+      throw NotSupportedError();
+
+  /// Get list of cards in the deck. Optionally filter by deckId or tagId.
+  Future<List<CardDetail>> getCards({String? deckId, List<String>? tags});
+
+  /// Get card with the given key.
+  Future<CardDetail> getCard(CardKey key);
+
+  /// Create a new card.
   Future<Card> createCard(Card card);
-  Future<Card> updateCard(Card card);
-  Future<void> deleteCard(String id);
-  Future<int> getNumCardsInDeck(String id);
+
+  /// Update the card with the given key.
+  Future<int?> getNumCardsInDeck(String deckId);
 }

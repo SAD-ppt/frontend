@@ -1,15 +1,10 @@
-import 'package:data_api/data_api.dart' as api;
-import 'package:flutter/src/material/card.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:repos/repos.dart';
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
-
 import 'mocked_database.dart';
 
 void main() {
-  test("Create new note template", () async {
+  test("Create new note template and get associated card templates", () async {
     final mockedDatabase = MockedDatabase();
     final noteTemplateRepo = NoteTemplateRepo(
         noteTemplateApi: mockedDatabase, cardTemplateApi: mockedDatabase);
@@ -23,7 +18,7 @@ void main() {
       (["field1", "field3"], ["field2", "field4"]),
     ]);
     late String id;
-    await noteTemplateRepo.getAllNoteTemplates().first.then((value) {
+    await noteTemplateRepo.getAllNoteTemplates().then((value) {
       expect(value.length, 1);
       expect(value[0].name, "template1");
       expect(value[0].fieldNames, ["field1", "field2", "field3", "field4"]);
@@ -57,5 +52,36 @@ void main() {
               (["field152", "field3"], ["field2", "field4"]),
             ]),
         throwsArgumentError);
+  });
+
+  test("Create multiple note templates", () async {
+    final mockedDatabase = MockedDatabase();
+    final noteTemplateRepo = NoteTemplateRepo(
+        noteTemplateApi: mockedDatabase, cardTemplateApi: mockedDatabase);
+    noteTemplateRepo.createNewNoteTemplate("template1", [
+      "field1",
+      "field2",
+      "field3",
+      "field4",
+    ], [
+      (["field1", "field2"], ["field3", "field4"]),
+      (["field1", "field3"], ["field2", "field4"]),
+    ]);
+    noteTemplateRepo.createNewNoteTemplate("template2", [
+      "field1",
+      "field2",
+      "field3",
+      "field4",
+    ], [
+      (["field1", "field2"], ["field3", "field4"]),
+      (["field1", "field3"], ["field2", "field4"]),
+    ]);
+    await noteTemplateRepo.getAllNoteTemplates().then((value) {
+      expect(value.length, 2);
+      final resultTemplateNames = value.map((nt) => nt.name).toList();
+      resultTemplateNames.sort();
+      expect(resultTemplateNames, ["template1", "template2"]);
+
+    });
   });
 }
