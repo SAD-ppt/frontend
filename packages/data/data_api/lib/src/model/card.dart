@@ -1,43 +1,56 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:uuid/uuid.dart';
 
 import 'card_template.dart';
+import 'note_template.dart';
 import 'note.dart';
 
-@immutable
-class Card extends Equatable {
-  final Uuid deckId;
-  final Uuid id;
+class CardKey extends Equatable {
+  final String deckId;
+  final String noteId;
   final String cardTemplateId;
-  final DateTime lastReviewed;
-  final DateTime nextReview;
 
-  const Card({
+  const CardKey({
     required this.deckId,
-    required this.id,
+    required this.noteId,
     required this.cardTemplateId,
-    required this.lastReviewed,
-    required this.nextReview,
   });
 
   @override
-  List<Object> get props =>
-      [id, deckId, cardTemplateId, lastReviewed, nextReview];
+  List<Object> get props => [deckId, noteId, cardTemplateId];
+}
+
+@immutable
+class Card extends Equatable {
+  final String deckId;
+  final String noteId;
+  final String cardTemplateId;
+
+  const Card({
+    required this.deckId,
+    required this.noteId,
+    required this.cardTemplateId,
+  });
+
+  @override
+  List<Object> get props => [noteId, deckId, cardTemplateId];
 }
 
 @immutable
 class CardDetail extends Equatable {
   final Card card;
-  final CardTemplateDetail cardTemplate;
-  final NoteDetail note;
+  final List<NoteTemplateField> noteTemplateFields;
+  final List<CardTemplateField> cardTemplateFields;
+  final List<NoteField> noteFields;
 
   const CardDetail({
     required this.card,
-    required this.cardTemplate,
-    required this.note,
+    required this.noteTemplateFields,
+    required this.cardTemplateFields,
+    required this.noteFields,
   });
 
   @override
-  List<Object> get props => [card, cardTemplate, note];
+  List<Object> get props =>
+      [card, noteTemplateFields, cardTemplateFields, noteFields];
 }
