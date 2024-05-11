@@ -14,30 +14,30 @@ class SubmitCard extends AddNewCardEvent {
 }
 
 class DeckChanged extends AddNewCardEvent {
-  final String deck;
+  final String deckName;
 
-  const DeckChanged(this.deck);
+  const DeckChanged(this.deckName);
 
   @override
-  List<Object> get props => [deck];
+  List<Object> get props => [deckName];
 }
 
 class NoteTemplateChanged extends AddNewCardEvent {
-  final String noteTemplate;
+  final String noteTemplateName;
 
-  const NoteTemplateChanged(this.noteTemplate);
+  const NoteTemplateChanged(this.noteTemplateName);
 
   @override
-  List<Object> get props => [noteTemplate];
+  List<Object> get props => [noteTemplateName];
 }
 
 class CardTypesChanged extends AddNewCardEvent {
-  final List<String> cardTypes;
+  final List<String> selectedCardTypes;
 
-  const CardTypesChanged(this.cardTypes);
+  const CardTypesChanged(this.selectedCardTypes);
 
   @override
-  List<Object> get props => [cardTypes];
+  List<Object> get props => [selectedCardTypes];
 }
 
 // class RemoveTag extends AddNewCardEvent {
@@ -65,6 +65,15 @@ class TagsChanged extends AddNewCardEvent {
 
   @override
   List<Object> get props => [tagsList];
+}
+
+class AddNewAvailableTag extends AddNewCardEvent {
+  final String tag;
+
+  const AddNewAvailableTag(this.tag);
+
+  @override
+  List<Object> get props => [tag];
 }
 
 class TagsTriggered extends AddNewCardEvent {
