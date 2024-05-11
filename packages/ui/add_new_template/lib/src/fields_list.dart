@@ -20,7 +20,7 @@ class _FieldsListState extends State<FieldsList> {
   @override
   Widget build(BuildContext context) {
     var children = <Widget>[];
-    for (var (i, e) in fieldLabels.indexed) {
+    for (var (i, _) in fieldLabels.indexed) {
       children.add(_Field(onChanged: (value) {
         fieldLabels[i] = value;
         widget.onFieldsChanged(List<String>.from(fieldLabels));
@@ -35,7 +35,7 @@ class _FieldsListState extends State<FieldsList> {
         alignment: Alignment.centerRight,
         child: OutlinedButton(
             style: ButtonStyle(
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                shape: WidgetStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)))),
             onPressed: () {
               setState(() {

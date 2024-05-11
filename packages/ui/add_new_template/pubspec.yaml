@@ -1,7 +1,6 @@
 name: add_new_template
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
 publish_to: none
 
 environment:
@@ -16,6 +15,9 @@ dependencies:
     path: '../components'
   flutter_bloc: ^8.1.4
   equatable: ^2.0.5
+
+  repos:
+    path: '../../data/repos/'
 
 dev_dependencies:
   flutter_test:

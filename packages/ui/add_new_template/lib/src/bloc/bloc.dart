@@ -4,10 +4,13 @@ import 'package:add_new_template/src/bloc/event.dart';
 import 'package:add_new_template/src/bloc/state.dart';
 import 'package:add_new_template/src/card_type.dart';
 import 'package:bloc/bloc.dart';
+import 'package:repos/repos.dart';
 
 class AddNewTemplateBloc
     extends Bloc<AddNewTemplateEvent, AddNewTemplateState> {
-  AddNewTemplateBloc() : super(const AddNewTemplateState()) {
+  final NoteTemplateRepo noteTemplateRepo;
+  AddNewTemplateBloc({required this.noteTemplateRepo})
+      : super(const AddNewTemplateState()) {
     on<NameChanged>(_onNameChanged);
     on<FieldsChanged>(_onFieldsChanged);
     on<AddNewCardType>(_onAddNewCardType);
@@ -45,7 +48,18 @@ class AddNewTemplateBloc
     ));
   }
 
-  FutureOr<void> _onSubmit(Submit event, Emitter<AddNewTemplateState> emit) {}
+  FutureOr<void> _onSubmit(Submit event, Emitter<AddNewTemplateState> emit) {
+    final cardTypes = state.cardTypes.map((cardType) {
+      final frontFields = cardType.frontFields;
+      final backFields = cardType.backFields;
+      return (frontFields, backFields);
+    }).toList();
+    noteTemplateRepo.createNewNoteTemplate(
+      state.templateName,
+      state.fields,
+      cardTypes,
+    );
+  }
 
   FutureOr<void> _onCancel(Cancel event, Emitter<AddNewTemplateState> emit) {}
 

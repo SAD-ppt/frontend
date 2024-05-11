@@ -1,4 +1,3 @@
-import 'package:add_new_template/src/card_type.dart';
 import 'package:equatable/equatable.dart';
 
 sealed class AddNewTemplateEvent extends Equatable {
