@@ -6,22 +6,52 @@ class LearningStatApiHandler implements LearningStatApi {
   const LearningStatApiHandler({required this.db});
   @override
   Future<void> addLearningResult(CardKey key, String result, {DateTime? time}) {
-    // TODO: implement addLearningResult
-    throw UnimplementedError();
+    return db.insert('LearningResult', {
+      'DeckID': key.deckId,
+      'NoteID': key.noteId,
+      'CardTemplateID': key.cardTemplateId,
+      'Result': result,
+      'Time': time?.toIso8601String(),
+    }).then((value) {
+      return Future.value();
+    });
   }
   @override
   Future<void> createLearningStat(CardKey key) {
-    // TODO: implement createLearningStat
-    throw UnimplementedError();
+    return db.insert('LearningStat', {
+      'DeckID': key.deckId,
+      'NoteID': key.noteId,
+      'CardTemplateID': key.cardTemplateId,
+    }).then((value) {
+      return Future.value();
+    });
   }
   @override
   Future<void> deleteLearningStat(CardKey key) {
-    // TODO: implement deleteLearningStat
-    throw UnimplementedError();
+    return db.delete('LearningResult',
+        where:
+            'DeckID = ? AND NoteID = ? AND CardTemplateID = ?',
+        whereArgs: [key.deckId, key.noteId, key.cardTemplateId]).then((value) {
+      return Future.value();
+    });
   }
   @override
   Future<LearningStatDetail?> getLearningStatOfCard(CardKey key) {
-    // TODO: implement getLearningStatOfCard
-    throw UnimplementedError();
+    return db.query('LearningResult',
+        where:
+            'DeckID = ? AND NoteID = ? AND CardTemplateID = ?',
+        whereArgs: [key.deckId, key.noteId, key.cardTemplateId]).then((value) {
+      if (value.isEmpty) {
+        return Future.value(null);
+      }
+      return Future.value(LearningStatDetail(
+        learningStat: LearningStat(cardId: key),
+        results: value.map((e) => LearningResult(
+          cardId: key,
+          result: e['Result'].toString(),
+          time: DateTime.parse(e['Time'].toString()),
+        )).toList(),
+      ));
+    });
   }
 }

@@ -16,21 +16,28 @@ class NoteApiHandler implements NoteApi {
   const NoteApiHandler({required this.db});
   @override
   Future<Note> createNote(
-      String deckId, String noteTemplateId, List<String> fieldValues) async {
+      String deckId, String noteTemplateId, List<String> fieldValues) {
     Note note = Note(
       id: const Uuid().v4(),
       noteTemplateId: noteTemplateId,
     );
-    await db.insert('Note', note.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    for (int i = 0; i < fieldValues.length; i++) {
-      await db.insert('NoteField', {
-        'NoteID': note.id,
-        'OrderNumber': i,
-        'RichDataText': fieldValues[i],
-      });
-    }
-    return note;
+    return db
+        .insert('Note', note.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace)
+        .then((value) {
+      if (value == 0) {
+        throw Exception('Failed to create note');
+      } else {
+        for (int i = 0; i < fieldValues.length; i++) {
+          db.insert('NoteField', {
+            'NoteID': note.id,
+            'OrderNumber': i,
+            'RichDataText': fieldValues[i],
+          });
+        }
+        return Future.value(note);
+      }
+    });
   }
 
   @override
@@ -54,7 +61,7 @@ class NoteApiHandler implements NoteApi {
       );
       List<NoteField> fields = [];
       List<NoteTag> tags = [];
-      db.query('NoteField', where: 'NoteID = ?', whereArgs: [id]).then((value) {
+      return db.query('NoteField', where: 'NoteID = ?', whereArgs: [id]).then((value) {
         for (Map<String, dynamic> row in value) {
           fields.add(NoteField(
             noteId: row['NoteID'],
@@ -62,8 +69,7 @@ class NoteApiHandler implements NoteApi {
             value: row['RichDataText'],
           ));
         }
-      });
-      db.query('Tag', where: 'NoteID = ?', whereArgs: [id]).then((value) {
+        return db.query('Tag', where: 'NoteID = ?', whereArgs: [id]).then((value) {
         for (Map<String, dynamic> row in value) {
           tags.add(NoteTag(
             noteId: row['NoteID'],
@@ -71,8 +77,9 @@ class NoteApiHandler implements NoteApi {
             color: row['Color'],
           ));
         }
+        return Future.value(NoteDetail(note: note, fields: fields, tags: tags));
       });
-      return NoteDetail(note: note, fields: fields, tags: tags);
+      });
     });
   }
 
@@ -152,7 +159,7 @@ class NoteApiHandler implements NoteApi {
 
   Future<List<NoteDetail>> getNotesByTags(List<String> tags) {
     // Select the notes that have all the tags, by joining the Note and Tag tables
-    db.rawQuery(
+    return db.rawQuery(
         'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN ? GROUP BY NoteID HAVING COUNT(*) = ?)',
         [tags, tags.length]).then((value) {
       List<NoteDetail> notes = [];
@@ -185,15 +192,14 @@ class NoteApiHandler implements NoteApi {
         });
         notes.add(NoteDetail(note: note, fields: fields, tags: tags));
       }
-      return notes;
+      return Future.value(notes);
     });
-    throw Exception('No notes found');
   }
 
   Future<List<NoteDetail>> getNotesByDeckIdAndTags(
       String deckId, List<String> tags) {
     // Select the notes in the deckID deck, that have all the tags, by joining the Note, Tag and Card tables
-    db.rawQuery(
+    return db.rawQuery(
         'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN ? GROUP BY NoteID HAVING COUNT(*) = ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
         [tags, tags.length, deckId]).then((value) {
       List<NoteDetail> notes = [];
@@ -226,9 +232,8 @@ class NoteApiHandler implements NoteApi {
         });
         notes.add(NoteDetail(note: note, fields: fields, tags: tags));
       }
-      return notes;
+      return Future.value(notes);
     });
-    throw Exception('No notes found');
   }
 
   @override
@@ -264,17 +269,18 @@ class NoteApiHandler implements NoteApi {
       } else {
         return db.query('Note',
             where: 'UniqueID = ?', whereArgs: [noteId]).then((value) {
-          return Note(
+          return Future.value(Note(
             id: value[0]['UniqueID'].toString(),
             noteTemplateId: value[0]['NoteTemplateID'].toString(),
-          );
+          ));
         });
       }
     });
   }
 
   @override
-  Future<Note> updateNoteFields(String noteId, List<NoteField> noteFields) async {
+  Future<Note> updateNoteFields(
+      String noteId, List<NoteField> noteFields) async {
     // Update the fields in NoteField table
     for (NoteField field in noteFields) {
       await db.update('NoteField', {'RichDataText': field.value},
@@ -283,14 +289,15 @@ class NoteApiHandler implements NoteApi {
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
     // Get the note from the Note table
-    return db.query('Note', where: 'UniqueID = ?', whereArgs: [noteId]).then((value) {
+    return db.query('Note', where: 'UniqueID = ?', whereArgs: [noteId]).then(
+        (value) {
       if (value.isEmpty) {
         throw Exception('Note not found');
       }
-      return Note(
+      return Future.value(Note(
         id: value[0]['UniqueID'].toString(),
         noteTemplateId: value[0]['NoteTemplateID'].toString(),
-      );
+      ));
     });
   }
 }

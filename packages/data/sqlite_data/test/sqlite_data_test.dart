@@ -16,7 +16,8 @@ void main() {
       name: 'Deck 1',
       description: 'Deck 1 Description',
     );
-    var deckCreated = await sqlDB.deckApiHandler.createDeck(deck.name, deck.description);
+    var deckCreated =
+        await sqlDB.deckApiHandler.createDeck(deck.name, deck.description);
     // get deck
     await sqlDB.deckApiHandler.getDeck(deckCreated.id).then((value) {
       expect(value.id, deckCreated.id);
@@ -35,7 +36,8 @@ void main() {
       name: 'Deck 1',
       description: 'Deck 1 Description',
     );
-    var deckCreated = await sqlDB.deckApiHandler.createDeck(deck.name, deck.description);
+    var deckCreated =
+        await sqlDB.deckApiHandler.createDeck(deck.name, deck.description);
     // get deck
     await sqlDB.deckApiHandler.getDeck(deckCreated.id).then((value) {
       expect(value.id, deckCreated.id);
@@ -61,7 +63,8 @@ void main() {
       name: 'Deck 2',
       description: 'Deck 2 Description',
     );
-    var deck2Created = await sqlDB.deckApiHandler.createDeck(deck2.name, deck2.description);
+    var deck2Created =
+        await sqlDB.deckApiHandler.createDeck(deck2.name, deck2.description);
     await sqlDB.deckApiHandler.getDecks().then((value) {
       expect(value.length, 2);
       expect(value[0].id, updatedDeck.id);
@@ -83,16 +86,17 @@ void main() {
     await sqlDB.close();
     await deleteDBFile();
   });
-
   test("Note Template API test", () async {
     SqliteDB sqlDB = SqliteDB();
     await sqlDB.init();
     // create new note template
     var noteTemplate1Name = 'Note Template 1';
     var note1FieldNames = ['Field 1', 'Field 2', 'Field 3'];
-    var noteTemplate1 = await sqlDB.noteTemplateApiHandler.createNoteTemplate(noteTemplate1Name, note1FieldNames);
+    var noteTemplate1 = await sqlDB.noteTemplateApiHandler
+        .createNoteTemplate(noteTemplate1Name, note1FieldNames);
     // get note template
-    var noteTemplateDetail = await sqlDB.noteTemplateApiHandler.getNoteTemplate(noteTemplate1.noteTemplate.id);
+    var noteTemplateDetail = await sqlDB.noteTemplateApiHandler
+        .getNoteTemplate(noteTemplate1.noteTemplate.id);
     expect(noteTemplateDetail.noteTemplate.id, noteTemplate1.noteTemplate.id);
     expect(noteTemplateDetail.noteTemplate.name, noteTemplate1Name);
     expect(noteTemplateDetail.fields.length, note1FieldNames.length);
@@ -101,31 +105,76 @@ void main() {
     }
     // update note template
     var noteTemplate1UpdatedName = 'Note Template 1 Updated';
-    var noteTemplate1Updated = await sqlDB.noteTemplateApiHandler.updateNoteTemplate(
+    var noteTemplate1Updated =
+        await sqlDB.noteTemplateApiHandler.updateNoteTemplate(
       NoteTemplate(
         id: noteTemplate1.noteTemplate.id,
         name: noteTemplate1UpdatedName,
       ),
     );
     // get note template
-    var noteTemplateDetailUpdated = await sqlDB.noteTemplateApiHandler.getNoteTemplate(noteTemplate1Updated.id);
+    var noteTemplateDetailUpdated = await sqlDB.noteTemplateApiHandler
+        .getNoteTemplate(noteTemplate1Updated.id);
     expect(noteTemplateDetailUpdated.noteTemplate.id, noteTemplate1Updated.id);
     // create note template 2 and get all note templates
     var noteTemplate2Name = 'Note Template 2';
     var note2FieldNames = ['Field 1', 'Field 2'];
-    await sqlDB.noteTemplateApiHandler.createNoteTemplate(noteTemplate2Name, note2FieldNames);
+    await sqlDB.noteTemplateApiHandler
+        .createNoteTemplate(noteTemplate2Name, note2FieldNames);
     var noteTemplates = await sqlDB.noteTemplateApiHandler.getNoteTemplates();
     expect(noteTemplates.length, 2);
     expect(noteTemplates[0].noteTemplate.id, noteTemplate1Updated.id);
     expect(noteTemplates[1].noteTemplate.name, noteTemplate2Name);
     // delete note template 2
-    await sqlDB.noteTemplateApiHandler.deleteNoteTemplate(noteTemplates[1].noteTemplate.id);
+    await sqlDB.noteTemplateApiHandler
+        .deleteNoteTemplate(noteTemplates[1].noteTemplate.id);
     // get all note templates
-    var noteTemplatesAfterDelete = await sqlDB.noteTemplateApiHandler.getNoteTemplates();
+    var noteTemplatesAfterDelete =
+        await sqlDB.noteTemplateApiHandler.getNoteTemplates();
     expect(noteTemplatesAfterDelete.length, 1);
-    expect(noteTemplatesAfterDelete[0].noteTemplate.id, noteTemplate1Updated.id);
+    expect(
+        noteTemplatesAfterDelete[0].noteTemplate.id, noteTemplate1Updated.id);
     await sqlDB.close();
     await deleteDBFile();
+  });
+  test("Note API Test", () async {
+    SqliteDB sqlDB = SqliteDB();
+    await sqlDB.init();
+    // create a new deck
+    Deck deck = const Deck(
+      id: '1',
+      name: 'Deck 1',
+      description: 'Deck 1 Description',
+    );
+    var deckCreated =
+        await sqlDB.deckApiHandler.createDeck(deck.name, deck.description);
+    // create new note template
+    var noteTemplate1Name = 'Note Template 1';
+    var note1FieldNames = ['Field 1', 'Field 2', 'Field 3'];
+    var noteTemplate1 = await sqlDB.noteTemplateApiHandler
+        .createNoteTemplate(noteTemplate1Name, note1FieldNames);
+    // create new note
+    var note1FieldValues = ['Value 1', 'Value 2', 'Value 3'];
+    var note1 = await sqlDB.noteApiHandler.createNote(
+      deckCreated.id,
+      noteTemplate1.noteTemplate.id,
+      note1FieldValues,
+    );
+    expect(note1.id, isNotNull);
+    // get note
+    await sqlDB.noteApiHandler.getNote(
+      note1.id,
+    ).then((value) {
+      expect(value.note.id, note1.id);
+      expect(value.note.noteTemplateId, noteTemplate1.noteTemplate.id);
+      expect(value.fields.length, note1FieldValues.length);
+      for (int i = 0; i < note1FieldValues.length; i++) {
+        expect(value.fields[i].value, note1FieldValues[i]);
+      }
+    });
+    // update note
+    var note1FieldValuesUpdated = ['Value 1 Updated', 'Value 2 Updated'];
+    
   });
 }
 
