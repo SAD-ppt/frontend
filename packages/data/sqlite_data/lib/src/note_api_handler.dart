@@ -61,7 +61,8 @@ class NoteApiHandler implements NoteApi {
       );
       List<NoteField> fields = [];
       List<NoteTag> tags = [];
-      return db.query('NoteField', where: 'NoteID = ?', whereArgs: [id]).then((value) {
+      return db.query('NoteField', where: 'NoteID = ?', whereArgs: [id]).then(
+          (value) {
         for (Map<String, dynamic> row in value) {
           fields.add(NoteField(
             noteId: row['NoteID'],
@@ -69,16 +70,18 @@ class NoteApiHandler implements NoteApi {
             value: row['RichDataText'],
           ));
         }
-        return db.query('Tag', where: 'NoteID = ?', whereArgs: [id]).then((value) {
-        for (Map<String, dynamic> row in value) {
-          tags.add(NoteTag(
-            noteId: row['NoteID'],
-            name: row['Name'],
-            color: row['Color'],
-          ));
-        }
-        return Future.value(NoteDetail(note: note, fields: fields, tags: tags));
-      });
+        return db
+            .query('Tag', where: 'NoteID = ?', whereArgs: [id]).then((value) {
+          for (Map<String, dynamic> row in value) {
+            tags.add(NoteTag(
+              noteId: row['NoteID'],
+              name: row['Name'],
+              color: row['Color'],
+            ));
+          }
+          return Future.value(
+              NoteDetail(note: note, fields: fields, tags: tags));
+        });
       });
     });
   }
@@ -86,7 +89,7 @@ class NoteApiHandler implements NoteApi {
   Future<List<NoteDetail>> getNotesRaw() {
     // Get all notes, asscoiated fields and tags with them
     List<NoteDetail> notes = [];
-    db.query('Note').then((value) {
+    return db.query('Note').then((value) async {
       for (Map<String, dynamic> row in value) {
         Note note = Note(
           id: row['UniqueID'].toString(),
@@ -94,8 +97,8 @@ class NoteApiHandler implements NoteApi {
         );
         List<NoteField> fields = [];
         List<NoteTag> tags = [];
-        db.query('NoteField', where: 'NoteID = ?', whereArgs: [note.id]).then(
-            (value) {
+        await db.query('NoteField',
+            where: 'NoteID = ?', whereArgs: [note.id]).then((value) {
           for (Map<String, dynamic> row in value) {
             fields.add(NoteField(
               noteId: row['NoteID'],
@@ -104,7 +107,7 @@ class NoteApiHandler implements NoteApi {
             ));
           }
         });
-        db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+        await db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
             (value) {
           for (Map<String, dynamic> row in value) {
             tags.add(NoteTag(
@@ -116,14 +119,17 @@ class NoteApiHandler implements NoteApi {
         });
         notes.add(NoteDetail(note: note, fields: fields, tags: tags));
       }
+      return Future.value(notes);
     });
-    return Future.value(notes);
   }
 
   Future<List<NoteDetail>> getNotesByDeckId(String deckId) {
     // Get all notes, asscoiated fields and tags with them
     List<NoteDetail> notes = [];
-    db.query('Note', where: 'DeckID = ?', whereArgs: [deckId]).then((value) {
+    return db.rawQuery(
+      'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
+      [deckId],
+    ).then((value) async {
       for (Map<String, dynamic> row in value) {
         Note note = Note(
           id: row['UniqueID'].toString(),
@@ -131,8 +137,8 @@ class NoteApiHandler implements NoteApi {
         );
         List<NoteField> fields = [];
         List<NoteTag> tags = [];
-        db.query('NoteField', where: 'NoteID = ?', whereArgs: [note.id]).then(
-            (value) {
+        await db.query('NoteField',
+            where: 'NoteID = ?', whereArgs: [note.id]).then((value) {
           for (Map<String, dynamic> row in value) {
             fields.add(NoteField(
               noteId: row['NoteID'],
@@ -141,7 +147,7 @@ class NoteApiHandler implements NoteApi {
             ));
           }
         });
-        db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+        await db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
             (value) {
           for (Map<String, dynamic> row in value) {
             tags.add(NoteTag(
@@ -153,15 +159,15 @@ class NoteApiHandler implements NoteApi {
         });
         notes.add(NoteDetail(note: note, fields: fields, tags: tags));
       }
+      return Future.value(notes);
     });
-    return Future.value(notes);
   }
 
   Future<List<NoteDetail>> getNotesByTags(List<String> tags) {
     // Select the notes that have all the tags, by joining the Note and Tag tables
     return db.rawQuery(
-        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN ? GROUP BY NoteID HAVING COUNT(*) = ?)',
-        [tags, tags.length]).then((value) {
+        "SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) = ?)",
+    [...tags, tags.length],).then((value) {
       List<NoteDetail> notes = [];
       for (Map<String, dynamic> row in value) {
         Note note = Note(
@@ -200,8 +206,8 @@ class NoteApiHandler implements NoteApi {
       String deckId, List<String> tags) {
     // Select the notes in the deckID deck, that have all the tags, by joining the Note, Tag and Card tables
     return db.rawQuery(
-        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN ? GROUP BY NoteID HAVING COUNT(*) = ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
-        [tags, tags.length, deckId]).then((value) {
+        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) = ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
+        [...tags, tags.length, deckId]).then((value) {
       List<NoteDetail> notes = [];
       for (Map<String, dynamic> row in value) {
         Note note = Note(
@@ -237,15 +243,16 @@ class NoteApiHandler implements NoteApi {
   }
 
   @override
-  Future<List<NoteDetail>> getNotes({String? deckId, List<String>? tags}) {
+  Future<List<NoteDetail>> getNotes(
+      {String? deckId, List<String>? tags}) async {
     if (deckId == null && tags == null) {
-      return getNotesRaw();
+      return await getNotesRaw();
     } else if (deckId != null && tags == null) {
-      return getNotesByDeckId(deckId);
+      return await getNotesByDeckId(deckId);
     } else if (deckId == null && tags != null) {
-      return getNotesByTags(tags);
+      return await getNotesByTags(tags);
     } else {
-      return getNotesByDeckIdAndTags(deckId!, tags!);
+      return await getNotesByDeckIdAndTags(deckId!, tags!);
     }
   }
 

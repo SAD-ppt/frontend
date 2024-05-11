@@ -119,7 +119,87 @@ void main() async {
     await sqlDB.close();
     await deleteDBFile();
   });
-
+  test("Note API Test", () async {
+    SqliteDB sqlDB = SqliteDB();
+    await sqlDB.init();
+    await createMockData(sqlDB);
+    // create new note
+    var note1 = await sqlDB.noteApiHandler.createNote(
+      'deck1',
+      'template1',
+      ['Text for Note 1 Field 1', 'Text for Note 1 Field 2'],
+    );
+    // get note
+    await sqlDB.noteApiHandler.getNote(
+      note1.id,
+    ).then((value) {
+      expect(value.note.id, note1.id);
+      expect(value.note.noteTemplateId, 'template1');
+      expect(value.fields.length, 2);
+      expect(value.fields[0].value, 'Text for Note 1 Field 1');
+      expect(value.fields[1].value, 'Text for Note 1 Field 2');
+    });
+    // update note field
+    await sqlDB.noteApiHandler.updateNoteField(
+      note1.id,
+      1,
+      'Text for Note 1 Field 2 Updated',
+    );
+    // get note
+    await sqlDB.noteApiHandler.getNote(
+      note1.id,
+    ).then((value) {
+      expect(value.note.id, note1.id);
+      expect(value.note.noteTemplateId, 'template1');
+      expect(value.fields.length, 2);
+      expect(value.fields[0].value, 'Text for Note 1 Field 1');
+      expect(value.fields[1].value, 'Text for Note 1 Field 2 Updated');
+    });
+    // update note fields
+    await sqlDB.noteApiHandler.updateNoteFields(
+      note1.id,
+      [
+        NoteField(
+          noteId: note1.id,
+          orderNumber: 1,
+          value: 'Text for Note 1 Field 2 Updated 2nd Time',
+        ),
+        NoteField(
+          noteId: note1.id,
+          orderNumber: 0,
+          value: 'Text for Note 1 Field 1 Updated',
+        ),
+      ],
+    );
+    // get note
+    await sqlDB.noteApiHandler.getNote(
+      note1.id,
+    ).then((value) {
+      expect(value.note.id, note1.id);
+      expect(value.note.noteTemplateId, 'template1');
+      expect(value.fields.length, 2);
+      expect(value.fields[0].value, 'Text for Note 1 Field 1 Updated');
+      expect(value.fields[1].value, 'Text for Note 1 Field 2 Updated 2nd Time');
+    });
+    // delete note
+    await sqlDB.noteApiHandler.deleteNote(
+      note1.id,
+    );
+    // get all notes raw
+    var notes = await sqlDB.noteApiHandler.getNotes();
+    expect(notes.length, 3);
+    // get notes for deck1
+    notes = await sqlDB.noteApiHandler.getNotes(deckId: 'deck1');
+    expect(notes.length, 1);
+    // get notes for tag Tag1
+    notes = await sqlDB.noteApiHandler.getNotes(tags: ['Tag1']);
+    expect(notes.length, 1);
+    // get notes with Tag1 and deck2
+    notes = await sqlDB.noteApiHandler.getNotes(deckId: 'deck2', tags: ['Tag1']);
+    expect(notes.length, 0);
+    await sqlDB.close();
+    await deleteDBFile();
+  });
 }
 
 Future<void> deleteDBFile() async {
