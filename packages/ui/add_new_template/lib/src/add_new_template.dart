@@ -13,6 +13,9 @@ class AddNewTemplateScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AddNewTemplateBloc(
+          onSuccess: () {
+            Navigator.of(context).pop();
+          },
           noteTemplateRepo: context.read<NoteTemplateRepo>()),
       child: Navigator(
         initialRoute: 'add_new_template/add_fields',

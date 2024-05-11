@@ -9,7 +9,8 @@ import 'package:repos/repos.dart';
 class AddNewTemplateBloc
     extends Bloc<AddNewTemplateEvent, AddNewTemplateState> {
   final NoteTemplateRepo noteTemplateRepo;
-  AddNewTemplateBloc({required this.noteTemplateRepo})
+  final void Function() onSuccess;
+  AddNewTemplateBloc({required this.onSuccess, required this.noteTemplateRepo})
       : super(const AddNewTemplateState()) {
     on<NameChanged>(_onNameChanged);
     on<FieldsChanged>(_onFieldsChanged);
@@ -19,6 +20,7 @@ class AddNewTemplateBloc
     on<Cancel>(_onCancel);
     on<AddFieldToCardType>(_onAddFieldToCardType);
     on<RemoveFieldFromCardType>(_onRemoveFieldFromCardType);
+    on<CardTypeNameChanged>(_onCardTypeNameChanged);
   }
 
   FutureOr<void> _onNameChanged(
@@ -48,17 +50,20 @@ class AddNewTemplateBloc
     ));
   }
 
-  FutureOr<void> _onSubmit(Submit event, Emitter<AddNewTemplateState> emit) {
+  FutureOr<void> _onSubmit(
+      Submit event, Emitter<AddNewTemplateState> emit) async {
     final cardTypes = state.cardTypes.map((cardType) {
       final frontFields = cardType.frontFields;
       final backFields = cardType.backFields;
       return (frontFields, backFields);
     }).toList();
-    noteTemplateRepo.createNewNoteTemplate(
+    await noteTemplateRepo.createNewNoteTemplate(
       state.templateName,
       state.fields,
       cardTypes,
     );
+    emit(state.copyWith(status: AddNewTemplateStatus.success));
+    onSuccess();
   }
 
   FutureOr<void> _onCancel(Cancel event, Emitter<AddNewTemplateState> emit) {}
@@ -89,6 +94,18 @@ class AddNewTemplateBloc
         } else {
           return cardType.removeFieldFromBack(event.field);
         }
+      }
+      return cardType;
+    }).toList();
+    emit(state.copyWith(cardTypes: newCardTypes));
+  }
+
+  FutureOr<void> _onCardTypeNameChanged(
+      CardTypeNameChanged event, Emitter<AddNewTemplateState> emit) {
+    final newCardTypes = state.cardTypes.indexed.map((e) {
+      final (index, cardType) = e;
+      if (index == event.index) {
+        return cardType.copyWith(name: event.name);
       }
       return cardType;
     }).toList();

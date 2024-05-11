@@ -25,6 +25,9 @@ class _AddCardTypes extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AddNewTemplateBloc, AddNewTemplateState>(
       builder: (context, state) {
+        if (state.status == AddNewTemplateStatus.success) {
+          Navigator.of(context).pop();
+        }
         return ListView(
           children: [
             for (var i = 0; i < state.cardTypes.length; i++)
