@@ -7,10 +7,9 @@ import 'package:repos/repos.dart';
 
 class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   DeckRepo deckRepo;
-  StreamSubscription? _deckSubscription;
 
   MainScreenBloc({required this.deckRepo}) : super(const MainScreenState()) {
-    _deckSubscription = deckRepo.getDeckOverviews().listen((decks) {
+    deckRepo.getDeckOverviews().then((decks) {
       add(MainScreenDecksUpdated(decks));
     });
     on<MainScreenInitial>(_onInitial);
