@@ -1,3 +1,4 @@
+import 'package:data_api/data_api.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -33,7 +34,7 @@ class Note extends Equatable {
 class NoteDetail extends Equatable {
   final Note note;
   final List<NoteField> fields;
-  final List<String> tags;
+  final List<NoteTag> tags;
 
   const NoteDetail({
     required this.note,
