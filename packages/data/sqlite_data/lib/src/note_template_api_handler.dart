@@ -36,7 +36,7 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
     return db
         .insert('NoteTemplate', noteTemplate.toMap(),
             conflictAlgorithm: ConflictAlgorithm.replace)
-        .then((value) {
+        .then((value) async {
       if (value == 0) {
         throw Exception('Failed to create note template');
       }
@@ -47,12 +47,12 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
               noteTemplateId: id, orderNumber: e.key, name: e.value))
           .toList();
       for (NoteTemplateField field in fields) {
-        db.insert('NoteTemplateField', field.toMap(),
+        await db.insert('NoteTemplateField', field.toMap(),
             conflictAlgorithm: ConflictAlgorithm.replace);
       }
-      return NoteTemplateDetail(noteTemplate: noteTemplate, fields: fields);
+      return Future.value(
+          NoteTemplateDetail(noteTemplate: noteTemplate, fields: fields));
     });
-    // Create note template fields
   }
 
   @override
@@ -62,8 +62,8 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
 
   @override
   Future<void> deleteNoteTemplate(String id) {
-    return db.delete('NoteTemplate', where: 'UniqueID = ?', whereArgs: [id]).then(
-        (value) {
+    return db.delete('NoteTemplate',
+        where: 'UniqueID = ?', whereArgs: [id]).then((value) {
       if (value == 0) {
         throw Exception('Failed to delete note template');
       }
