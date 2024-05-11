@@ -39,7 +39,7 @@ Future<Database> initializeDB() async {
 }
 
 class SqliteDB {
-  late Database _db;
+  late Database db;
   late CardApiHandler cardApiHandler;
   late CardTemplateApiHandler cardTemplateApiHandler;
   late DeckApiHandler deckApiHandler;
@@ -49,17 +49,17 @@ class SqliteDB {
   late NoteTagApiHandler noteTagApiHandler;
 
   Future<void> init() async {
-    _db = await initializeDB();
-    cardApiHandler = CardApiHandler(db: _db);
-    cardTemplateApiHandler = CardTemplateApiHandler(db: _db);
-    deckApiHandler = DeckApiHandler(db: _db);
-    noteApiHandler = NoteApiHandler(db: _db);
-    noteTemplateApiHandler = NoteTemplateApiHandler(db: _db);
-    learningStatApiHandler = LearningStatApiHandler(db: _db);
-    noteTagApiHandler = NoteTagApiHandler(db: _db);
+    db = await initializeDB();
+    cardApiHandler = CardApiHandler(db: db);
+    cardTemplateApiHandler = CardTemplateApiHandler(db: db);
+    deckApiHandler = DeckApiHandler(db: db);
+    noteApiHandler = NoteApiHandler(db: db);
+    noteTemplateApiHandler = NoteTemplateApiHandler(db: db);
+    learningStatApiHandler = LearningStatApiHandler(db: db);
+    noteTagApiHandler = NoteTagApiHandler(db: db);
   }
 
   Future<void> close() async {
-    await _db.close();
+    await db.close();
   }
 }

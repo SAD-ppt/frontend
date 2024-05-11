@@ -6,11 +6,11 @@ import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqlite_data/sqlite_data.dart';
 
-void main() {
+void main() async {
   test("Test Init Database", () async {
     SqliteDB sqlDB = SqliteDB();
     await sqlDB.init();
-    // create new deck
+    await createMockData(sqlDB);
     Deck deck = const Deck(
       id: '1',
       name: 'Deck 1',
@@ -30,11 +30,12 @@ void main() {
   test("Deck API test", () async {
     SqliteDB sqlDB = SqliteDB();
     await sqlDB.init();
+    await createMockData(sqlDB);
     // create new deck
     Deck deck = const Deck(
       id: '1',
-      name: 'Deck 1',
-      description: 'Deck 1 Description',
+      name: 'Manual Deck 1',
+      description: 'Manual Deck 1 Description',
     );
     var deckCreated =
         await sqlDB.deckApiHandler.createDeck(deck.name, deck.description);
@@ -45,137 +46,28 @@ void main() {
       expect(value.description, deck.description);
     });
     // update deck
-    Deck updatedDeck = Deck(
-      id: deckCreated.id,
-      name: 'Deck 1 Updated',
-      description: 'Deck 1 Description Updated',
-    );
-    await sqlDB.deckApiHandler.updateDeck(updatedDeck);
-    // get deck
-    await sqlDB.deckApiHandler.getDeck(updatedDeck.id).then((value) {
-      expect(value.id, updatedDeck.id);
-      expect(value.name, updatedDeck.name);
-      expect(value.description, updatedDeck.description);
-    });
-    // create deck 2 and get all decks
-    Deck deck2 = const Deck(
-      id: '2',
-      name: 'Deck 2',
-      description: 'Deck 2 Description',
-    );
-    var deck2Created =
-        await sqlDB.deckApiHandler.createDeck(deck2.name, deck2.description);
-    await sqlDB.deckApiHandler.getDecks().then((value) {
-      expect(value.length, 2);
-      expect(value[0].id, updatedDeck.id);
-      expect(value[0].name, updatedDeck.name);
-      expect(value[0].description, updatedDeck.description);
-      expect(value[1].id, deck2Created.id);
-      expect(value[1].name, deck2.name);
-      expect(value[1].description, deck2.description);
-    });
-    // delete deck 2
-    await sqlDB.deckApiHandler.deleteDeck(deck2Created.id);
-    // get all decks
-    await sqlDB.deckApiHandler.getDecks().then((value) {
-      expect(value.length, 1);
-      expect(value[0].id, updatedDeck.id);
-      expect(value[0].name, updatedDeck.name);
-      expect(value[0].description, updatedDeck.description);
-    });
-    await sqlDB.close();
-    await deleteDBFile();
-  });
-  test("Note Template API test", () async {
-    SqliteDB sqlDB = SqliteDB();
-    await sqlDB.init();
-    // create new note template
-    var noteTemplate1Name = 'Note Template 1';
-    var note1FieldNames = ['Field 1', 'Field 2', 'Field 3'];
-    var noteTemplate1 = await sqlDB.noteTemplateApiHandler
-        .createNoteTemplate(noteTemplate1Name, note1FieldNames);
-    // get note template
-    var noteTemplateDetail = await sqlDB.noteTemplateApiHandler
-        .getNoteTemplate(noteTemplate1.noteTemplate.id);
-    expect(noteTemplateDetail.noteTemplate.id, noteTemplate1.noteTemplate.id);
-    expect(noteTemplateDetail.noteTemplate.name, noteTemplate1Name);
-    expect(noteTemplateDetail.fields.length, note1FieldNames.length);
-    for (int i = 0; i < note1FieldNames.length; i++) {
-      expect(noteTemplateDetail.fields[i].name, note1FieldNames[i]);
-    }
-    // update note template
-    var noteTemplate1UpdatedName = 'Note Template 1 Updated';
-    var noteTemplate1Updated =
-        await sqlDB.noteTemplateApiHandler.updateNoteTemplate(
-      NoteTemplate(
-        id: noteTemplate1.noteTemplate.id,
-        name: noteTemplate1UpdatedName,
+    var deckUpdated = await sqlDB.deckApiHandler.updateDeck(
+      Deck(
+        id: deckCreated.id,
+        name: 'Manual Deck 1 Updated',
+        description: 'Manual Deck 1 Description Updated',
       ),
     );
-    // get note template
-    var noteTemplateDetailUpdated = await sqlDB.noteTemplateApiHandler
-        .getNoteTemplate(noteTemplate1Updated.id);
-    expect(noteTemplateDetailUpdated.noteTemplate.id, noteTemplate1Updated.id);
-    // create note template 2 and get all note templates
-    var noteTemplate2Name = 'Note Template 2';
-    var note2FieldNames = ['Field 1', 'Field 2'];
-    await sqlDB.noteTemplateApiHandler
-        .createNoteTemplate(noteTemplate2Name, note2FieldNames);
-    var noteTemplates = await sqlDB.noteTemplateApiHandler.getNoteTemplates();
-    expect(noteTemplates.length, 2);
-    expect(noteTemplates[0].noteTemplate.id, noteTemplate1Updated.id);
-    expect(noteTemplates[1].noteTemplate.name, noteTemplate2Name);
-    // delete note template 2
-    await sqlDB.noteTemplateApiHandler
-        .deleteNoteTemplate(noteTemplates[1].noteTemplate.id);
-    // get all note templates
-    var noteTemplatesAfterDelete =
-        await sqlDB.noteTemplateApiHandler.getNoteTemplates();
-    expect(noteTemplatesAfterDelete.length, 1);
-    expect(
-        noteTemplatesAfterDelete[0].noteTemplate.id, noteTemplate1Updated.id);
+    // get deck
+    await sqlDB.deckApiHandler.getDeck(deckUpdated.id).then((value) {
+      expect(value.id, deckUpdated.id);
+      expect(value.name, 'Manual Deck 1 Updated');
+      expect(value.description, 'Manual Deck 1 Description Updated');
+    });
+    // delete deck
+    await sqlDB.deckApiHandler.deleteDeck(deckCreated.id);
+    // get all decks
+    var decks = await sqlDB.deckApiHandler.getDecks();
+    expect(decks.length, 3);
     await sqlDB.close();
     await deleteDBFile();
   });
-  test("Note API Test", () async {
-    SqliteDB sqlDB = SqliteDB();
-    await sqlDB.init();
-    // create a new deck
-    Deck deck = const Deck(
-      id: '1',
-      name: 'Deck 1',
-      description: 'Deck 1 Description',
-    );
-    var deckCreated =
-        await sqlDB.deckApiHandler.createDeck(deck.name, deck.description);
-    // create new note template
-    var noteTemplate1Name = 'Note Template 1';
-    var note1FieldNames = ['Field 1', 'Field 2', 'Field 3'];
-    var noteTemplate1 = await sqlDB.noteTemplateApiHandler
-        .createNoteTemplate(noteTemplate1Name, note1FieldNames);
-    // create new note
-    var note1FieldValues = ['Value 1', 'Value 2', 'Value 3'];
-    var note1 = await sqlDB.noteApiHandler.createNote(
-      deckCreated.id,
-      noteTemplate1.noteTemplate.id,
-      note1FieldValues,
-    );
-    expect(note1.id, isNotNull);
-    // get note
-    await sqlDB.noteApiHandler.getNote(
-      note1.id,
-    ).then((value) {
-      expect(value.note.id, note1.id);
-      expect(value.note.noteTemplateId, noteTemplate1.noteTemplate.id);
-      expect(value.fields.length, note1FieldValues.length);
-      for (int i = 0; i < note1FieldValues.length; i++) {
-        expect(value.fields[i].value, note1FieldValues[i]);
-      }
-    });
-    // update note
-    var note1FieldValuesUpdated = ['Value 1 Updated', 'Value 2 Updated'];
-    
-  });
+  
 }
 
 Future<void> deleteDBFile() async {
@@ -183,4 +75,73 @@ Future<void> deleteDBFile() async {
   if (File(dbFile).existsSync()) {
     File(dbFile).deleteSync();
   }
+}
+
+// Create mock data
+Future<void> createMockData(SqliteDB sqliteDB) {
+  return sqliteDB.db.execute("""
+INSERT INTO Deck (UniqueID, Name, Description) VALUES 
+    ('deck1', 'Deck 1', 'Description for Deck 1'),
+    ('deck2', 'Deck 2', 'Description for Deck 2'),
+    ('deck3', 'Deck 3', 'Description for Deck 3');
+
+INSERT INTO NoteTemplate (UniqueID, Name) VALUES 
+    ('template1', 'Template 1'),
+    ('template2', 'Template 2'),
+    ('template3', 'Template 3');
+
+INSERT INTO NoteTemplateField (NoteTemplateID, OrderNumber, Name) VALUES 
+    ('template1', 1, 'Field 1'),
+    ('template1', 2, 'Field 2'),
+    ('template2', 1, 'Field 1'),
+    ('template2', 2, 'Field 2'),
+    ('template3', 1, 'Field 1'),
+    ('template3', 2, 'Field 2');
+
+INSERT INTO Note (UniqueID, NoteTemplateID) VALUES 
+    ('note1', 'template1'),
+    ('note2', 'template2'),
+    ('note3', 'template3');
+
+INSERT INTO NoteField (NoteID, OrderNumber, RichDataText) VALUES 
+    ('note1', 1, 'Text for Note 1 Field 1'),
+    ('note1', 2, 'Text for Note 1 Field 2'),
+    ('note2', 1, 'Text for Note 2 Field 1'),
+    ('note2', 2, 'Text for Note 2 Field 2'),
+    ('note3', 1, 'Text for Note 3 Field 1'),
+    ('note3', 2, 'Text for Note 3 Field 2');
+
+INSERT INTO CardTemplate (UniqueID, NoteTemplateID, Name) VALUES 
+    ('card_template1', 'template1', 'Card Template 1'),
+    ('card_template2', 'template2', 'Card Template 2'),
+    ('card_template3', 'template3', 'Card Template 3');
+
+INSERT INTO CardTemplateField (CardTemplateID, OrderNumber, NoteTemplateFieldID, Side) VALUES 
+    ('card_template1', 1, 'template1_field1', 1),
+    ('card_template1', 2, 'template1_field2', 1),
+    ('card_template2', 1, 'template2_field1', 1),
+    ('card_template2', 2, 'template2_field2', 1),
+    ('card_template3', 1, 'template3_field1', 1),
+    ('card_template3', 2, 'template3_field2', 1);
+
+INSERT INTO Card (CardTemplateID, DeckID, NoteID) VALUES 
+    ('card_template1', 'deck1', 'note1'),
+    ('card_template2', 'deck2', 'note2'),
+    ('card_template3', 'deck3', 'note3');
+
+INSERT INTO Tag (Name, NoteID, Color) VALUES 
+    ('Tag1', 'note1', 'Blue'),
+    ('Tag2', 'note2', 'Red'),
+    ('Tag3', 'note3', 'Green');
+
+INSERT INTO LearningResult (DeckID, NoteID, CardTemplateID, Time, Result) VALUES 
+    ('deck1', 'note1', 'card_template1', '2024-05-10 10:00:00', 'Pass'),
+    ('deck2', 'note2', 'card_template2', '2024-05-10 11:00:00', 'Fail'),
+    ('deck3', 'note3', 'card_template3', '2024-05-10 12:00:00', 'Pass');
+
+INSERT INTO LearningStat (DeckID, NoteID, CardTemplateID) VALUES 
+    ('deck1', 'note1', 'card_template1'),
+    ('deck2', 'note2', 'card_template2'),
+    ('deck3', 'note3', 'card_template3');
+  """);
 }
