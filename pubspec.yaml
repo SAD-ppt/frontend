@@ -46,9 +46,10 @@ dependencies:
   add_new_template:
     path: 'packages/ui/add_new_template'
 
+  repos:
+    path: 'packages/data/repos'
   sqlite_data:
     path: 'packages/data/sqlite_data'
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

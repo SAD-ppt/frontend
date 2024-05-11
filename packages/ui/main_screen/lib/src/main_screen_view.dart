@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:main_screen/main_screen.dart';
 import 'package:main_screen/src/add_new_deck_popup.dart';
 import 'package:main_screen/src/drawer.dart';
+import 'package:repos/repos.dart';
 // import 'package:repos/repos.dart';
 
 
@@ -12,8 +13,7 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>()),
-      create: (context) => MainScreenBloc(),
+      create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>()),
       child: _MainScreenView(),
     );
   }
