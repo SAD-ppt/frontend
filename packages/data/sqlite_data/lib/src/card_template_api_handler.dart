@@ -25,6 +25,7 @@ extension ToMapCardTemplate on CardTemplate {
 class CardTemplateApiHandler implements CardTemplateApi {
   final Database db;
   const CardTemplateApiHandler({required this.db});
+
   @override
   Future<CardTemplateDetail?> getCardTemplate(String id) {
     return db.query('CardTemplate',

@@ -106,11 +106,11 @@ class CardApiHandler implements CardApi {
     if (deckId == null && tags == null) {
       return getCardsRaw();
     } else if (deckId != null && tags == null) {
-      return getCardsByDeckId(deckId);
+      return _getCardsByDeckId(deckId);
     } else if (deckId == null && tags != null) {
-      return getCardsByTags(tags);
+      return _getCardsByTags(tags);
     } else {
-      return getCardsByDeckIdAndTags(deckId!, tags!);
+      return _getCardsByDeckIdAndTags(deckId!, tags!);
     }
   }
 
@@ -130,7 +130,7 @@ class CardApiHandler implements CardApi {
     });
   }
 
-  Future<List<CardDetail>> getCardsByDeckId(String deckId) {
+  Future<List<CardDetail>> _getCardsByDeckId(String deckId) {
     List<CardDetail> cards = [];
     return db.query('Card', where: 'DeckID = ?', whereArgs: [deckId]).then(
         (value) async {
@@ -147,7 +147,7 @@ class CardApiHandler implements CardApi {
     });
   }
 
-  Future<List<CardDetail>> getCardsByTags(List<String> tags) {
+  Future<List<CardDetail>> _getCardsByTags(List<String> tags) {
     // Get cards that have all the tags in the list
     List<CardDetail> cards = [];
     return db.rawQuery(
@@ -166,7 +166,7 @@ class CardApiHandler implements CardApi {
     });
   }
 
-  Future<List<CardDetail>> getCardsByDeckIdAndTags(
+  Future<List<CardDetail>> _getCardsByDeckIdAndTags(
       String deckId, List<String> tags) {
     // Get cards that have all the tags in the list
     List<CardDetail> cards = [];

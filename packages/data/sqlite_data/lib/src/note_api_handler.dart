@@ -86,7 +86,7 @@ class NoteApiHandler implements NoteApi {
     });
   }
 
-  Future<List<NoteDetail>> getNotesRaw() {
+  Future<List<NoteDetail>> _getNotesRaw() {
     // Get all notes, asscoiated fields and tags with them
     List<NoteDetail> notes = [];
     return db.query('Note').then((value) async {
@@ -123,7 +123,7 @@ class NoteApiHandler implements NoteApi {
     });
   }
 
-  Future<List<NoteDetail>> getNotesByDeckId(String deckId) {
+  Future<List<NoteDetail>> _getNotesByDeckId(String deckId) {
     // Get all notes, asscoiated fields and tags with them
     List<NoteDetail> notes = [];
     return db.rawQuery(
@@ -163,11 +163,12 @@ class NoteApiHandler implements NoteApi {
     });
   }
 
-  Future<List<NoteDetail>> getNotesByTags(List<String> tags) {
+  Future<List<NoteDetail>> _getNotesByTags(List<String> tags) {
     // Select the notes that have all the tags, by joining the Note and Tag tables
     return db.rawQuery(
-        "SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?)",
-    [...tags, tags.length],).then((value) {
+      "SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?)",
+      [...tags, tags.length],
+    ).then((value) {
       List<NoteDetail> notes = [];
       for (Map<String, dynamic> row in value) {
         Note note = Note(
@@ -202,7 +203,7 @@ class NoteApiHandler implements NoteApi {
     });
   }
 
-  Future<List<NoteDetail>> getNotesByDeckIdAndTags(
+  Future<List<NoteDetail>> _getNotesByDeckIdAndTags(
       String deckId, List<String> tags) {
     // Select the notes in the deckID deck, that have all the tags, by joining the Note, Tag and Card tables
     return db.rawQuery(
@@ -246,13 +247,13 @@ class NoteApiHandler implements NoteApi {
   Future<List<NoteDetail>> getNotes(
       {String? deckId, List<String>? tags}) async {
     if (deckId == null && tags == null) {
-      return await getNotesRaw();
+      return await _getNotesRaw();
     } else if (deckId != null && tags == null) {
-      return await getNotesByDeckId(deckId);
+      return await _getNotesByDeckId(deckId);
     } else if (deckId == null && tags != null) {
-      return await getNotesByTags(tags);
+      return await _getNotesByTags(tags);
     } else {
-      return await getNotesByDeckIdAndTags(deckId!, tags!);
+      return await _getNotesByDeckIdAndTags(deckId!, tags!);
     }
   }
 
