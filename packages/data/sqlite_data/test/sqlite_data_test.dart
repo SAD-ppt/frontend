@@ -339,11 +339,58 @@ void main() async {
     // get cards have Tag1, Tag2 and Tag3
     cards = await sqlDB.cardApiHandler.getCards(tags: ['Tag1', 'Tag2', 'Tag3']);
     // get cards in deck1 have Tag2
-    cards = await sqlDB.cardApiHandler.getCards(deckId: 'deck1', tags: ['Tag2']);
+    cards =
+        await sqlDB.cardApiHandler.getCards(deckId: 'deck1', tags: ['Tag2']);
     expect(cards.length, 2);
     await sqlDB.close();
     await deleteDBFile();
   });
+  test("NoteTag API Test", () async {
+    SqliteDB sqlDB = SqliteDB();
+    await sqlDB.init();
+    await createMockData(sqlDB);
+    // create new tag
+    await sqlDB.noteTagApiHandler.createTag(
+      'Tag4',
+      color: 'Yellow',
+    );
+    // get tags
+    var tags = await sqlDB.noteTagApiHandler.getTags(null);
+    expect(tags.length, 4);
+    // get tags for note1
+    tags = await sqlDB.noteTagApiHandler.getTags('note1');
+    expect(tags.length, 3);
+    // get nums of tags for note1
+    var numTags = await sqlDB.noteTagApiHandler.getNumTagsOfNote('note1');
+    expect(numTags, 3);
+    // add Tag4 to note1
+    await sqlDB.noteTagApiHandler.addTagToNote(
+      'note1',
+      'Tag4',
+    );
+    // get tags for note1
+    tags = await sqlDB.noteTagApiHandler.getTags('note1');
+    expect(tags.length, 4);
+    // update Tag4 color to Orange
+    await sqlDB.noteTagApiHandler.updateTag(
+      const NoteTag(name: "Tag4", noteId: "note1", color: "Orange"),
+    );
+    // get tags for note1
+    tags = await sqlDB.noteTagApiHandler.getTags('note1');
+    expect(tags.length, 4);
+    expect(tags[3].color, 'Orange');
+    // delete Tag4 from note1
+    await sqlDB.noteTagApiHandler.removeTagFromNote(
+      'note1',
+      'Tag4',
+    );
+    // get tags for note1
+    tags = await sqlDB.noteTagApiHandler.getTags('note1');
+    expect(tags.length, 3);
+    await sqlDB.close();
+    await deleteDBFile();
+  });
+  test("Learning Stat API Test", () async {});
 }
 
 Future<void> deleteDBFile() async {
@@ -405,7 +452,7 @@ INSERT INTO Card (CardTemplateID, DeckID, NoteID) VALUES
     ('card_template2', 'deck2', 'note2'),
     ('card_template3', 'deck3', 'note3');
 
-INSERT INTO Tag (Name, NoteID, Color) VALUES 
+INSERT INTO NoteTag (Name, NoteID, Color) VALUES 
     ('Tag1', 'note1', 'Blue'),
     ('Tag2', 'note1', 'Red'),
     ('Tag3', 'note1', 'Green'),

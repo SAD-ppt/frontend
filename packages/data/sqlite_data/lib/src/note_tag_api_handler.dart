@@ -6,22 +6,21 @@ class NoteTagApiHandler implements NoteTagApi {
   const NoteTagApiHandler({required this.db});
   @override
   Future<void> addTagToNote(String noteId, String name) {
-    return db.query('Tag',
+    return db.query('NoteTag',
         where: 'NoteID = ? AND Name = ?',
         whereArgs: [noteId, name]).then((value) {
       if (value.isEmpty) {
-        return db
-            .insert(
-          'Tag',
-          {
+        return db.query('NoteTag', where: 'Name = ?', whereArgs: [name]).then((value) {
+          if (value.isEmpty) {
+            throw Exception('NoteTag not found');
+          }
+          return db.insert('NoteTag', {
             'NoteID': noteId,
             'Name': name,
-            'Color': "",
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        )
-            .then((value) {
-          return Future.value();
+            'Color': value[0]['Color'].toString(),
+          }).then((value) {
+            return Future.value();
+          });
         });
       }
     });
@@ -29,7 +28,7 @@ class NoteTagApiHandler implements NoteTagApi {
 
   @override
   Future<NoteTag> createTag(String name, {String? color}) {
-    return db.insert('Tag', {
+    return db.insert('NoteTag', {
       'NoteID': "",
       'Name': name,
       'Color': color ?? "",
@@ -45,7 +44,7 @@ class NoteTagApiHandler implements NoteTagApi {
   @override
   Future<int> getNumTagsOfNote(String noteId) {
     return db.rawQuery(
-        'SELECT COUNT(*) FROM Tag WHERE NoteID = ?', [noteId]).then((value) {
+        'SELECT COUNT(*) FROM NoteTag WHERE NoteID = ?', [noteId]).then((value) {
       return Future.value(value[0]['COUNT(*)'] as int);
     });
   }
@@ -55,7 +54,7 @@ class NoteTagApiHandler implements NoteTagApi {
     if (noteId == null) {
       // select all unique tags
       return db.rawQuery(
-          'SELECT DISTINCT Name, Color FROM Tag').then((value) {
+          'SELECT DISTINCT Name, Color FROM NoteTag').then((value) {
         return Future.value(value
             .map((e) => NoteTag(
                   noteId: "",
@@ -67,7 +66,7 @@ class NoteTagApiHandler implements NoteTagApi {
       );
     } else {
       return db
-          .query('Tag', where: 'NoteID = ?', whereArgs: [noteId]).then((value) {
+          .query('NoteTag', where: 'NoteID = ?', whereArgs: [noteId]).then((value) {
         return Future.value(value
             .map((e) => NoteTag(
                   noteId: e['NoteID'].toString(),
@@ -81,30 +80,31 @@ class NoteTagApiHandler implements NoteTagApi {
 
   @override
   Future<NoteTag> getTagsOfNoteByName(String noteId, String name) {
-    return db.query('Tag',
-        where: 'NoteID = ? AND Name = ?',
-        whereArgs: [noteId, name]).then((value) {
-      if (value.isEmpty) {
-        throw Exception('Tag not found');
-      }
-      return Future.value(NoteTag(
-        noteId: value[0]['NoteID'].toString(),
-        name: value[0]['Name'].toString(),
-        color: value[0]['Color'].toString(),
-      ));
-    });
+    // return db.query('NoteTag',
+    //     where: 'NoteID = ? AND Name = ?',
+    //     whereArgs: [noteId, name]).then((value) {
+    //   if (value.isEmpty) {
+    //     throw Exception('NoteTag not found');
+    //   }
+    //   return Future.value(NoteTag(
+    //     noteId: value[0]['NoteID'].toString(),
+    //     name: value[0]['Name'].toString(),
+    //     color: value[0]['Color'].toString(),
+    //   ));
+    // });
+    throw UnimplementedError();
   }
 
   @override
   Future<void> removeTagFromNote(String noteId, String name) {
-    return db.delete('Tag', where: 'NoteID = ? AND Name = ?', whereArgs: [noteId, name]).then((value) {
+    return db.delete('NoteTag', where: 'NoteID = ? AND Name = ?', whereArgs: [noteId, name]).then((value) {
       return Future.value();
     });
   }
 
   @override
   Future<NoteTag> updateTag(NoteTag tag) {
-    return db.update('Tag', {
+    return db.update('NoteTag', {
       'NoteID': tag.noteId,
       'Name': tag.name,
       'Color': tag.color,
