@@ -29,25 +29,31 @@ extension ToCardKey on api.CardKey {
 
 extension ToCard on api.CardDetail {
   Card toCard() {
+    final ctfs = cardTemplateFields.toList()
+      ..sort((a, b) => a.orderNumber - b.orderNumber);
+    final ntfs = noteTemplateFields.toList()
+      ..sort((a, b) => a.orderNumber - b.orderNumber);
+    final nfs = noteFields.toList()
+      ..sort((a, b) => a.orderNumber - b.orderNumber);
+    final List<(String, String, bool)> front = [];
+    final List<(String, String, bool)> back = [];
+    for (var i = 0; i < ctfs.length; i++) {
+      final ctf = ctfs[i];
+      final ntf = ntfs[i];
+      final nf = nfs[i];
+      if (ctf.side == api.CardSide.front) {
+        front.add((ntf.name, nf.value, true));
+      } else {
+        back.add((ntf.name, nf.value, false));
+      }
+    }
     return Card(
       key: CardKey(
           deckId: card.deckId,
           noteId: card.noteId,
           cardTemplateId: card.cardTemplateId),
-      front: cardTemplate.frontFields
-          .map((field) => (
-                noteTemplate.fields[field.orderNumber].name,
-                note.fields[field.orderNumber].value,
-                true
-              ))
-          .toList(),
-      back: cardTemplate.backFields
-          .map((field) => (
-                noteTemplate.fields[field.orderNumber].name,
-                note.fields[field.orderNumber].value,
-                false
-              ))
-          .toList(),
+      front: front,
+      back: back,
     );
   }
 }
@@ -66,4 +72,17 @@ class Card extends Equatable {
 
   @override
   List<Object> get props => [front, back];
+}
+
+/// A card overview, without field data.
+class CardOverview {
+  final CardKey id;
+  final String cardTemplateName;
+  final List<String> tags;
+
+  CardOverview({
+    required this.id,
+    required this.cardTemplateName,
+    required this.tags,
+  });
 }

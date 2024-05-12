@@ -50,6 +50,12 @@ class NoteRepo {
     );
   }
 
+  Future<List<String>> getTags() {
+    return noteTagApi.getTags(null).then((tags) {
+      return tags.map((tag) => tag.name).toList();
+    });
+  }
+
   Future<void> addTagToNote(
     String noteId,
     String name,
@@ -97,5 +103,25 @@ class NoteRepo {
         ));
       }
     });
+  }
+
+  Future<void> deleteNote(String noteId) {
+    return noteApi.deleteNote(
+      noteId,
+    );
+  }
+
+  Future<void> updateNoteFields(String noteId, List<String> newFieldValues) {
+    final fields = newFieldValues.indexed.map((entry) {
+      return api.NoteField(
+        noteId: noteId,
+        orderNumber: entry.$1,
+        value: entry.$2,
+      );
+    });
+    return noteApi.updateNoteFields(
+      noteId,
+      fields.toList(),
+    );
   }
 }

@@ -1,3 +1,5 @@
+import 'model/note_template.dart';
+import 'package:uuid/uuid.dart';
 import 'package:data_api/src/not_supported_error.dart';
 
 import 'model/note_template.dart';

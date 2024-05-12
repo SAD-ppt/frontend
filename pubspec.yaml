@@ -30,6 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  login_screen:
+    path: 'packages/ui/login_screen'
+
+  register_screen:
+    path: 'packages/ui/register_screen'
 
   add_new_card:
     path: 'packages/ui/add_new_card'
@@ -37,19 +42,35 @@ dependencies:
   components:
     path: 'packages/ui/components'
 
+  main_screen:
+    path: 'packages/ui/main_screen'
+
   card_browser:
     path: 'packages/ui/card_browser'
 
   add_new_template:
     path: 'packages/ui/add_new_template'
 
+  learning_screen:
+    path: 'packages/ui/learning_screen'
+  testing_setup:
+    path: 'packages/ui/testing_setup'
+
+  repos:
+    path: 'packages/data/repos'
+  
+  data_api:
+    path: 'packages/data/data_api'
+
   sqlite_data:
     path: 'packages/data/sqlite_data'
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flutter_bloc: ^8.1.5
+  bloc: ^8.1.4
+  equatable: ^2.0.5
   sqflite: ^2.3.3
   path: ^1.9.0
 
