@@ -23,7 +23,11 @@ class AddNewTemplateScreen extends StatelessWidget {
           WidgetBuilder builder;
           switch (settings.name) {
             case 'add_new_template/add_fields':
-              builder = (BuildContext context) => const AddFieldsScreen();
+              builder = (BuildContext _) => AddFieldsScreen(
+                    onBack: () {
+                      Navigator.of(context).pop();
+                    },
+                  );
             case 'add_new_template/add_card_types':
               builder = (BuildContext context) => const AddCardTypesScreen();
             default:

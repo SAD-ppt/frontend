@@ -14,6 +14,11 @@ class AddCardTypesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Card Types'),
+        leading: BackButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: _AddCardTypes(),
     );

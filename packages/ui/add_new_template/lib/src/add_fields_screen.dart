@@ -7,13 +7,17 @@ import 'fields_list.dart';
 import 'template_name.dart';
 
 class AddFieldsScreen extends StatelessWidget {
-  const AddFieldsScreen({super.key});
+  final void Function()? onBack;
+
+  const AddFieldsScreen({super.key, this.onBack});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Add Fields'),
-          leading: const BackButton(),
+          leading: BackButton(
+            onPressed: onBack,
+          ),
         ),
         body: Column(
           children: [
