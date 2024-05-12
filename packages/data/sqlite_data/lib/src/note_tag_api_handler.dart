@@ -79,23 +79,6 @@ class NoteTagApiHandler implements NoteTagApi {
   }
 
   @override
-  Future<NoteTag> getTagsOfNoteByName(String noteId, String name) {
-    // return db.query('NoteTag',
-    //     where: 'NoteID = ? AND Name = ?',
-    //     whereArgs: [noteId, name]).then((value) {
-    //   if (value.isEmpty) {
-    //     throw Exception('NoteTag not found');
-    //   }
-    //   return Future.value(NoteTag(
-    //     noteId: value[0]['NoteID'].toString(),
-    //     name: value[0]['Name'].toString(),
-    //     color: value[0]['Color'].toString(),
-    //   ));
-    // });
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> removeTagFromNote(String noteId, String name) {
     return db.delete('NoteTag', where: 'NoteID = ? AND Name = ?', whereArgs: [noteId, name]).then((value) {
       return Future.value();
