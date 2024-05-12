@@ -32,7 +32,7 @@ class NoteApiHandler implements NoteApi {
           db.insert('NoteField', {
             'NoteID': note.id,
             'OrderNumber': i,
-            'RichDataText': fieldValues[i],
+            'RichTextData': fieldValues[i],
           });
         }
         return Future.value(note);
@@ -67,7 +67,7 @@ class NoteApiHandler implements NoteApi {
           fields.add(NoteField(
             noteId: row['NoteID'],
             orderNumber: row['OrderNumber'],
-            value: row['RichDataText'],
+            value: row['RichTextData'],
           ));
         }
         return db
@@ -103,7 +103,7 @@ class NoteApiHandler implements NoteApi {
             fields.add(NoteField(
               noteId: row['NoteID'],
               orderNumber: row['OrderNumber'],
-              value: row['RichDataText'],
+              value: row['RichTextData'],
             ));
           }
         });
@@ -143,7 +143,7 @@ class NoteApiHandler implements NoteApi {
             fields.add(NoteField(
               noteId: row['NoteID'],
               orderNumber: row['OrderNumber'],
-              value: row['RichDataText'],
+              value: row['RichTextData'],
             ));
           }
         });
@@ -166,7 +166,7 @@ class NoteApiHandler implements NoteApi {
   Future<List<NoteDetail>> getNotesByTags(List<String> tags) {
     // Select the notes that have all the tags, by joining the Note and Tag tables
     return db.rawQuery(
-        "SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) = ?)",
+        "SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?)",
     [...tags, tags.length],).then((value) {
       List<NoteDetail> notes = [];
       for (Map<String, dynamic> row in value) {
@@ -182,7 +182,7 @@ class NoteApiHandler implements NoteApi {
             fields.add(NoteField(
               noteId: row['NoteID'],
               orderNumber: row['OrderNumber'],
-              value: row['RichDataText'],
+              value: row['RichTextData'],
             ));
           }
         });
@@ -206,7 +206,7 @@ class NoteApiHandler implements NoteApi {
       String deckId, List<String> tags) {
     // Select the notes in the deckID deck, that have all the tags, by joining the Note, Tag and Card tables
     return db.rawQuery(
-        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) = ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
+        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
         [...tags, tags.length, deckId]).then((value) {
       List<NoteDetail> notes = [];
       for (Map<String, dynamic> row in value) {
@@ -222,7 +222,7 @@ class NoteApiHandler implements NoteApi {
             fields.add(NoteField(
               noteId: row['NoteID'],
               orderNumber: row['OrderNumber'],
-              value: row['RichDataText'],
+              value: row['RichTextData'],
             ));
           }
         });
@@ -266,7 +266,7 @@ class NoteApiHandler implements NoteApi {
   Future<Note> updateNoteField(String noteId, int idx, String value) {
     // Update the field in NoteField table
     return db
-        .update('NoteField', {'RichDataText': value},
+        .update('NoteField', {'RichTextData': value},
             where: 'NoteID = ? AND OrderNumber = ?',
             whereArgs: [noteId, idx],
             conflictAlgorithm: ConflictAlgorithm.replace)
@@ -290,7 +290,7 @@ class NoteApiHandler implements NoteApi {
       String noteId, List<NoteField> noteFields) async {
     // Update the fields in NoteField table
     for (NoteField field in noteFields) {
-      await db.update('NoteField', {'RichDataText': field.value},
+      await db.update('NoteField', {'RichTextData': field.value},
           where: 'NoteID = ? AND OrderNumber = ?',
           whereArgs: [noteId, field.orderNumber],
           conflictAlgorithm: ConflictAlgorithm.replace);
