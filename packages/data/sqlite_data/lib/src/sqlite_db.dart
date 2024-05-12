@@ -22,15 +22,15 @@ Future<Database> initializeDB() async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Note(UniqueID TEXT PRIMARY KEY, NoteTemplateID TEXT, FOREIGN KEY(NoteTemplateID) REFERENCES NoteTemplate(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS NoteField(NoteID TEXT, OrderNumber INTEGER, RichDataText TEXT, PRIMARY KEY(NoteID, OrderNumber), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID), FOREIGN KEY(OrderNumber) REFERENCES NoteTemplateField(OrderNumber))');
+        'CREATE TABLE IF NOT EXISTS NoteField(NoteID TEXT, OrderNumber INTEGER, RichTextData TEXT, PRIMARY KEY(NoteID, OrderNumber), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID), FOREIGN KEY(OrderNumber) REFERENCES NoteTemplateField(OrderNumber))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS CardTemplate(UniqueID TEXT PRIMARY KEY, NoteTemplateID TEXT, Name TEXT, FOREIGN KEY(NoteTemplateID) REFERENCES NoteTemplate(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS CardTemplateField(CardTemplateID TEXT, OrderNumber INTEGER, NoteTemplateFieldID TEXT, Side INTEGER, PRIMARY KEY(CardTemplateID, OrderNumber), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(NoteTemplateFieldID) REFERENCES NoteTemplateField(UniqueID))');
+        'CREATE TABLE IF NOT EXISTS CardTemplateField(CardTemplateID TEXT, OrderNumber INTEGER, Side INTEGER, PRIMARY KEY(CardTemplateID, OrderNumber), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(OrderNumber) REFERENCES NoteTemplateField(OrderNumber))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Card(CardTemplateID TEXT, DeckID TEXT, NoteID TEXT, PRIMARY KEY(CardTemplateID, DeckID, NoteID), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(DeckID) REFERENCES Deck(UniqueID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS Tag(Name TEXT, NoteID TEXT, Color TEXT, PRIMARY KEY(Name, NoteID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
+        'CREATE TABLE IF NOT EXISTS NoteTag(Name TEXT, NoteID TEXT, Color TEXT, PRIMARY KEY(Name, NoteID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS LearningResult(DeckID TEXT, NoteID TEXT, CardTemplateID TEXT, Time TEXT, Result TEXT, PRIMARY KEY(DeckID, NoteID, CardTemplateID, Time), FOREIGN KEY(DeckID) REFERENCES Deck(UniqueID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID))');
     await db.execute(
@@ -39,7 +39,7 @@ Future<Database> initializeDB() async {
 }
 
 class SqliteDB {
-  late Database _db;
+  late Database db;
   late CardApiHandler cardApiHandler;
   late CardTemplateApiHandler cardTemplateApiHandler;
   late DeckApiHandler deckApiHandler;
@@ -49,17 +49,17 @@ class SqliteDB {
   late NoteTagApiHandler noteTagApiHandler;
 
   Future<void> init() async {
-    _db = await initializeDB();
-    cardApiHandler = CardApiHandler(db: _db);
-    cardTemplateApiHandler = CardTemplateApiHandler(db: _db);
-    deckApiHandler = DeckApiHandler(db: _db);
-    noteApiHandler = NoteApiHandler(db: _db);
-    noteTemplateApiHandler = NoteTemplateApiHandler(db: _db);
-    learningStatApiHandler = LearningStatApiHandler(db: _db);
-    noteTagApiHandler = NoteTagApiHandler(db: _db);
+    db = await initializeDB();
+    cardApiHandler = CardApiHandler(db: db);
+    cardTemplateApiHandler = CardTemplateApiHandler(db: db);
+    deckApiHandler = DeckApiHandler(db: db);
+    noteApiHandler = NoteApiHandler(db: db);
+    noteTemplateApiHandler = NoteTemplateApiHandler(db: db);
+    learningStatApiHandler = LearningStatApiHandler(db: db);
+    noteTagApiHandler = NoteTagApiHandler(db: db);
   }
 
   Future<void> close() async {
-    await _db.close();
+    await db.close();
   }
 }
