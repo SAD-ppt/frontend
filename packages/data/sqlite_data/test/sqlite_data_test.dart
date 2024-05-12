@@ -390,7 +390,91 @@ void main() async {
     await sqlDB.close();
     await deleteDBFile();
   });
-  test("Learning Stat API Test", () async {});
+  test("Learning Stat API Test", () async {
+    SqliteDB sqlDB = SqliteDB();
+    await sqlDB.init();
+    await createMockData(sqlDB);
+    // create new learning result
+    await sqlDB.learningStatApiHandler.addLearningResult(
+      const CardKey(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+      'Pass',
+      time: DateTime.parse('2024-05-10 10:00:00'),
+    );
+    // create new learning stat
+    await sqlDB.learningStatApiHandler.createLearningStat(
+      const CardKey(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+    );
+    // get learning stat
+    await sqlDB.learningStatApiHandler
+        .getLearningStatOfCard(
+      const CardKey(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+    )
+        .then((value) {
+      expect(value?.learningStat.cardId.deckId, 'deck1');
+      expect(value?.learningStat.cardId.noteId, 'note2');
+      expect(value?.learningStat.cardId.cardTemplateId, 'card_template2');
+      expect(value?.results.length, 1);
+    });
+    // create another learning result
+    await sqlDB.learningStatApiHandler.addLearningResult(
+      const CardKey(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+      'Fail',
+      time: DateTime.parse('2024-05-10 10:30:00'),
+    );
+    // get learning result
+    await sqlDB.learningStatApiHandler
+        .getLearningStatOfCard(
+      const CardKey(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+    )
+        .then((value) {
+      expect(value?.learningStat.cardId.deckId, 'deck1');
+      expect(value?.learningStat.cardId.noteId, 'note2');
+      expect(value?.learningStat.cardId.cardTemplateId, 'card_template2');
+      expect(value?.results.length, 2);
+    });
+    // delete learning stat
+    await sqlDB.learningStatApiHandler.deleteLearningStat(
+      const CardKey(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+    );
+    // get learning stat
+    await sqlDB.learningStatApiHandler
+        .getLearningStatOfCard(
+      const CardKey(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+    )
+        .then((value) {
+      expect(value, null);
+    });
+    await sqlDB.close();
+    await deleteDBFile();
+  });
 }
 
 Future<void> deleteDBFile() async {

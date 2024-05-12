@@ -16,6 +16,7 @@ class LearningStatApiHandler implements LearningStatApi {
       return Future.value();
     });
   }
+
   @override
   Future<void> createLearningStat(CardKey key) {
     return db.insert('LearningStat', {
@@ -26,31 +27,37 @@ class LearningStatApiHandler implements LearningStatApi {
       return Future.value();
     });
   }
+
   @override
   Future<void> deleteLearningStat(CardKey key) {
     return db.delete('LearningResult',
-        where:
-            'DeckID = ? AND NoteID = ? AND CardTemplateID = ?',
+        where: 'DeckID = ? AND NoteID = ? AND CardTemplateID = ?',
         whereArgs: [key.deckId, key.noteId, key.cardTemplateId]).then((value) {
-      return Future.value();
+      return db.delete(
+        'LearningStat',
+        where: 'DeckID = ? AND NoteID = ? AND CardTemplateID = ?',
+        whereArgs: [key.deckId, key.noteId, key.cardTemplateId],
+      ).then((value) => Future.value());
     });
   }
+
   @override
   Future<LearningStatDetail?> getLearningStatOfCard(CardKey key) {
     return db.query('LearningResult',
-        where:
-            'DeckID = ? AND NoteID = ? AND CardTemplateID = ?',
+        where: 'DeckID = ? AND NoteID = ? AND CardTemplateID = ?',
         whereArgs: [key.deckId, key.noteId, key.cardTemplateId]).then((value) {
       if (value.isEmpty) {
         return Future.value(null);
       }
       return Future.value(LearningStatDetail(
         learningStat: LearningStat(cardId: key),
-        results: value.map((e) => LearningResult(
-          cardId: key,
-          result: e['Result'].toString(),
-          time: DateTime.parse(e['Time'].toString()),
-        )).toList(),
+        results: value
+            .map((e) => LearningResult(
+                  cardId: key,
+                  result: e['Result'].toString(),
+                  time: DateTime.parse(e['Time'].toString()),
+                ))
+            .toList(),
       ));
     });
   }
