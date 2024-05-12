@@ -200,6 +200,9 @@ void main() async {
     // get notes for tag Tag1
     notes = await sqlDB.noteApiHandler.getNotes(tags: ['Tag1']);
     expect(notes.length, 1);
+    // get notes for tags Tag1, Tag2 and Tag3
+    notes = await sqlDB.noteApiHandler.getNotes(tags: ['Tag1', 'Tag2', 'Tag3']);
+    expect(notes.length, 1);
     // get notes with Tag1 and deck2
     notes =
         await sqlDB.noteApiHandler.getNotes(deckId: 'deck2', tags: ['Tag1']);
@@ -260,12 +263,8 @@ void main() async {
       expect(value?.backFields.length, 2);
     });
     // update field order
-    await sqlDB.cardTemplateApiHandler.updateFieldOrder(
-      cardTemplate1.id,
-      3,
-      4,
-      CardSide.back
-    );
+    await sqlDB.cardTemplateApiHandler
+        .updateFieldOrder(cardTemplate1.id, 3, 4, CardSide.back);
     // get all card templates
     var cardTemplates = await sqlDB.cardTemplateApiHandler.getCardTemplates(
       'template1',
@@ -280,6 +279,68 @@ void main() async {
       'template1',
     );
     expect(cardTemplates.length, 1);
+    await sqlDB.close();
+    await deleteDBFile();
+  });
+  test("Card API Test", () async {
+    SqliteDB sqlDB = SqliteDB();
+    await sqlDB.init();
+    await createMockData(sqlDB);
+    // create new card
+    var card1 = await sqlDB.cardApiHandler.createCard(
+      const Card(
+        deckId: 'deck1',
+        noteId: 'note2',
+        cardTemplateId: 'card_template2',
+      ),
+    );
+    CardKey key = CardKey(
+      deckId: card1.deckId,
+      noteId: card1.noteId,
+      cardTemplateId: card1.cardTemplateId,
+    );
+    // get card
+    await sqlDB.cardApiHandler
+        .getCard(
+      key,
+    )
+        .then((value) {
+      expect(value.card.deckId, 'deck1');
+      expect(value.card.noteId, 'note2');
+      expect(value.card.cardTemplateId, 'card_template2');
+      expect(value.noteTemplateFields.length, 2);
+      expect(value.cardTemplateFields.length, 2);
+      expect(value.noteFields.length, 2);
+    });
+    // create another card
+    await sqlDB.cardApiHandler.createCard(
+      const Card(
+        deckId: 'deck1',
+        noteId: 'note3',
+        cardTemplateId: 'card_template3',
+      ),
+    );
+    // get number of cards in deck1
+    await sqlDB.cardApiHandler.getNumCardsInDeck('deck1').then((value) {
+      expect(value, 3);
+    });
+    // get all cards
+    var cards = await sqlDB.cardApiHandler.getCards();
+    expect(cards.length, 5);
+    // get cards in deck1
+    cards = await sqlDB.cardApiHandler.getCards(deckId: 'deck1');
+    expect(cards.length, 3);
+    // get cards have Tag1
+    cards = await sqlDB.cardApiHandler.getCards(tags: ['Tag1']);
+    expect(cards.length, 1);
+    // get cards have Tag2
+    cards = await sqlDB.cardApiHandler.getCards(tags: ['Tag2']);
+    expect(cards.length, 3);
+    // get cards have Tag1, Tag2 and Tag3
+    cards = await sqlDB.cardApiHandler.getCards(tags: ['Tag1', 'Tag2', 'Tag3']);
+    // get cards in deck1 have Tag2
+    cards = await sqlDB.cardApiHandler.getCards(deckId: 'deck1', tags: ['Tag2']);
+    expect(cards.length, 2);
     await sqlDB.close();
     await deleteDBFile();
   });
@@ -318,7 +379,7 @@ INSERT INTO Note (UniqueID, NoteTemplateID) VALUES
     ('note2', 'template2'),
     ('note3', 'template3');
 
-INSERT INTO NoteField (NoteID, OrderNumber, RichDataText) VALUES 
+INSERT INTO NoteField (NoteID, OrderNumber, RichTextData) VALUES 
     ('note1', 1, 'Text for Note 1 Field 1'),
     ('note1', 2, 'Text for Note 1 Field 2'),
     ('note2', 1, 'Text for Note 2 Field 1'),
@@ -346,6 +407,8 @@ INSERT INTO Card (CardTemplateID, DeckID, NoteID) VALUES
 
 INSERT INTO Tag (Name, NoteID, Color) VALUES 
     ('Tag1', 'note1', 'Blue'),
+    ('Tag2', 'note1', 'Red'),
+    ('Tag3', 'note1', 'Green'),
     ('Tag2', 'note2', 'Red'),
     ('Tag3', 'note3', 'Green');
 
