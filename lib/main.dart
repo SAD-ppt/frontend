@@ -1,6 +1,5 @@
 import 'package:add_new_template/add_new_template.dart';
 import 'package:data_api/data_api.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:main_screen/main_screen.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,9 +19,11 @@ import 'package:flutter/material.dart';
 // import 'package:main_screen/main_screen.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final db = SqliteDB();
   await db.init();
   runApp(MyApp(db: db));
+  await db.close();
 }
 
 class MyApp extends StatelessWidget {

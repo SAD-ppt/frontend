@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqlite_data/src/card_api_handler.dart';
 import 'package:sqlite_data/src/card_template_api_handler.dart';
@@ -8,11 +12,28 @@ import 'package:sqlite_data/src/note_api_handler.dart';
 import 'package:sqlite_data/src/note_tag_api_handler.dart';
 import 'package:sqlite_data/src/note_template_api_handler.dart';
 
+Future<String> checkPath(String dbName) async {
+  String documentsPath = (await getApplicationDocumentsDirectory()).path;
+  String path = join(documentsPath, dbName);
+  if (await Directory(dirname(path)).exists()) {
+  } else {
+    try {
+      await Directory(dirname(path)).create(recursive: true);
+    } catch (e) {
+      print(e);
+    }
+  }
+  return path;
+}
+
 Future<Database> initializeDB() async {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
-  return openDatabase(join(await getDatabasesPath(), 'data.db'), version: 1,
-      onCreate: (db, version) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // sqfliteFfiInit();
+  // databaseFactory = databaseFactoryFfi;
+
+  String dbPath = await checkPath('anki_clone.db');
+
+  return await openDatabase(dbPath, version: 1, onCreate: (db, version) async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Deck(UniqueID TEXT PRIMARY KEY, Name TEXT, Description TEXT)');
     await db.execute(
@@ -49,6 +70,9 @@ class SqliteDB {
   late NoteTagApiHandler noteTagApiHandler;
 
   Future<void> init() async {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+    WidgetsFlutterBinding.ensureInitialized();
     db = await initializeDB();
     cardApiHandler = CardApiHandler(db: db);
     cardTemplateApiHandler = CardTemplateApiHandler(db: db);
