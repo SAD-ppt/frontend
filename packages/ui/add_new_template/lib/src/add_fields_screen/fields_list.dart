@@ -26,6 +26,17 @@ class _FieldsListState extends State<FieldsList> {
         continue;
       }
       children.add(Dismissible(
+        background: Container(
+          decoration: const BoxDecoration(
+            color: Colors.redAccent,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          alignment: Alignment.centerRight,
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Icons.delete, color: Colors.white),
+          ),
+        ),
         onDismissed: (direction) {
           setState(() {
             fieldLabels[i] = (field.$1, false);
