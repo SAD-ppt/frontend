@@ -15,7 +15,7 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>()),
+      create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>())..add(const MainScreenInitial()),
       child: _MainScreenView(
         onAddNewCard: onAddNewCard,
         onAddNewTemplate: onAddNewTemplate,

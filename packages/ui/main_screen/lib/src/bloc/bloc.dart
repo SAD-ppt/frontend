@@ -24,9 +24,20 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   FutureOr<void> _onInitial(
     MainScreenInitial event,
     Emitter<MainScreenState> emit,
-  ) {
-    // Set the status to loaded
-    emit(state.copyWith(status: MainScreenStatus.loaded));
+  ) async {
+    emit(state.copyWith(status: MainScreenStatus.loading));
+    // get the decks from the repo
+    List<DeckOverview> decks = await deckRepo.getDeckOverviews();
+    // Map the decks to DeckInfo
+    var newDecks = List<DeckInfo>.empty(growable: true);
+    for (var deck in decks) {
+      newDecks.add(DeckInfo(
+        name: deck.name,
+        deckDescription: deck.description,
+      ));
+    }
+    // emit the decks
+    emit(state.copyWith(status: MainScreenStatus.loaded, decks: newDecks));
   }
 
   FutureOr<void> _onAddButtonPressed(
@@ -40,7 +51,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     MainScreenDecksUpdated event,
     Emitter<MainScreenState> emit,
   ) {
-    var newDecks = List<DeckInfo>.empty();
+    var newDecks = List<DeckInfo>.empty(growable: true);
     var decks = event.decks;
     // Map the decks to DeckInfo
     for (var deck in decks) {
@@ -62,7 +73,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   FutureOr<void> _onAddNewDeckSubmit(
     MainScreenAddNewDeckSubmit event,
     Emitter<MainScreenState> emit,
-  ) {
+  ) async {
+    // call add deck from repo
+    await deckRepo.createNewDeck(event.deckName, event.deckDescription);
     emit(state.copyWith(currentStep: MainScreenStep.mainScreen, decks: [
       ...state.decks,
       DeckInfo(

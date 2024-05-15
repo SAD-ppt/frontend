@@ -23,7 +23,6 @@ void main() async {
   final db = SqliteDB();
   await db.init();
   runApp(MyApp(db: db));
-  await db.close();
 }
 
 class MyApp extends StatelessWidget {
