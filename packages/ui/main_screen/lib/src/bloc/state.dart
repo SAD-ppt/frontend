@@ -22,11 +22,7 @@ class MainScreenState extends Equatable {
   final List<DeckInfo> decks;
 
   const MainScreenState({
-    this.decks = const [
-      DeckInfo(name: 'Deck 1', deckDescription: 'Deck 1 description'),
-      DeckInfo(name: 'Deck 2', deckDescription: 'Deck 2 description'),
-      DeckInfo(name: 'Deck 3', deckDescription: 'Deck 3 description'),
-    ],
+    this.decks = const [],
     this.status = MainScreenStatus.initial,
     this.currentStep = MainScreenStep.mainScreen,
   });
