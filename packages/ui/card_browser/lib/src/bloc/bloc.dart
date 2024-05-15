@@ -20,6 +20,7 @@ class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
     on<TestEvent>(_onTest);
     on<AddCardEvent>(_onAddCard);
     on<ReviewEvent>(_onReview);
+    on<SearchEvent>(_onSearch);
   }
   Future<FutureOr<void>> _onInitial(InitialEvent event, Emitter<CardBrowserState> emit) async {
 
@@ -45,5 +46,28 @@ class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
 
   FutureOr<void> _onAddCard(AddCardEvent event, Emitter<CardBrowserState> emit) {
     print('Adding Card');
+  }
+
+  void _onSearch(SearchEvent event, Emitter<CardBrowserState> emit) {
+    // Set the status to loading
+    emit(state.copyWith(status: CardBrowserStatus.loading));
+    // Logical resolution
+    if(event.keyword.isEmpty) {
+      emit(state.copyWith(
+        status: CardBrowserStatus.loaded,
+        selectedCards: state.cardList
+      ));
+      return;
+    }
+
+    List<Card> selectedCards = state.cardList
+        .where((card) => 
+            (card.front[0].$2).toLowerCase().contains(event.keyword))
+        .toList();
+    
+    emit(state.copyWith(
+      status: CardBrowserStatus.loaded,
+      selectedCards: selectedCards
+    ));
   }
 }
