@@ -20,25 +20,29 @@ class MainScreenState extends Equatable {
   final MainScreenStatus status;
   final MainScreenStep currentStep;
   final List<DeckInfo> decks;
+  final List<DeckInfo> filteredDecks;
 
   const MainScreenState({
     this.decks = const [],
+    this.filteredDecks = const [],
     this.status = MainScreenStatus.initial,
     this.currentStep = MainScreenStep.mainScreen,
   });
 
   @override
-  List<Object> get props => [decks, currentStep, status];
+  List<Object> get props => [decks, filteredDecks, currentStep, status];
 
   MainScreenState copyWith({
     MainScreenStatus? status,
     MainScreenStep? currentStep,
     List<DeckInfo>? decks,
+    List<DeckInfo>? filteredDecks,
   }) {
     return MainScreenState(
       status: status ?? this.status,
       currentStep: currentStep ?? this.currentStep,
       decks: decks ?? this.decks,
+      filteredDecks: filteredDecks ?? this.filteredDecks,
     );
   }
 

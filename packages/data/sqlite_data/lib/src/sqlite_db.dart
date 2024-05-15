@@ -79,7 +79,7 @@ class SqliteDB {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     db = await initializeDB();
-    // createMockData(db);
+    await initData(db);
     cardApiHandler = CardApiHandler(db: db);
     cardTemplateApiHandler = CardTemplateApiHandler(db: db);
     deckApiHandler = DeckApiHandler(db: db);
@@ -93,7 +93,7 @@ class SqliteDB {
     await db.close();
   }
 
-  void createMockData(Database db) async {
+  Future<void> initData(Database db) async {
     await db.query('Deck').then((value) {
       if (value.isEmpty) {
         db.execute("""
@@ -140,15 +140,15 @@ class SqliteDB {
       if (value.isEmpty) {
         db.execute("""
         INSERT INTO NoteField (NoteID, OrderNumber, RichTextData) VALUES 
-          ('note1', 1, 'Rich Text Data 1'),
-          ('note1', 2, 'Rich Text Data 2'),
-          ('note1', 3, 'Rich Text Data 3'),
-          ('note2', 1, 'Rich Text Data 1'),
-          ('note2', 2, 'Rich Text Data 2'),
-          ('note2', 3, 'Rich Text Data 3'),
-          ('note3', 1, 'Rich Text Data 1'),
-          ('note3', 2, 'Rich Text Data 2'),
-          ('note3', 3, 'Rich Text Data 3');""");
+          ('note1', 0, 'Rich Text Data 1'),
+          ('note1', 1, 'Rich Text Data 2'),
+          ('note1', 2, 'Rich Text Data 3'),
+          ('note2', 0, 'Rich Text Data 1'),
+          ('note2', 1, 'Rich Text Data 2'),
+          ('note2', 2, 'Rich Text Data 3'),
+          ('note3', 0, 'Rich Text Data 1'),
+          ('note3', 1, 'Rich Text Data 2'),
+          ('note3', 2, 'Rich Text Data 3');""");
       }
     });
     await db.query('CardTemplate').then((value) {
@@ -188,6 +188,9 @@ class SqliteDB {
       if (value.isEmpty) {
         db.execute("""
         INSERT INTO NoteTag (Name, NoteID, Color) VALUES 
+          ('tag1', '', 'red'),
+          ('tag2', '', 'blue'),
+          ('tag3', '', 'green'),
           ('tag1', 'note1', 'red'),
           ('tag2', 'note2', 'blue'),
           ('tag3', 'note3', 'green');""");

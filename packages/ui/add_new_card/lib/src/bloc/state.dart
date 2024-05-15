@@ -19,7 +19,7 @@ class AddNewCardState extends Equatable {
   final String deckName;
   final String noteTemplateName;
   final List<String> selectedCardTypes;
-  final List<String> fieldNames;
+  final List<(String, String)> fieldNamesValues;
   final List<String> tagsList;
   final List<String> availableTagsList;
   final List<DeckOverview> availableDecks;
@@ -31,7 +31,7 @@ class AddNewCardState extends Equatable {
     this.deckName = '',
     this.noteTemplateName = '',
     this.selectedCardTypes = const [],
-    this.fieldNames = const [],
+    this.fieldNamesValues = const [],
     this.tagsList = const [],
     this.availableTagsList = const [],
     this.availableDecks = const [],
@@ -45,7 +45,7 @@ class AddNewCardState extends Equatable {
         deckName,
         noteTemplateName,
         selectedCardTypes,
-        fieldNames,
+        fieldNamesValues,
         tagsList,
         availableTagsList,
         availableDecks,
@@ -58,9 +58,8 @@ class AddNewCardState extends Equatable {
     String? deckName,
     String? noteTemplateName,
     List<String>? selectedCardTypes,
-    List<String>? fieldNames,
+    List<(String, String)>? fieldNamesValues,
     List<String>? tagsList,
-
     List<String>? availableTagsList,
     List<DeckOverview>? availableDecks,
     List<NoteTemplate>? availableNoteTemplates,
@@ -71,7 +70,7 @@ class AddNewCardState extends Equatable {
       deckName: deckName ?? this.deckName,
       noteTemplateName: noteTemplateName ?? this.noteTemplateName,
       selectedCardTypes: selectedCardTypes ?? this.selectedCardTypes,
-      fieldNames: fieldNames ?? this.fieldNames,
+      fieldNamesValues: fieldNamesValues ?? this.fieldNamesValues,
       tagsList: tagsList ?? this.tagsList,
       availableTagsList: availableTagsList ?? this.availableTagsList,
       availableDecks: availableDecks ?? this.availableDecks,

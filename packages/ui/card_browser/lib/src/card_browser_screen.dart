@@ -15,7 +15,7 @@ class CardBrowserScreen extends StatelessWidget {
       create: (context) => CardBrowserBloc(
         deckRepository: context.read<DeckRepo>(), 
         cardRepository: context.read<CardRepo>()
-      ),
+      )..add(InitialEvent()),
       child: _CardBrowserScreenView(),
     );
   }

@@ -14,6 +14,7 @@ class AddNewCardPage extends StatelessWidget {
     return BlocProvider(
         create: (context) => AddNewCardBloc(
           deckRepository: context.read<DeckRepo>(),
+          noteRepository: context.read<NoteRepo>(),
           noteTemplateRepository: context.read<NoteTemplateRepo>(),
         )..add(InitialEvent()),
         child: _AddNewCardView());
@@ -48,11 +49,14 @@ class _AddNewCardView extends StatelessWidget {
               deckName: state.deckName,
               noteTemplateName: state.noteTemplateName,
               selectedCardTypes: state.selectedCardTypes,
-              fieldNames: state.fieldNames,
+              fieldNames: state.fieldNamesValues.map((e) => e.$1).toList(),
               onDeckChanged: (value) =>
                   {context.read<AddNewCardBloc>().add(DeckChanged(value))},
               onNoteTemplateChanged: (value) => {
                 context.read<AddNewCardBloc>().add(NoteTemplateChanged(value))
+              },
+              onCardFormFieldChanged: (index, value) => {
+                context.read<AddNewCardBloc>().add(FieldValueChanged(index, value))
               },
               onCardTypesChanged: (value) =>
                   {context.read<AddNewCardBloc>().add(CardTypesChanged(value))},
