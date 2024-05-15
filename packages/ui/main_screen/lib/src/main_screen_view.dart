@@ -36,19 +36,17 @@ class _MainScreenView extends StatelessWidget {
         builder: (context, state) {
       return Scaffold(
         appBar: AppBar(
-          title: SizedBox(
-            height: 45,
-            child: SearchBar(
-              hintText: 'Search for decks',
-              // no shadow
-              elevation: const WidgetStatePropertyAll<double>(0),
-              
-              onChanged: (value) => context
-                  .read<MainScreenBloc>()
-                  .add(MainScreenSearch(value)),
-            ),
-          )
-        ),
+            title: SizedBox(
+          height: 45,
+          child: SearchBar(
+            hintText: 'Search for decks',
+            // no shadow
+            elevation: const WidgetStatePropertyAll<double>(0),
+
+            onChanged: (value) =>
+                context.read<MainScreenBloc>().add(MainScreenSearch(value)),
+          ),
+        )),
         drawer: const MainScreenDrawer(),
         body: Center(
           // List of decks
@@ -99,18 +97,25 @@ class _MainScreenView extends StatelessWidget {
                 leading: const Icon(Icons.add_box),
                 title: const Text('Add New Deck'),
                 onTap: () {
+                  Navigator.of(context).pop();
                   _onAddNewDeck(context);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.add_circle),
                 title: const Text('Add New Card'),
-                onTap: onAddNewCard,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  onAddNewCard();
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.add_circle_outline),
                 title: const Text('Add New Template'),
-                onTap: onAddNewTemplate,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  onAddNewTemplate();
+                },
               ),
             ],
           ),
@@ -141,3 +146,4 @@ class _MainScreenView extends StatelessWidget {
     );
   }
 }
+
