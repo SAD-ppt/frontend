@@ -1,7 +1,8 @@
-import 'package:add_new_template/src/bloc/bloc.dart';
-import 'package:add_new_template/src/bloc/event.dart';
-import 'package:add_new_template/src/bloc/state.dart';
-import 'package:add_new_template/src/template_name.dart';
+import 'package:add_new_template/src/add_card_types_screen/card_type_name.dart';
+
+import '../bloc/bloc.dart';
+import '../bloc/event.dart';
+import '../bloc/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,7 +21,10 @@ class AddCardTypesScreen extends StatelessWidget {
           },
         ),
       ),
-      body: _AddCardTypes(),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: _AddCardTypes(),
+      ),
     );
   }
 }
@@ -65,7 +69,7 @@ class _CardTypeForm extends StatelessWidget {
         builder: (context, state) {
       return Column(
         children: [
-          TemplateName(
+          CardTypeName(
               onChanged: (name) => context
                   .read<AddNewTemplateBloc>()
                   .add(CardTypeNameChanged(index, name))),
