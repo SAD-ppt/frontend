@@ -1,4 +1,5 @@
 import 'package:add_new_template/add_new_template.dart';
+import 'package:card_browser/card_browser.dart';
 import 'package:data_api/data_api.dart';
 import 'package:flutter/material.dart';
 // import 'package:main_screen/main_screen.dart';
@@ -45,9 +46,9 @@ class MyApp extends StatelessWidget {
                   deckApi: db.deckApiHandler, cardApi: db.cardApiHandler)),
           RepositoryProvider<NoteRepo>(
               create: (context) => NoteRepo(
-                  cardApi: db.cardApiHandler, 
-                  noteApi: db.noteApiHandler, 
-                  cardTemplateApi: db.cardTemplateApiHandler, 
+                  cardApi: db.cardApiHandler,
+                  noteApi: db.noteApiHandler,
+                  cardTemplateApi: db.cardTemplateApiHandler,
                   noteTemplateApi: db.noteTemplateApiHandler,
                   noteTagApi: db.noteTagApiHandler)),
           RepositoryProvider<NoteTemplateRepo>(
@@ -73,6 +74,11 @@ class _UiRoot extends StatelessWidget {
     return MainScreen(
       onAddNewCard: () => Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => AddNewCardPage()),
+      ),
+      onDeckSelected: (deckId) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => CardBrowserScreen(),
+        ),
       ),
       onAddNewTemplate: () => Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => AddNewTemplateScreen()),

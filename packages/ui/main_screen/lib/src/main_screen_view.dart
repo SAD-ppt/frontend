@@ -9,8 +9,12 @@ import 'package:repos/repos.dart';
 class MainScreen extends StatelessWidget {
   final void Function() onAddNewCard;
   final void Function() onAddNewTemplate;
+  final void Function(String deckId) onDeckSelected;
   const MainScreen(
-      {super.key, required this.onAddNewCard, required this.onAddNewTemplate});
+      {super.key,
+      required this.onAddNewCard,
+      required this.onAddNewTemplate,
+      required this.onDeckSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +22,7 @@ class MainScreen extends StatelessWidget {
       create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>())
         ..add(const MainScreenInitial()),
       child: _MainScreenView(
+        onDeckSelected: onDeckSelected,
         onAddNewCard: onAddNewCard,
         onAddNewTemplate: onAddNewTemplate,
       ),
@@ -28,8 +33,11 @@ class MainScreen extends StatelessWidget {
 class _MainScreenView extends StatelessWidget {
   final void Function() onAddNewCard;
   final void Function() onAddNewTemplate;
+  final void Function(String deckId) onDeckSelected;
   const _MainScreenView(
-      {required this.onAddNewCard, required this.onAddNewTemplate});
+      {required this.onAddNewCard,
+      required this.onAddNewTemplate,
+      required this.onDeckSelected});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainScreenBloc, MainScreenState>(
@@ -58,8 +66,7 @@ class _MainScreenView extends StatelessWidget {
                   (deck) => DeckItem(
                     deck: deck.name,
                     description: deck.deckDescription,
-                    // TODO: Implement the onDetailsPressed function
-                    onTap: () => null,
+                    onTap: () => onDeckSelected(deck.id),
                   ),
                 )
                 .toList(),
@@ -77,10 +84,6 @@ class _MainScreenView extends StatelessWidget {
         ),
       );
     });
-  }
-
-  void onDetailsPressed() {
-    // Add the implementation of the onDetailsPressed function
   }
 
   void _onAddButtonPressed(BuildContext context, void Function() onAddNewCard,
