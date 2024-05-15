@@ -16,6 +16,7 @@ class AddNewDeckPopup extends StatelessWidget {
       content: 
         // Add a text field to enter the deck name and a text field to enter the deck description
         Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _controllerName,
@@ -30,7 +31,7 @@ class AddNewDeckPopup extends StatelessWidget {
               ),
             ),
           ],
-      ),
+              ),
       actions: <Widget>[
         TextButton(
           child: const Text('Cancel'),
