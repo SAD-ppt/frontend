@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/bloc.dart';
-import 'bloc/event.dart';
+import '../bloc/bloc.dart';
+import '../bloc/event.dart';
 import 'fields_list.dart';
-import 'template_name.dart';
+import '../template_name.dart';
 
 class AddFieldsScreen extends StatelessWidget {
   final void Function()? onBack;

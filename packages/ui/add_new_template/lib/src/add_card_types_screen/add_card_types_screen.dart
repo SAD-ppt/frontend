@@ -1,7 +1,7 @@
-import 'package:add_new_template/src/bloc/bloc.dart';
-import 'package:add_new_template/src/bloc/event.dart';
-import 'package:add_new_template/src/bloc/state.dart';
-import 'package:add_new_template/src/template_name.dart';
+import '../bloc/bloc.dart';
+import '../bloc/event.dart';
+import '../bloc/state.dart';
+import '../template_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
