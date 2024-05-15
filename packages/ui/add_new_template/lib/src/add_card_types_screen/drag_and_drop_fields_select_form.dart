@@ -65,8 +65,11 @@ class _AvailableFieldsList extends StatelessWidget {
                 label: Text(field),
               ),
             ),
-            child: Chip(
-              label: Text(field),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Chip(
+                label: Text(field),
+              ),
             ),
           ),
       ],
@@ -92,17 +95,19 @@ class _ChosenFieldsList extends StatelessWidget {
         final border = candidateData.isEmpty
             ? Border.all(
                 color: Theme.of(context).colorScheme.secondaryContainer)
-            : Border.all(
-                color: Theme.of(context).colorScheme.secondary, width: 4);
+            : Border.all(color: Theme.of(context).colorScheme.secondary);
         return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           constraints: const BoxConstraints(
             minHeight: 50,
             minWidth: double.infinity,
           ),
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
             border: border,
           ),
           child: Wrap(
+            spacing: 8,
             children: [
               for (var field in fields)
                 Draggable<String>(
