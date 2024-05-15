@@ -73,3 +73,16 @@ class Card extends Equatable {
   @override
   List<Object> get props => [front, back];
 }
+
+/// A card overview, without field data.
+class CardOverview {
+  final CardKey id;
+  final String cardTemplateName;
+  final List<String> tags;
+
+  CardOverview({
+    required this.id,
+    required this.cardTemplateName,
+    required this.tags,
+  });
+}

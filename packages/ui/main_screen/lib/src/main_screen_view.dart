@@ -6,20 +6,29 @@ import 'package:main_screen/src/drawer.dart';
 import 'package:repos/repos.dart';
 // import 'package:repos/repos.dart';
 
-
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+  final void Function() onAddNewCard;
+  final void Function() onAddNewTemplate;
+  const MainScreen(
+      {super.key, required this.onAddNewCard, required this.onAddNewTemplate});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>()),
-      child: _MainScreenView(),
+      child: _MainScreenView(
+        onAddNewCard: onAddNewCard,
+        onAddNewTemplate: onAddNewTemplate,
+      ),
     );
   }
 }
 
 class _MainScreenView extends StatelessWidget {
+  final void Function() onAddNewCard;
+  final void Function() onAddNewTemplate;
+  const _MainScreenView(
+      {required this.onAddNewCard, required this.onAddNewTemplate});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainScreenBloc, MainScreenState>(
@@ -27,10 +36,11 @@ class _MainScreenView extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(
           title: _SearchBar(
+            // TODO: Implement the onSearch function
             onSearch: () => null,
           ),
         ),
-        drawer: const MainScreenDrawer(), 
+        drawer: const MainScreenDrawer(),
         body: Center(
           // List of decks
           child: ListView(
@@ -41,6 +51,7 @@ class _MainScreenView extends StatelessWidget {
                   (deck) => DeckItem(
                     deck: deck.name,
                     description: deck.deckDescription,
+                    // TODO: Implement the onDetailsPressed function
                     onTap: () => null,
                   ),
                 )
@@ -53,8 +64,8 @@ class _MainScreenView extends StatelessWidget {
             context
                 .read<MainScreenBloc>()
                 .add(const MainScreenAddButtonPressed());
-            _onAddButtonPressed(context);
-            },
+            _onAddButtonPressed(context, onAddNewCard, onAddNewTemplate);
+          },
           child: const Icon(Icons.add),
         ),
       );
@@ -65,7 +76,8 @@ class _MainScreenView extends StatelessWidget {
     // Add the implementation of the onDetailsPressed function
   }
 
-  void _onAddButtonPressed(BuildContext context) {
+  void _onAddButtonPressed(BuildContext context, void Function() onAddNewCard,
+      void Function() onAddNewTemplate) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -84,18 +96,12 @@ class _MainScreenView extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.add_circle),
                 title: const Text('Add New Card'),
-                onTap: () {
-                  // Handle add new card
-                  Navigator.pop(context);
-                },
+                onTap: onAddNewCard,
               ),
               ListTile(
                 leading: const Icon(Icons.add_circle_outline),
                 title: const Text('Add New Template'),
-                onTap: () {
-                  // Handle add new template
-                  Navigator.pop(context);
-                },
+                onTap: onAddNewTemplate,
               ),
             ],
           ),

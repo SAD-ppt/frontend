@@ -1,9 +1,11 @@
+import 'package:repos/repos.dart';
 import 'package:repos/src/models/card.dart';
 import 'package:data_api/data_api.dart' as api;
 import 'dart:math';
 
 class CardRepo {
   final api.CardApi cardApi;
+  final api.NoteApi noteApi;
   final api.LearningStatApi learningStatApi;
   final api.CardTemplateApi cardTemplateApi;
   final Map<String, List<(Card, api.LearningStatDetail?)>?> _cardsDueForReview =
@@ -11,6 +13,7 @@ class CardRepo {
 
   CardRepo(
       {required this.cardApi,
+      required this.noteApi,
       required this.cardTemplateApi,
       required this.learningStatApi});
 
@@ -89,5 +92,31 @@ class CardRepo {
     return cardApi
         .getCards(deckId: deckId)
         .then((cards) => cards.map((cd) => cd.toCard()).toList());
+  }
+
+  /// Get all card overviews. Optionally filter using [cardTemplateName] and [tags].
+  Future<List<CardOverview>> getCardOverviews(
+      {String? cardTemplateName, List<String>? tags}) async {
+    final cards = await cardApi.getCards(tags: tags);
+    return await Future.wait(cards.map((card) async {
+      final cardTemplate =
+          await cardTemplateApi.getCardTemplate(card.card.cardTemplateId);
+      if (cardTemplate == null) {
+        throw Exception('Card template not found');
+      }
+      final note = await noteApi.getNote(card.card.noteId);
+      if (note == null) {
+        throw Exception('Note not found');
+      }
+      final tags = note.tags.map((t) => t.name).toList();
+      return CardOverview(
+        id: CardKey(
+            deckId: card.card.deckId,
+            noteId: card.card.noteId,
+            cardTemplateId: card.card.cardTemplateId),
+        cardTemplateName: cardTemplate.cardTemplate.name,
+        tags: tags,
+      );
+    }));
   }
 }

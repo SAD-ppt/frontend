@@ -50,6 +50,12 @@ class NoteRepo {
     );
   }
 
+  Future<List<String>> getTags() {
+    return noteTagApi.getTags(null).then((tags) {
+      return tags.map((tag) => tag.name).toList();
+    });
+  }
+
   Future<void> addTagToNote(
     String noteId,
     String name,
