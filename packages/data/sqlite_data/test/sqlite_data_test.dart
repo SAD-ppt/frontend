@@ -6,6 +6,8 @@ import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqlite_data/sqlite_data.dart';
 
+String filename = 'anki_clone.db';
+
 void main() async {
   test("Test Init Database", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -25,7 +27,7 @@ void main() async {
       expect(value.description, deck.description);
     });
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
   test("Deck API test", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -65,7 +67,7 @@ void main() async {
     var decks = await sqlDB.deckApiHandler.getDecks();
     expect(decks.length, 3);
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
   test("Note Template API test", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -117,7 +119,7 @@ void main() async {
     var noteTemplates = await sqlDB.noteTemplateApiHandler.getNoteTemplates();
     expect(noteTemplates.length, 3);
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
   test("Note API Test", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -208,7 +210,7 @@ void main() async {
         await sqlDB.noteApiHandler.getNotes(deckId: 'deck2', tags: ['Tag1']);
     expect(notes.length, 0);
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
   test("Card Template API Test", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -280,7 +282,7 @@ void main() async {
     );
     expect(cardTemplates.length, 1);
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
   test("Card API Test", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -343,7 +345,7 @@ void main() async {
         await sqlDB.cardApiHandler.getCards(deckId: 'deck1', tags: ['Tag2']);
     expect(cards.length, 2);
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
   test("NoteTag API Test", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -388,7 +390,7 @@ void main() async {
     tags = await sqlDB.noteTagApiHandler.getTags('note1');
     expect(tags.length, 3);
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
   test("Learning Stat API Test", () async {
     SqliteDB sqlDB = SqliteDB();
@@ -473,12 +475,12 @@ void main() async {
       expect(value, null);
     });
     await sqlDB.close();
-    await deleteDBFile();
+    await deleteDBFile(filename);
   });
 }
 
-Future<void> deleteDBFile() async {
-  final dbFile = join(await getDatabasesPath(), 'data.db');
+Future<void> deleteDBFile(String filename) async {
+  final dbFile = join(await getDatabasesPath(), filename);
   if (File(dbFile).existsSync()) {
     File(dbFile).deleteSync();
   }

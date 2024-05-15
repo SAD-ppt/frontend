@@ -13,14 +13,20 @@ import 'package:sqlite_data/src/note_tag_api_handler.dart';
 import 'package:sqlite_data/src/note_template_api_handler.dart';
 
 Future<String> checkPath(String dbName) async {
-  String documentsPath = (await getApplicationDocumentsDirectory()).path;
+  String documentsPath;
+  if (Platform.isWindows) {
+    documentsPath = (await getDatabasesPath());
+  }
+  else {
+    documentsPath = (await getApplicationDocumentsDirectory()).path;
+  }
   String path = join(documentsPath, dbName);
   if (await Directory(dirname(path)).exists()) {
   } else {
     try {
       await Directory(dirname(path)).create(recursive: true);
     } catch (e) {
-      print(e);
+      throw 'Error creating directory: $e';
     }
   }
   return path;
@@ -28,9 +34,8 @@ Future<String> checkPath(String dbName) async {
 
 Future<Database> initializeDB() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // sqfliteFfiInit();
-  // databaseFactory = databaseFactoryFfi;
-
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
   String dbPath = await checkPath('anki_clone.db');
 
   return await openDatabase(dbPath, version: 1, onCreate: (db, version) async {
@@ -70,10 +75,11 @@ class SqliteDB {
   late NoteTagApiHandler noteTagApiHandler;
 
   Future<void> init() async {
+    WidgetsFlutterBinding.ensureInitialized();
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
-    WidgetsFlutterBinding.ensureInitialized();
     db = await initializeDB();
+    // createMockData(db);
     cardApiHandler = CardApiHandler(db: db);
     cardTemplateApiHandler = CardTemplateApiHandler(db: db);
     deckApiHandler = DeckApiHandler(db: db);
@@ -85,5 +91,125 @@ class SqliteDB {
 
   Future<void> close() async {
     await db.close();
+  }
+
+  void createMockData(Database db) async {
+    await db.query('Deck').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO Deck (UniqueID, Name, Description) VALUES 
+          ('deck1', 'Deck 1', 'Description for Deck 1'),
+          ('deck2', 'Deck 2', 'Description for Deck 2'),
+          ('deck3', 'Deck 3', 'Description for Deck 3');""");
+      }
+    });
+    await db.query('NoteTemplate').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO NoteTemplate (UniqueID, Name) VALUES 
+          ('note_template1', 'Note Template 1'),
+          ('note_template2', 'Note Template 2'),
+          ('note_template3', 'Note Template 3');""");
+      }
+    });
+    await db.query('NoteTemplateField').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO NoteTemplateField (NoteTemplateID, OrderNumber, Name) VALUES 
+          ('note_template1', 1, 'Field 1'),
+          ('note_template1', 2, 'Field 2'),
+          ('note_template1', 3, 'Field 3'),
+          ('note_template2', 1, 'Field 1'),
+          ('note_template2', 2, 'Field 2'),
+          ('note_template2', 3, 'Field 3'),
+          ('note_template3', 1, 'Field 1'),
+          ('note_template3', 2, 'Field 2'),
+          ('note_template3', 3, 'Field 3');""");
+      }
+    });
+    await db.query('Note').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO Note (UniqueID, NoteTemplateID) VALUES 
+          ('note1', 'note_template1'),
+          ('note2', 'note_template2'),
+          ('note3', 'note_template3');""");
+      }
+    });
+    await db.query('NoteField').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO NoteField (NoteID, OrderNumber, RichTextData) VALUES 
+          ('note1', 1, 'Rich Text Data 1'),
+          ('note1', 2, 'Rich Text Data 2'),
+          ('note1', 3, 'Rich Text Data 3'),
+          ('note2', 1, 'Rich Text Data 1'),
+          ('note2', 2, 'Rich Text Data 2'),
+          ('note2', 3, 'Rich Text Data 3'),
+          ('note3', 1, 'Rich Text Data 1'),
+          ('note3', 2, 'Rich Text Data 2'),
+          ('note3', 3, 'Rich Text Data 3');""");
+      }
+    });
+    await db.query('CardTemplate').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO CardTemplate (UniqueID, NoteTemplateID, Name) VALUES 
+          ('card_template1', 'note_template1', 'Card Template 1'),
+          ('card_template2', 'note_template2', 'Card Template 2'),
+          ('card_template3', 'note_template3', 'Card Template 3');""");
+      }
+    });
+    await db.query('CardTemplateField').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO CardTemplateField (CardTemplateID, OrderNumber, Side) VALUES 
+          ('card_template1', 1, 0),
+          ('card_template1', 2, 1),
+          ('card_template1', 3, 0),
+          ('card_template2', 1, 0),
+          ('card_template2', 2, 1),
+          ('card_template2', 3, 0),
+          ('card_template3', 1, 0),
+          ('card_template3', 2, 1),
+          ('card_template3', 3, 0);""");
+      }
+    });
+    await db.query('Card').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO Card (CardTemplateID, DeckID, NoteID) VALUES 
+          ('card_template1', 'deck1', 'note1'),
+          ('card_template2', 'deck2', 'note2'),
+          ('card_template3', 'deck3', 'note3');""");
+      }
+    });
+    await db.query('NoteTag').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO NoteTag (Name, NoteID, Color) VALUES 
+          ('tag1', 'note1', 'red'),
+          ('tag2', 'note2', 'blue'),
+          ('tag3', 'note3', 'green');""");
+      }
+    });
+    await db.query('LearningResult').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO LearningResult (DeckID, NoteID, CardTemplateID, Time, Result) VALUES 
+          ('deck1', 'note1', 'card_template1', '2022-01-01 00:00:00', 'Result 1'),
+          ('deck2', 'note2', 'card_template2', '2022-01-01 00:00:00', 'Result 2'),
+          ('deck3', 'note3', 'card_template3', '2022-01-01 00:00:00', 'Result 3');""");
+      }
+    });
+    await db.query('LearningStat').then((value) {
+      if (value.isEmpty) {
+        db.execute("""
+        INSERT INTO LearningStat (DeckID, NoteID, CardTemplateID) VALUES 
+          ('deck1', 'note1', 'card_template1'),
+          ('deck2', 'note2', 'card_template2'),
+          ('deck3', 'note3', 'card_template3');""");
+      }
+    });
   }
 }

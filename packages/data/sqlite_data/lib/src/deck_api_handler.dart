@@ -69,7 +69,7 @@ class DeckApiHandler implements DeckApi {
   Future<List<Deck>> getDecks() {
     return db.query('Deck').then((value) {
       if (value.isEmpty) {
-        throw Exception('No decks found');
+        return [];
       }
       return value
           .map((e) => Deck(

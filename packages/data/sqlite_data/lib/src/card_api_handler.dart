@@ -151,7 +151,7 @@ class CardApiHandler implements CardApi {
     // Get cards that have all the tags in the list
     List<CardDetail> cards = [];
     return db.rawQuery(
-        'SELECT DISTINCT Card.DeckID, Card.NoteID, Card.CardTemplateID FROM Card JOIN Tag ON Card.NoteID = Tag.NoteID WHERE Tag.Name IN (${tags.map((_) => '?').join(',')}) GROUP BY Card.DeckID, Card.NoteID, Card.CardTemplateID HAVING COUNT(*) >= ?',
+        'SELECT DISTINCT Card.DeckID, Card.NoteID, Card.CardTemplateID FROM Card JOIN NoteTag ON Card.NoteID = NoteTag.NoteID WHERE NoteTag.Name IN (${tags.map((_) => '?').join(',')}) GROUP BY Card.DeckID, Card.NoteID, Card.CardTemplateID HAVING COUNT(*) >= ?',
         [...tags, tags.length]).then((value) async {
       for (var item in value) {
         CardKey key = CardKey(
@@ -171,7 +171,7 @@ class CardApiHandler implements CardApi {
     // Get cards that have all the tags in the list
     List<CardDetail> cards = [];
     return db.rawQuery(
-        'SELECT Card.DeckID, Card.NoteID, Card.CardTemplateID FROM Card JOIN Tag ON Card.NoteID = Tag.NoteID WHERE Card.DeckID = ? AND Tag.Name IN (${tags.map((_) => '?').join(',')}) GROUP BY Card.DeckID, Card.NoteID, Card.CardTemplateID HAVING COUNT(*) >= ?',
+        'SELECT Card.DeckID, Card.NoteID, Card.CardTemplateID FROM Card JOIN NoteTag ON Card.NoteID = NoteTag.NoteID WHERE Card.DeckID = ? AND NoteTag.Name IN (${tags.map((_) => '?').join(',')}) GROUP BY Card.DeckID, Card.NoteID, Card.CardTemplateID HAVING COUNT(*) >= ?',
         [deckId, ...tags, tags.length]).then((value) async {
       for (var item in value) {
         CardKey key = CardKey(
