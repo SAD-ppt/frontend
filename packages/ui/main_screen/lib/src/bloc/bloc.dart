@@ -22,10 +22,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     on<MainScreenSearch>(_onSearch);
   }
 
-  FutureOr<void> _onInitial(
-    MainScreenInitial event,
-    Emitter<MainScreenState> emit,
-  ) async {
+  Future<void> init(Emitter<MainScreenState> emit) async {
     emit(state.copyWith(status: MainScreenStatus.loading));
     // get the decks from the repo
     List<DeckOverview> decks = await deckRepo.getDeckOverviews();
@@ -33,6 +30,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     var newDecks = List<DeckInfo>.empty(growable: true);
     for (var deck in decks) {
       newDecks.add(DeckInfo(
+        id: deck.id,
         name: deck.name,
         deckDescription: deck.description,
       ));
@@ -42,6 +40,13 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         status: MainScreenStatus.loaded,
         decks: newDecks,
         filteredDecks: newDecks));
+  }
+
+  FutureOr<void> _onInitial(
+    MainScreenInitial event,
+    Emitter<MainScreenState> emit,
+  ) async {
+    await init(emit);
   }
 
   FutureOr<void> _onAddButtonPressed(
@@ -60,6 +65,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     // Map the decks to DeckInfo
     for (var deck in decks) {
       newDecks.add(DeckInfo(
+        id: deck.id,
         name: deck.name,
         deckDescription: deck.description,
       ));
@@ -80,19 +86,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   ) async {
     // call add deck from repo
     await deckRepo.createNewDeck(event.deckName, event.deckDescription);
-    emit(state.copyWith(currentStep: MainScreenStep.mainScreen, decks: [
-      ...state.decks,
-      DeckInfo(
-        name: event.deckName,
-        deckDescription: event.deckDescription,
-      ),
-    ], filteredDecks: [
-      ...state.filteredDecks,
-      DeckInfo(
-        name: event.deckName,
-        deckDescription: event.deckDescription,
-      ),
-    ]));
+    await init(emit);
   }
 
   FutureOr<void> _onAddNewDeckCancel(
@@ -126,6 +120,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
             deck.name.toLowerCase().contains(event.query.toLowerCase()))
         .toList();
     // emit the filtered decks
-    emit(state.copyWith(status: MainScreenStatus.loaded, filteredDecks: filteredDecks));
+    emit(state.copyWith(
+        status: MainScreenStatus.loaded, filteredDecks: filteredDecks));
   }
 }
