@@ -46,7 +46,6 @@ class Config extends StatelessWidget {
       ),
     );
     var chooseTemplateTitle = Text("Template", style: fieldHeaderTextStyle);
-    var chooseCardTypesTitle = Text("Card types", style: fieldHeaderTextStyle);
     var chooseTemplate = CustomDropdown<String>.search(
       initialItem: noteTemplateName,
       hideSelectedFieldWhenExpanded: true,
@@ -56,18 +55,6 @@ class Config extends StatelessWidget {
         // update the item selected
         onNoteTemplateChanged(p0),
       },
-      decoration: CustomDropdownDecoration(
-        closedBorder: Border.all(color: Colors.grey),
-        expandedBorder: Border.all(color: Colors.grey),
-        closedBorderRadius: BorderRadius.zero,
-        expandedBorderRadius: BorderRadius.zero,
-      ),
-    );
-    var chooseCardTypes = CustomDropdown<String>.multiSelectSearch(
-      hideSelectedFieldWhenExpanded: true,
-      hintText: 'Choose card type(s)',
-      items: availableCardTypes.map((cardTemplate) => cardTemplate.name).toList(),
-      onListChanged: (p0) => onCardTypesChanged(p0),
       decoration: CustomDropdownDecoration(
         closedBorder: Border.all(color: Colors.grey),
         expandedBorder: Border.all(color: Colors.grey),
@@ -94,10 +81,6 @@ class Config extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Flexible(flex: 2, child: chooseCardTypesTitle),
-          Flexible(flex: 4, child: chooseCardTypes),
-        ]),
         const SizedBox(height: 20),
       ],
     );
