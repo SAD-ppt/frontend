@@ -3,7 +3,6 @@ import 'package:add_new_template/src/add_card_types_screen/card_type_name.dart';
 import '../bloc/bloc.dart';
 import '../bloc/event.dart';
 import '../bloc/state.dart';
-import '../template_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -9,28 +9,36 @@ class FieldsList extends StatefulWidget {
 }
 
 class _FieldsListState extends State<FieldsList> {
-  late List<String> fieldLabels;
+  late List<(String, bool)> fieldLabels;
   final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
-    fieldLabels = List.generate(1, (index) => '');
+    fieldLabels = List.generate(1, (index) => ('', true));
   }
 
   @override
   Widget build(BuildContext context) {
     var children = <Widget>[];
-    for (var (i, _) in fieldLabels.indexed) {
+    for (var (i, field) in fieldLabels.indexed) {
+      if (!field.$2) {
+        continue;
+      }
       children.add(Dismissible(
         onDismissed: (direction) {
           setState(() {
-            fieldLabels.removeAt(i);
+            fieldLabels[i] = (field.$1, false);
           });
         },
-        key: UniqueKey(),
+        key: ValueKey(i),
         child: _Field(onChanged: (value) {
-          fieldLabels[i] = value;
-          widget.onFieldsChanged(List<String>.from(fieldLabels));
+          fieldLabels[i] = (value, true);
+          final newFieldLabels = fieldLabels
+              .where((element) => element.$2)
+              .map((e) => e.$1)
+              .toList();
+          widget.onFieldsChanged(List<String>.from(newFieldLabels));
         }),
       ));
       if (i < fieldLabels.length - 1) {
@@ -43,7 +51,7 @@ class _FieldsListState extends State<FieldsList> {
         constraints: const BoxConstraints.tightFor(width: double.infinity),
         child: _AddNewFieldButton(
             onPressed: () => setState(() {
-                  fieldLabels.add('');
+                  fieldLabels.add(('', true));
                 })),
       ),
     );
