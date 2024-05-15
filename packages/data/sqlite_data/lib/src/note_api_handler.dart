@@ -71,7 +71,7 @@ class NoteApiHandler implements NoteApi {
           ));
         }
         return db
-            .query('Tag', where: 'NoteID = ?', whereArgs: [id]).then((value) {
+            .query('NoteTag', where: 'NoteID = ?', whereArgs: [id]).then((value) {
           for (Map<String, dynamic> row in value) {
             tags.add(NoteTag(
               noteId: row['NoteID'],
@@ -107,7 +107,7 @@ class NoteApiHandler implements NoteApi {
             ));
           }
         });
-        await db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+        await db.query('NoteTag', where: 'NoteID = ?', whereArgs: [note.id]).then(
             (value) {
           for (Map<String, dynamic> row in value) {
             tags.add(NoteTag(
@@ -147,7 +147,7 @@ class NoteApiHandler implements NoteApi {
             ));
           }
         });
-        await db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+        await db.query('NoteTag', where: 'NoteID = ?', whereArgs: [note.id]).then(
             (value) {
           for (Map<String, dynamic> row in value) {
             tags.add(NoteTag(
@@ -164,9 +164,9 @@ class NoteApiHandler implements NoteApi {
   }
 
   Future<List<NoteDetail>> _getNotesByTags(List<String> tags) {
-    // Select the notes that have all the tags, by joining the Note and Tag tables
+    // Select the notes that have all the tags, by joining the Note and NoteTag tables
     return db.rawQuery(
-      "SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?)",
+      "SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM NoteTag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?)",
       [...tags, tags.length],
     ).then((value) {
       List<NoteDetail> notes = [];
@@ -187,7 +187,7 @@ class NoteApiHandler implements NoteApi {
             ));
           }
         });
-        db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+        db.query('NoteTag', where: 'NoteID = ?', whereArgs: [note.id]).then(
             (value) {
           for (Map<String, dynamic> row in value) {
             tags.add(NoteTag(
@@ -205,9 +205,9 @@ class NoteApiHandler implements NoteApi {
 
   Future<List<NoteDetail>> _getNotesByDeckIdAndTags(
       String deckId, List<String> tags) {
-    // Select the notes in the deckID deck, that have all the tags, by joining the Note, Tag and Card tables
+    // Select the notes in the deckID deck, that have all the tags, by joining the Note, NoteTag and Card tables
     return db.rawQuery(
-        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM Tag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
+        'SELECT * FROM Note WHERE UniqueID IN (SELECT NoteID FROM NoteTag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?) AND UniqueID IN (SELECT NoteID FROM Card WHERE DeckID = ?)',
         [...tags, tags.length, deckId]).then((value) {
       List<NoteDetail> notes = [];
       for (Map<String, dynamic> row in value) {
@@ -227,7 +227,7 @@ class NoteApiHandler implements NoteApi {
             ));
           }
         });
-        db.query('Tag', where: 'NoteID = ?', whereArgs: [note.id]).then(
+        db.query('NoteTag', where: 'NoteID = ?', whereArgs: [note.id]).then(
             (value) {
           for (Map<String, dynamic> row in value) {
             tags.add(NoteTag(

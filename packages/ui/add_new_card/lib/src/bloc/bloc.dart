@@ -60,18 +60,6 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
       InitialEvent event, Emitter<AddNewCardState> emit) async {
     emit(state.copyWith(status: Status.loading));
     await Future.delayed(const Duration(seconds: 1));
-    // Success loaded with mock data
-    // emit(state.copyWith(
-    //     status: Status.loaded,
-    //     deck: deckList[0],
-    //     noteTemplate: noteTemplateList[0],
-    //     fieldNames: fieldsList[0],
-    //     tagsList: tagsList,
-    //     cardTypes: cardTypeList[0],
-    //     availableDecks: deckList,
-    //     availableNoteTemplates: noteTemplateList,
-    //     availableCardTypes: cardTypeList[0],
-    //     availableTagsList: availableTagsList));
 
     // Load data from repository
     List<DeckOverview> deckList = await deckRepository.getDeckOverviews();
