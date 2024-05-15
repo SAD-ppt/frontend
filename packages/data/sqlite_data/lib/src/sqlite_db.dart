@@ -79,7 +79,7 @@ class SqliteDB {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     db = await initializeDB();
-    // createMockData(db);
+    await initData(db);
     cardApiHandler = CardApiHandler(db: db);
     cardTemplateApiHandler = CardTemplateApiHandler(db: db);
     deckApiHandler = DeckApiHandler(db: db);
@@ -93,7 +93,7 @@ class SqliteDB {
     await db.close();
   }
 
-  void createMockData(Database db) async {
+  Future<void> initData(Database db) async {
     await db.query('Deck').then((value) {
       if (value.isEmpty) {
         db.execute("""

@@ -15,7 +15,8 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>())..add(const MainScreenInitial()),
+      create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>())
+        ..add(const MainScreenInitial()),
       child: _MainScreenView(
         onAddNewCard: onAddNewCard,
         onAddNewTemplate: onAddNewTemplate,
@@ -35,10 +36,18 @@ class _MainScreenView extends StatelessWidget {
         builder: (context, state) {
       return Scaffold(
         appBar: AppBar(
-          title: _SearchBar(
-            // TODO: Implement the onSearch function
-            onSearch: () => null,
-          ),
+          title: SizedBox(
+            height: 45,
+            child: SearchBar(
+              hintText: 'Search for decks',
+              // no shadow
+              elevation: const WidgetStatePropertyAll<double>(0),
+              
+              onChanged: (value) => context
+                  .read<MainScreenBloc>()
+                  .add(MainScreenSearch(value)),
+            ),
+          )
         ),
         drawer: const MainScreenDrawer(),
         body: Center(
@@ -46,7 +55,7 @@ class _MainScreenView extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(20),
             // get the list of decks from bloc
-            children: state.decks
+            children: state.filteredDecks
                 .map(
                   (deck) => DeckItem(
                     deck: deck.name,
@@ -129,31 +138,6 @@ class _MainScreenView extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _SearchBar extends StatelessWidget {
-  final void Function() onSearch;
-
-  const _SearchBar({super.key, required this.onSearch});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: 'Search',
-            ),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: onSearch,
-        ),
-      ],
     );
   }
 }
