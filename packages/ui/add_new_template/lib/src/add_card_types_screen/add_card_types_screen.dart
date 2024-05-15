@@ -14,7 +14,15 @@ class AddCardTypesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Card Types'),
+        title:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          const Text('Add Card Types'),
+          IconButton(
+              onPressed: () {
+                context.read<AddNewTemplateBloc>().add(const Submit());
+              },
+              icon: const Icon(Icons.check))
+        ]),
         leading: BackButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -46,12 +54,6 @@ class _AddCardTypes extends StatelessWidget {
                 context.read<AddNewTemplateBloc>().add(const AddNewCardType());
               },
               child: const Text('Add Card Type'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                context.read<AddNewTemplateBloc>().add(const Submit());
-              },
-              child: const Text('Done'),
             ),
           ],
         );
