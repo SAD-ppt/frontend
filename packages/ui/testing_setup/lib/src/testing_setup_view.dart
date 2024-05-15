@@ -16,15 +16,11 @@ class TestingSetupScreen extends StatelessWidget {
         deckRepository: context.read<DeckRepo>(),
         cardRepository: context.read<CardRepo>(),
         noteRepository: context.read<NoteRepo>(),
-      )..add(InitialEvent()
-      ),
+      )..add(InitialEvent()),
       child: _TestingSetupView(),
     );
   }
 }
-
-const List<String> availableTagsList = ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5'];
-const List<String> availableCardTypesList = ['Type1', 'Type2', 'Type3', 'Type4', 'Type5'];
 
 class _TestingSetupView extends StatelessWidget {
 
@@ -39,11 +35,50 @@ class _TestingSetupView extends StatelessWidget {
             child: ListView(
               children: [
                 _Config(
-                  availableTagsList: availableTagsList,
-                  availableCardTypeList: availableCardTypesList,
+                  availableTagsList: state.availableTags,
+                  availableCardTypeList: state.availableCardTypes,
                   onSelectedTagsChanged: (tags) => context.read<TestingSetupBloc>().add(SelectedTagsChanged(tags)),
                   onSelectedCardTypeChanged: (cardTypes) => context.read<TestingSetupBloc>().add(SelectedCardTypeChanged(cardTypes)),
                 ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Total cards'),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black, width: 2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        state.totalFilteredCard.toString(),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<TestingSetupBloc>().add(StartEvent());
+                      },
+                      child: const Text('Start'),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
@@ -94,7 +129,7 @@ class _Config extends StatelessWidget {
     var cardTypeDropdown = CustomDropdown<String>.multiSelectSearch(
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose card type(s)',
-      items: availableCardTypesList,
+      items: availableCardTypeList,
       onListChanged: (items) => {
         // sort tags alphabetically
         items.sort(),

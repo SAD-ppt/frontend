@@ -8,7 +8,8 @@ sealed class LearningScreenEvent extends Equatable {
 }
 
 final class InitialEvent extends LearningScreenEvent {
-  const InitialEvent();
+  final String deckId;
+  const InitialEvent({required this.deckId});
 }
 
 final class LoadCardEvent extends LearningScreenEvent {

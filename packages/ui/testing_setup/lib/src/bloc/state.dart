@@ -13,13 +13,15 @@ class TestingSetupState extends Equatable {
   final TestingSetupStatus status;
   final String deckID;
   
-  final List<Card> filteredCards;
+  // final List<CardOverview> filteredCards;
   final List<String> selectedTags;
   final List<String> selectedCardType;
 
-  final List<Card> cardList;
+  final List<CardOverview> cardList;
   final List<String> availableTags;
-  final List<CardTemplate> availableCardTypes;
+  final List<String> availableCardTypes;
+
+  final int totalFilteredCard;
 
   const TestingSetupState({
     this.status = TestingSetupStatus.initial,
@@ -29,7 +31,8 @@ class TestingSetupState extends Equatable {
     this.selectedTags = const [],
     this.availableCardTypes = const [],
     this.selectedCardType = const [],
-    this.filteredCards = const [],
+    // this.filteredCards = const [],
+    this.totalFilteredCard = 0,
   });
 
   @override
@@ -41,20 +44,23 @@ class TestingSetupState extends Equatable {
         selectedTags,
         availableCardTypes,
         selectedCardType,
-        filteredCards,
+        // filteredCards,
+        totalFilteredCard,
       ];
   
   TestingSetupState copyWith({
     TestingSetupStatus? status,
     String? deckID,
     
-    List<Card>? filteredCards,
+    // List<CardOverview>? filteredCards,
     List<String>? selectedTags,
     List<String>? selectedCardType,
 
-    List<Card>? cardList,
+    List<CardOverview>? cardList,
     List<String>? availableTags,
-    List<CardTemplate>? availableCardTypes,
+    List<String>? availableCardTypes,
+
+    int? totalFilteredCard,
   }) {
     return TestingSetupState(
       status: status ?? this.status,
@@ -64,7 +70,8 @@ class TestingSetupState extends Equatable {
       selectedTags: selectedTags ?? this.selectedTags,
       availableCardTypes: availableCardTypes ?? this.availableCardTypes,
       selectedCardType: selectedCardType ?? this.selectedCardType,
-      filteredCards: cardList ?? this.filteredCards,
+      // filteredCards: cardList ?? this.filteredCards,
+      totalFilteredCard: totalFilteredCard ?? this.totalFilteredCard,
     );
   }
 }
