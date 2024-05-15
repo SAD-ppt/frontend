@@ -188,6 +188,9 @@ class SqliteDB {
       if (value.isEmpty) {
         db.execute("""
         INSERT INTO NoteTag (Name, NoteID, Color) VALUES 
+          ('tag1', '', 'red'),
+          ('tag2', '', 'blue'),
+          ('tag3', '', 'green'),
           ('tag1', 'note1', 'red'),
           ('tag2', 'note2', 'blue'),
           ('tag3', 'note3', 'green');""");

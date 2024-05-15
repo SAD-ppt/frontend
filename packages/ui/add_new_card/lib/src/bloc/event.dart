@@ -78,3 +78,13 @@ class AddNewAvailableTag extends AddNewCardEvent {
 
 class TagsTriggered extends AddNewCardEvent {
 }
+
+class FieldValueChanged extends AddNewCardEvent {
+  final int index;
+  final String value;
+
+  const FieldValueChanged(this.index, this.value);
+
+  @override
+  List<Object> get props => [index, value];
+}

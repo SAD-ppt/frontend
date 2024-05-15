@@ -23,6 +23,7 @@ class CardForm extends StatelessWidget {
   final Function(List<String>) onFieldsChanged;
   final Function(List<String>) onTagsChanged;
   final Function(String) onAddNewAvailableTag;
+  final Function(int, String) onCardFormFieldChanged;
 
   // final VoidCallback onTagsTriggered;
   const CardForm(
@@ -31,6 +32,7 @@ class CardForm extends StatelessWidget {
       required this.onDeckChanged,
       required this.noteTemplateName,
       required this.onTagsChanged,
+      required this.onCardFormFieldChanged,
       // required this.onTagsTriggered,
       required this.tagsList,
       required this.availableTagsList,
@@ -61,10 +63,12 @@ class CardForm extends StatelessWidget {
           onDeckChanged: onDeckChanged,
         ),
         Column(
-          children: fieldNames
+          children: fieldNames.indexed
               .map((e) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(e), const TextField()],
+                    children: [Text(e.$2), TextField(onChanged: (value) => 
+                      onCardFormFieldChanged(e.$1, value)
+                    )],
                   ))
               .toList(),
         ),
