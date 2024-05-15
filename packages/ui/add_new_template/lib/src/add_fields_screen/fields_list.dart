@@ -27,7 +27,7 @@ class _FieldsListState extends State<FieldsList> {
             fieldLabels.removeAt(i);
           });
         },
-        key: ValueKey(i),
+        key: UniqueKey(),
         child: _Field(onChanged: (value) {
           fieldLabels[i] = value;
           widget.onFieldsChanged(List<String>.from(fieldLabels));
