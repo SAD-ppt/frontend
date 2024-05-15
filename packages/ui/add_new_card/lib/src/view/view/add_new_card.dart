@@ -14,6 +14,7 @@ class AddNewCardPage extends StatelessWidget {
     return BlocProvider(
         create: (context) => AddNewCardBloc(
           deckRepository: context.read<DeckRepo>(),
+          noteRepository: context.read<NoteRepo>(),
           noteTemplateRepository: context.read<NoteTemplateRepo>(),
         )..add(InitialEvent()),
         child: _AddNewCardView());

@@ -1,6 +1,7 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repos/repos.dart';
 import 'package:testing_setup/src/bloc/bloc.dart';
 import 'package:testing_setup/src/bloc/event.dart';
 import 'package:testing_setup/src/bloc/state.dart';
@@ -11,7 +12,12 @@ class TestingSetupScreen extends StatelessWidget {
   @override 
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TestingSetupBloc(),
+      create: (context) => TestingSetupBloc(
+        deckRepository: context.read<DeckRepo>(),
+        cardRepository: context.read<CardRepo>(),
+        noteRepository: context.read<NoteRepo>(),
+      )..add(InitialEvent()
+      ),
       child: _TestingSetupView(),
     );
   }

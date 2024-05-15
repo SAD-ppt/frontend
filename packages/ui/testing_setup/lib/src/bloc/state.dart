@@ -9,14 +9,17 @@ enum TestingSetupStatus {
 }
 
 class TestingSetupState extends Equatable {
+  
   final TestingSetupStatus status;
   final String deckID;
+  
+  final List<Card> filteredCards;
+  final List<String> selectedTags;
+  final List<String> selectedCardType;
+
   final List<Card> cardList;
   final List<String> availableTags;
-  final List<String> selectedTags;
-  final List<String> availableCardTypes;
-  final List<String> selectedCardType;
-  final List<Card> filteredCards;
+  final List<CardTemplate> availableCardTypes;
 
   const TestingSetupState({
     this.status = TestingSetupStatus.initial,
@@ -44,12 +47,14 @@ class TestingSetupState extends Equatable {
   TestingSetupState copyWith({
     TestingSetupStatus? status,
     String? deckID,
+    
+    List<Card>? filteredCards,
+    List<String>? selectedTags,
+    List<String>? selectedCardType,
+
     List<Card>? cardList,
     List<String>? availableTags,
-    List<String>? selectedTags,
-    List<String>? availableCardTypes,
-    List<String>? selectedCardType,
-    List<Card>? filteredCards,
+    List<CardTemplate>? availableCardTypes,
   }) {
     return TestingSetupState(
       status: status ?? this.status,

@@ -12,10 +12,12 @@ import 'package:repos/repos.dart';
 class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
 
   final DeckRepo deckRepository;
+  final NoteRepo noteRepository;
   final NoteTemplateRepo noteTemplateRepository;
 
   AddNewCardBloc({
     required this.deckRepository,
+    required this.noteRepository,
     required this.noteTemplateRepository,
   }) : super(const AddNewCardState()) {
 
@@ -48,17 +50,20 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
       cardTemplateList = noteTemplateDetail.cardTemplates;
     }
 
+    List<String> fieldsList = getFieldsForNoteTemplate(noteTemplateList[0].name, noteTemplateList);
+    List<String> tagList = await noteRepository.getTags();
+
     emit(state.copyWith(
         status: Status.loaded,
         deckName: deckList.isNotEmpty ? deckList[0].name : '',
         noteTemplateName: noteTemplateList.isNotEmpty ? noteTemplateList[0].name : '',
-        fieldNames: fieldsList[0],
-        tagsList: tagsList,
+        fieldNames: fieldsList,
+        tagsList: const [],
         selectedCardTypes: [],
         availableDecks: deckList,
         availableNoteTemplates: noteTemplateList,
         availableCardTypes: cardTemplateList,
-        availableTagsList: availableTagsList
+        availableTagsList: tagList,
     ));
   }
 
@@ -78,11 +83,12 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     NoteTemplate noteTemplate = getNoteTemplateByName(event.noteTemplateName, state.availableNoteTemplates);
     NoteTemplateDetail noteTemplateDetail = await noteTemplateRepository.getNoteTemplateDetail(noteTemplate.id);
     List<CardTemplate> cardTemplateList = noteTemplateDetail.cardTemplates;
+    List<String> fieldsList = getFieldsForNoteTemplate(event.noteTemplateName, state.availableNoteTemplates);
 
     emit(state.copyWith(
         status: Status.changed,
         noteTemplateName: event.noteTemplateName,
-        fieldNames: getFieldsForNoteTemplate(event.noteTemplateName, state.availableNoteTemplates),
+        fieldNames: fieldsList,
         selectedCardTypes: const [],
         availableCardTypes: cardTemplateList));
   }

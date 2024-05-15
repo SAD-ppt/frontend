@@ -154,7 +154,8 @@ class _CardRow extends StatelessWidget {
         for (int i = 0; i < maxCard - cards.length; i++)
           const SizedBox(width: cardSize + 20),
       ];
-    } else {
+    } 
+    else {
       rowChildren = cards;
     }
 
