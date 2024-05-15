@@ -119,4 +119,29 @@ class CardRepo {
       );
     }));
   }
+
+  /// Get all CardOverviews of the deck with the given [deckId].
+  Future<List<CardOverview>> getCardOverviewsOfDeck(String deckId) async {
+    final cards = await cardApi.getCards(deckId: deckId);
+    return await Future.wait(cards.map((card) async {
+      final cardTemplate =
+          await cardTemplateApi.getCardTemplate(card.card.cardTemplateId);
+      if (cardTemplate == null) {
+        throw Exception('Card template not found');
+      }
+      final note = await noteApi.getNote(card.card.noteId);
+      if (note == null) {
+        throw Exception('Note not found');
+      }
+      final tags = note.tags.map((t) => t.name).toList();
+      return CardOverview(
+        id: CardKey(
+            deckId: card.card.deckId,
+            noteId: card.card.noteId,
+            cardTemplateId: card.card.cardTemplateId),
+        cardTemplateName: cardTemplate.cardTemplate.name,
+        tags: tags,
+      );
+    }));
+  }
 }
