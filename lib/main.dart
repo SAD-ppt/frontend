@@ -1,3 +1,4 @@
+import 'package:add_new_card/add_new_card.dart';
 import 'package:data_api/data_api.dart';
 import 'package:flutter/material.dart';
 import 'package:main_screen/main_screen.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TestingSetupScreen(),
+      home: const AddNewCardPage(),
       // home: RepositoryProvider(
       //   create: (context) => DeckRepo(
       //     deckApi: DeckApi(),

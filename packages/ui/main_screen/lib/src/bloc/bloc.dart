@@ -10,9 +10,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   StreamSubscription? _deckSubscription;
 
   MainScreenBloc({required this.deckRepo}) : super(const MainScreenState()) {
-    _deckSubscription = deckRepo.getDeckOverviews().listen((decks) {
-      add(MainScreenDecksUpdated(decks));
-    });
+    // _deckSubscription = deckRepo.getDeckOverviews().listen((decks) {
+    //   add(MainScreenDecksUpdated(decks));
+    // });
     on<MainScreenInitial>(_onInitial);
     on<MainScreenDecksUpdated>(_onDecksUpdated);
     on<MainScreenAddButtonPressed>(_onAddButtonPressed);
