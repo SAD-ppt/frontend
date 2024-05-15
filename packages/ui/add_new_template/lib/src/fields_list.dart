@@ -21,41 +21,30 @@ class _FieldsListState extends State<FieldsList> {
   Widget build(BuildContext context) {
     var children = <Widget>[];
     for (var (i, _) in fieldLabels.indexed) {
-      children.add(_Field(onChanged: (value) {
-        fieldLabels[i] = value;
-        widget.onFieldsChanged(List<String>.from(fieldLabels));
-      }));
+      children.add(Dismissible(
+        onDismissed: (direction) {
+          setState(() {
+            fieldLabels.removeAt(i);
+          });
+        },
+        key: ValueKey(i),
+        child: _Field(onChanged: (value) {
+          fieldLabels[i] = value;
+          widget.onFieldsChanged(List<String>.from(fieldLabels));
+        }),
+      ));
       if (i < fieldLabels.length - 1) {
         children.add(const SizedBox(height: 8.0));
       }
     }
     children.add(const SizedBox(height: 16.0));
     children.add(
-      Align(
-        alignment: Alignment.centerRight,
-        child: OutlinedButton(
-            style: ButtonStyle(
-                shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)))),
-            onPressed: () {
-              setState(() {
-                fieldLabels.add('');
-              });
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.add,
-                    size: 24, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                Text(
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge
-                        ?.apply(fontSizeDelta: 4),
-                    'Add new field'),
-              ],
-            )),
+      ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(width: double.infinity),
+        child: _AddNewFieldButton(
+            onPressed: () => setState(() {
+                  fieldLabels.add('');
+                })),
       ),
     );
     return Form(
@@ -81,6 +70,24 @@ class _Field extends StatelessWidget {
         hintText: "Field Name",
         border: OutlineInputBorder(),
       ),
+    );
+  }
+}
+
+class _AddNewFieldButton extends StatelessWidget {
+  final void Function() onPressed;
+  const _AddNewFieldButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      style: ButtonStyle(
+          backgroundColor:
+              WidgetStateProperty.all(Theme.of(context).secondaryHeaderColor),
+          shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)))),
+      onPressed: onPressed,
+      child: Icon(Icons.add, size: 24, color: Theme.of(context).primaryColor),
     );
   }
 }

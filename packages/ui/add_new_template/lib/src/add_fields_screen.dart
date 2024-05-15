@@ -19,36 +19,39 @@ class AddFieldsScreen extends StatelessWidget {
             onPressed: onBack,
           ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-                child: ListView(
-              children: [
-                TemplateName(onChanged: (p) {
-                  context.read<AddNewTemplateBloc>().add(NameChanged(p));
-                }),
-                const Padding(
-                    padding: EdgeInsetsDirectional.symmetric(vertical: 16),
-                    child: Divider()),
-                FieldsList(onFieldsChanged: (p) {
-                  context.read<AddNewTemplateBloc>().add(FieldsChanged(p));
-                }),
-                const SizedBox(height: 16),
-              ],
-            )),
-            Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton.outlined(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed('add_new_template/add_card_types');
-                    },
-                    icon: const Icon(Icons.navigate_next),
-                  ),
-                ))
-          ],
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                  child: ListView(
+                children: [
+                  TemplateName(onChanged: (p) {
+                    context.read<AddNewTemplateBloc>().add(NameChanged(p));
+                  }),
+                  const Padding(
+                      padding: EdgeInsetsDirectional.symmetric(vertical: 16),
+                      child: Divider()),
+                  FieldsList(onFieldsChanged: (p) {
+                    context.read<AddNewTemplateBloc>().add(FieldsChanged(p));
+                  }),
+                  const SizedBox(height: 16),
+                ],
+              )),
+              Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: IconButton.outlined(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed('add_new_template/add_card_types');
+                      },
+                      icon: const Icon(Icons.navigate_next),
+                    ),
+                  ))
+            ],
+          ),
         ));
   }
 }
