@@ -51,3 +51,12 @@ class MainScreenAddNewDeckSubmit extends MainScreenEvent {
 class MainScreenAddNewDeckCancel extends MainScreenEvent {
   const MainScreenAddNewDeckCancel();
 }
+
+class MainScreenSearch extends MainScreenEvent {
+  final String query;
+
+  const MainScreenSearch(this.query);
+
+  @override
+  List<Object> get props => [query];
+}

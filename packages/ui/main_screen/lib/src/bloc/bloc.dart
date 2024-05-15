@@ -19,6 +19,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     on<MainScreenDeckSelected>(_onDeckSelected);
     on<MainScreenAddNewDeckSubmit>(_onAddNewDeckSubmit);
     on<MainScreenAddNewDeckCancel>(_onAddNewDeckCancel);
+    on<MainScreenSearch>(_onSearch);
   }
 
   FutureOr<void> _onInitial(
@@ -37,7 +38,10 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       ));
     }
     // emit the decks
-    emit(state.copyWith(status: MainScreenStatus.loaded, decks: newDecks));
+    emit(state.copyWith(
+        status: MainScreenStatus.loaded,
+        decks: newDecks,
+        filteredDecks: newDecks));
   }
 
   FutureOr<void> _onAddButtonPressed(
@@ -82,6 +86,12 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         name: event.deckName,
         deckDescription: event.deckDescription,
       ),
+    ], filteredDecks: [
+      ...state.filteredDecks,
+      DeckInfo(
+        name: event.deckName,
+        deckDescription: event.deckDescription,
+      ),
     ]));
   }
 
@@ -97,5 +107,25 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     Emitter<MainScreenState> emit,
   ) {
     throw UnimplementedError();
+  }
+
+  void _onSearch(
+    MainScreenSearch event,
+    Emitter<MainScreenState> emit,
+  ) {
+    // emit loading
+    emit(state.copyWith(status: MainScreenStatus.loading));
+    // filter the decks in state
+    if (event.query.isEmpty) {
+      emit(state.copyWith(
+          status: MainScreenStatus.loaded, filteredDecks: state.decks));
+      return;
+    }
+    var filteredDecks = state.decks
+        .where((deck) =>
+            deck.name.toLowerCase().contains(event.query.toLowerCase()))
+        .toList();
+    // emit the filtered decks
+    emit(state.copyWith(status: MainScreenStatus.loaded, filteredDecks: filteredDecks));
   }
 }

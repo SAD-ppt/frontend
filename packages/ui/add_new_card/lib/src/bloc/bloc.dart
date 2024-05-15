@@ -5,30 +5,6 @@ import 'package:add_new_card/src/bloc/state.dart';
 import 'package:bloc/bloc.dart';
 import 'package:repos/repos.dart';
 
-// Mock Data
-var deckList = ['Deck 1', 'Deck 2', 'Deck 3'];
-var noteTemplateList = [
-  'Note Template 1',
-  'Note Template 2',
-  'Note Template 3'
-];
-var fieldsList = [
-  ['Field 1 for Note 1', 'Field 2 for Note 1', 'Field 3 for Note 1'],
-  ['Field 1 for Note 2', 'Field 2 for Note 2'],
-  ['Field 1 for Note 3', 'Field 2 for Note 3', 'Field 3 for Note 3']
-];
-var cardTypeList = [
-  [
-    'Card Type 1 for Note 1',
-    'Card Type 2 for Note 1',
-    'Card Type 3 for Note 1'
-  ],
-  ['Card Type 1 for Note 2', 'Card Type 2 for Note 2'],
-  ['Card Type 1 for Note 3', 'Card Type 2 for Note 3', 'Card Type 3 for Note 3']
-];
-var tagsList = ['Tag 1', 'Tag 2', 'Tag 3'];
-var availableTagsList = ['Tag 1', 'Tag 2', 'Tag 3', 'Tag 4', 'Tag 5'];
-
 // List<String> getFieldsForNoteTemplate(String noteTemplate) {
 //   return fieldsList[noteTemplateList.indexOf(noteTemplate)];
 // }
@@ -63,6 +39,7 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
 
     // Load data from repository
     List<DeckOverview> deckList = await deckRepository.getDeckOverviews();
+
     List<NoteTemplate> noteTemplateList = await noteTemplateRepository.getAllNoteTemplates();
     
     List<CardTemplate> cardTemplateList = const [];
