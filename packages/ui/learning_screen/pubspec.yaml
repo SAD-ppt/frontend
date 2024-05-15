@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.5
+  repos:
+    path: ../../data/repos
 
 dev_dependencies:
   flutter_test:
