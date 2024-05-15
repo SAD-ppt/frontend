@@ -117,14 +117,14 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
 
   @override
   Future<List<NoteTemplateDetail>> getNoteTemplates() {
-    return db.query('NoteTemplate').then((value) {
+    return db.query('NoteTemplate').then((value) async {
       if (value.isEmpty) {
         throw Exception('No note templates found');
       }
       List<NoteTemplateDetail> noteTemplates = [];
       for (Map<String, dynamic> noteTemplate in value) {
         List<NoteTemplateField> fields = [];
-        db.query('NoteTemplateField',
+        await db.query('NoteTemplateField',
             where: 'NoteTemplateID = ?',
             whereArgs: [noteTemplate['UniqueID']]).then((value) {
           for (Map<String, dynamic> field in value) {
@@ -139,7 +139,7 @@ class NoteTemplateApiHandler implements NoteTemplateApi {
                 id: noteTemplate['UniqueID'], name: noteTemplate['Name']),
             fields: fields));
       }
-      return noteTemplates;
+      return Future.value(noteTemplates);
     });
   }
 

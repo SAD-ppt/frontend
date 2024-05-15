@@ -34,6 +34,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext _) {
     return MultiRepositoryProvider(
         providers: [
+          RepositoryProvider<CardRepo>(
+              create: (context) => CardRepo(
+                  cardApi: db.cardApiHandler,
+                  noteApi: db.noteApiHandler,
+                  learningStatApi: db.learningStatApiHandler,
+                  cardTemplateApi: db.cardTemplateApiHandler)),
           RepositoryProvider<DeckRepo>(
               create: (context) => DeckRepo(
                   deckApi: db.deckApiHandler, cardApi: db.cardApiHandler)),
