@@ -140,15 +140,15 @@ class SqliteDB {
       if (value.isEmpty) {
         db.execute("""
         INSERT INTO NoteField (NoteID, OrderNumber, RichTextData) VALUES 
-          ('note1', 1, 'Rich Text Data 1'),
-          ('note1', 2, 'Rich Text Data 2'),
-          ('note1', 3, 'Rich Text Data 3'),
-          ('note2', 1, 'Rich Text Data 1'),
-          ('note2', 2, 'Rich Text Data 2'),
-          ('note2', 3, 'Rich Text Data 3'),
-          ('note3', 1, 'Rich Text Data 1'),
-          ('note3', 2, 'Rich Text Data 2'),
-          ('note3', 3, 'Rich Text Data 3');""");
+          ('note1', 0, 'Rich Text Data 1'),
+          ('note1', 1, 'Rich Text Data 2'),
+          ('note1', 2, 'Rich Text Data 3'),
+          ('note2', 0, 'Rich Text Data 1'),
+          ('note2', 1, 'Rich Text Data 2'),
+          ('note2', 2, 'Rich Text Data 3'),
+          ('note3', 0, 'Rich Text Data 1'),
+          ('note3', 1, 'Rich Text Data 2'),
+          ('note3', 2, 'Rich Text Data 3');""");
       }
     });
     await db.query('CardTemplate').then((value) {
