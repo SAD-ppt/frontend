@@ -5,14 +5,16 @@ import 'package:learning_screen/src/bloc/event.dart';
 import 'package:learning_screen/src/bloc/state.dart';
 import 'package:learning_screen/src/learning_panel_loading.dart';
 import 'package:learning_screen/src/learning_panel_widget.dart';
+import 'package:repos/repos.dart';
 
 class LearningScreen extends StatelessWidget {
-  const LearningScreen({super.key});
+  final String deckId;
+  const LearningScreen({super.key, required this.deckId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => LearningScreenBloc()..add(const InitialEvent()),
+        create: (context) => LearningScreenBloc(cardRepo: context.read<CardRepo>())..add(InitialEvent(deckId: deckId)),
         child: _LearningScreenView());
   }
 }
