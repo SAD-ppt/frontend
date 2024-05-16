@@ -40,6 +40,10 @@ class _FieldsListState extends State<FieldsList> {
         onDismissed: (direction) {
           setState(() {
             fieldLabels[i] = (field.$1, false);
+            widget.onFieldsChanged(fieldLabels
+                .where((element) => element.$2)
+                .map((e) => e.$1)
+                .toList());
           });
         },
         key: ValueKey(i),
