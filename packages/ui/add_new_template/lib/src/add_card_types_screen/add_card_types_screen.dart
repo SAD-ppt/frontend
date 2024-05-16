@@ -53,10 +53,17 @@ class _AddCardTypes extends StatelessWidget {
                 child: _CardTypeForm(index: i),
               ),
             ElevatedButton(
+              style: ButtonStyle(
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
               onPressed: () {
                 context.read<AddNewTemplateBloc>().add(const AddNewCardType());
               },
-              child: const Text('Add Card Type'),
+              child: const Icon(Icons.add),
             ),
           ],
         );
