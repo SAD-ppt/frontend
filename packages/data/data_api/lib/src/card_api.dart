@@ -17,4 +17,6 @@ abstract interface class CardApi {
 
   /// Update the card with the given key.
   Future<int?> getNumCardsInDeck(String deckId);
+
+  Future<int> deleteCards({String? deckId, List<String>? tags});
 }
