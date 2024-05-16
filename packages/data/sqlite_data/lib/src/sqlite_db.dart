@@ -186,23 +186,5 @@ class SqliteDB {
           ('card_template3', 'deck3', 'note3');""");
       }
     });
-    await db.query('LearningResult').then((value) {
-      if (value.isEmpty) {
-        db.execute("""
-        INSERT INTO LearningResult (DeckID, NoteID, CardTemplateID, Time, Result) VALUES 
-          ('deck1', 'note1', 'card_template1', '2022-01-01 00:00:00', 'Easy'),
-          ('deck2', 'note2', 'card_template2', '2022-01-01 00:00:00', 'Medium'),
-          ('deck3', 'note3', 'card_template3', '2022-01-01 00:00:00', 'Hard');""");
-      }
-    });
-    await db.query('LearningStat').then((value) {
-      if (value.isEmpty) {
-        db.execute("""
-        INSERT INTO LearningStat (DeckID, NoteID, CardTemplateID) VALUES 
-          ('deck1', 'note1', 'card_template1'),
-          ('deck2', 'note2', 'card_template2'),
-          ('deck3', 'note3', 'card_template3');""");
-      }
-    });
   }
 }

@@ -7,20 +7,22 @@ class LearningPanelFinish extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const SizedBox(height: 16),
-        Text(
-          'Congratulations!',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'You have completed the learning session.',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        const SizedBox(height: 16),
-      ],
+    return Center(
+      child: Column(
+        children: <Widget>[
+          const SizedBox(height: 16),
+          Text(
+            'Congratulations!',
+            style: Theme.of(context).textTheme.headlineLarge,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'You have completed the learning session.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 }
