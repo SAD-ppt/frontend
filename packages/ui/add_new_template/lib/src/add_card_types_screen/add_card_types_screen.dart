@@ -48,7 +48,10 @@ class _AddCardTypes extends StatelessWidget {
         return ListView(
           children: [
             for (var i = 0; i < state.cardTypes.length; i++)
-              _CardTypeForm(index: i),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: _CardTypeForm(index: i),
+              ),
             ElevatedButton(
               onPressed: () {
                 context.read<AddNewTemplateBloc>().add(const AddNewCardType());
@@ -71,7 +74,7 @@ class _CardTypeForm extends StatelessWidget {
         builder: (context, state) {
       return Card(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               CardTypeName(

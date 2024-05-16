@@ -6,12 +6,9 @@ class CardTypeName extends StatelessWidget {
   const CardTypeName({super.key, this.onChanged, this.onSubmitted});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: TextField(
-        decoration: const InputDecoration(hintText: 'Card Type Name'),
-        onChanged: onChanged,
-      ),
+    return TextField(
+      decoration: const InputDecoration(hintText: 'Card Type Name'),
+      onChanged: onChanged,
     );
   }
 }

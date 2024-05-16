@@ -23,29 +23,26 @@ class DragAndDropFieldsSelectForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Available Fields'),
-          _AvailableFieldsList(availableFields: availableFields),
-          const SizedBox(height: 16),
-          const Text('Front Fields'),
-          _ChosenFieldsList(
-            fields: frontFields,
-            onAdded: onFrontFieldAdded,
-            onRemoved: onFrontFieldRemoved,
-          ),
-          const SizedBox(height: 16),
-          const Text('Back Fields'),
-          _ChosenFieldsList(
-            fields: backFields,
-            onAdded: onBackFieldAdded,
-            onRemoved: onBackFieldRemoved,
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Available Fields'),
+        _AvailableFieldsList(availableFields: availableFields),
+        const SizedBox(height: 16),
+        const Text('Front Fields'),
+        _ChosenFieldsList(
+          fields: frontFields,
+          onAdded: onFrontFieldAdded,
+          onRemoved: onFrontFieldRemoved,
+        ),
+        const SizedBox(height: 16),
+        const Text('Back Fields'),
+        _ChosenFieldsList(
+          fields: backFields,
+          onAdded: onBackFieldAdded,
+          onRemoved: onBackFieldRemoved,
+        ),
+      ],
     );
   }
 }
