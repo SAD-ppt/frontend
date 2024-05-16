@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_screen/src/bloc/bloc.dart';
 import 'package:learning_screen/src/bloc/event.dart';
 import 'package:learning_screen/src/bloc/state.dart';
+import 'package:learning_screen/src/learning_panel_finish.dart';
 import 'package:learning_screen/src/learning_panel_loading.dart';
 import 'package:learning_screen/src/learning_panel_widget.dart';
 import 'package:repos/repos.dart';
@@ -43,6 +44,10 @@ class _LearningScreenView extends StatelessWidget {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (state.status == LearningScreenStatus.finish) ...[
+              const LearningPanelFinish(),
+              // call the function to delete temp deck
+            ],
             if (state.status == LearningScreenStatus.loading) ...[
               const LearningPanelLoading(),
             ],

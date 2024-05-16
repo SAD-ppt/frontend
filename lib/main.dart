@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.tealAccent),
             useMaterial3: true,
           ),
-          home: _UiRoot(),
+          home: LearningScreen(deckId: 'deck1'),
         ));
   }
 }

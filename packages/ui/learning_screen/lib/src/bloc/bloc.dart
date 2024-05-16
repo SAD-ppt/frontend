@@ -26,7 +26,7 @@ class LearningScreenBloc
     // load the first card
     Card? card = await cardRepo.nextCardForReview(event.deckId);
     if (card == null) {
-      emit(state.copyWith(status: LearningScreenStatus.error));
+      emit(state.copyWith(status: LearningScreenStatus.finish));
       return;
     }
     List<(String, String)> frontFields =
@@ -52,7 +52,7 @@ class LearningScreenBloc
     // load the next card
     Card? card = await cardRepo.nextCardForReview(state.deckId);
     if (card == null) {
-      emit(state.copyWith(status: LearningScreenStatus.error));
+      emit(state.copyWith(status: LearningScreenStatus.finish));
       return;
     }
     List<(String, String)> frontFields =
@@ -104,7 +104,7 @@ class LearningScreenBloc
     // load the next card
     Card? nextCard = await cardRepo.nextCardForReview(state.deckId);
     if (nextCard == null) {
-      emit(state.copyWith(status: LearningScreenStatus.error));
+      emit(state.copyWith(status: LearningScreenStatus.finish));
       return;
     }
     List<(String, String)> frontFieldsNext =
@@ -114,6 +114,7 @@ class LearningScreenBloc
     CardInfo cardInfoNext = CardInfo(
         backFields: backFieldsNext, frontFields: frontFieldsNext, side: true);
     emit(state.copyWith(
+      side: LearningCardSide.front,
       noteId: nextCard.key.noteId,
       cardTemplateId: nextCard.key.cardTemplateId,
       status: LearningScreenStatus.success,
