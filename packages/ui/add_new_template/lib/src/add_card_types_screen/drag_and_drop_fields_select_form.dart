@@ -23,25 +23,29 @@ class DragAndDropFieldsSelectForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('Available Fields'),
-        _AvailableFieldsList(availableFields: availableFields),
-        const SizedBox(height: 16),
-        const Text('Front Fields'),
-        _ChosenFieldsList(
-          fields: frontFields,
-          onAdded: onFrontFieldAdded,
-          onRemoved: onFrontFieldRemoved,
-        ),
-        const SizedBox(height: 16),
-        const Text('Back Fields'),
-        _ChosenFieldsList(
-          fields: backFields,
-          onAdded: onBackFieldAdded,
-          onRemoved: onBackFieldRemoved,
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Available Fields'),
+          _AvailableFieldsList(availableFields: availableFields),
+          const SizedBox(height: 16),
+          const Text('Front Fields'),
+          _ChosenFieldsList(
+            fields: frontFields,
+            onAdded: onFrontFieldAdded,
+            onRemoved: onFrontFieldRemoved,
+          ),
+          const SizedBox(height: 16),
+          const Text('Back Fields'),
+          _ChosenFieldsList(
+            fields: backFields,
+            onAdded: onBackFieldAdded,
+            onRemoved: onBackFieldRemoved,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -92,10 +96,9 @@ class _ChosenFieldsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return DragTarget<String>(
       builder: (context, candidateData, rejectedData) {
-        final border = candidateData.isEmpty
-            ? Border.all(
-                color: Theme.of(context).colorScheme.secondaryContainer)
-            : Border.all(color: Theme.of(context).colorScheme.secondary);
+        final color = candidateData.isEmpty
+            ? Theme.of(context).colorScheme.secondaryContainer
+            : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5);
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           constraints: const BoxConstraints(
@@ -103,8 +106,8 @@ class _ChosenFieldsList extends StatelessWidget {
             minWidth: double.infinity,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            border: border,
+            color: color,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Wrap(
             spacing: 8,
@@ -119,7 +122,7 @@ class _ChosenFieldsList extends StatelessWidget {
                   ),
                   child: Chip(
                     label: Text(field),
-                    deleteIcon: const Icon(Icons.delete),
+                    deleteIcon: const Icon(Icons.cancel),
                     onDeleted: () => onRemoved(field),
                   ),
                 ),
