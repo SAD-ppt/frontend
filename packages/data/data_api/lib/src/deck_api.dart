@@ -5,7 +5,9 @@ abstract interface class DeckApi {
   Future<List<Deck>> getDecks();
   Future<Deck> getDeck(String id);
   Future<Deck> getDeckAndCards(String id);
-  Future<Deck> createDeck(String name, String description);
+
+  /// Create a new deck, optionally with a specific [deckId].
+  Future<Deck> createDeck(String name, String description, {String? deckId});
   Future<Deck> updateDeck(Deck deck);
   Future<void> deleteDeck(String id);
 }
