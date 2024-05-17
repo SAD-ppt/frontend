@@ -8,20 +8,26 @@ import 'package:repos/repos.dart';
 import './card_form.dart';
 
 class AddNewCardPage extends StatelessWidget {
-  const AddNewCardPage({super.key});
+  final void Function() onDone;
+  final void Function() onBack;
+  const AddNewCardPage({super.key, required this.onDone, required this.onBack});
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => AddNewCardBloc(
-          deckRepository: context.read<DeckRepo>(),
-          noteRepository: context.read<NoteRepo>(),
-          noteTemplateRepository: context.read<NoteTemplateRepo>(),
-        )..add(InitialEvent()),
-        child: _AddNewCardView());
+              deckRepository: context.read<DeckRepo>(),
+              noteRepository: context.read<NoteRepo>(),
+              noteTemplateRepository: context.read<NoteTemplateRepo>(),
+            )..add(InitialEvent()),
+        child: _AddNewCardView(onDone: onDone, onBack: onBack));
   }
 }
 
 class _AddNewCardView extends StatelessWidget {
+  final void Function() onDone;
+  final void Function() onBack;
+
+  const _AddNewCardView({required this.onDone, required this.onBack});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AddNewCardBloc, AddNewCardState>(
@@ -30,7 +36,9 @@ class _AddNewCardView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Add new card'),
-            leading: const BackButton(),
+            leading: BackButton(
+              onPressed: onBack,
+            ),
           ),
           body: const Loading(),
         );
@@ -38,7 +46,10 @@ class _AddNewCardView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: _TitleBar(
-              onDone: () => context.read<AddNewCardBloc>().add(SubmitCard()),
+              onDone: () {
+                context.read<AddNewCardBloc>().add(SubmitCard());
+                onDone();
+              },
               onMore: () => null,
             ),
             leading: const BackButton(),
@@ -56,7 +67,9 @@ class _AddNewCardView extends StatelessWidget {
                 context.read<AddNewCardBloc>().add(NoteTemplateChanged(value))
               },
               onCardFormFieldChanged: (index, value) => {
-                context.read<AddNewCardBloc>().add(FieldValueChanged(index, value))
+                context
+                    .read<AddNewCardBloc>()
+                    .add(FieldValueChanged(index, value))
               },
               onCardTypesChanged: (value) =>
                   {context.read<AddNewCardBloc>().add(CardTypesChanged(value))},
