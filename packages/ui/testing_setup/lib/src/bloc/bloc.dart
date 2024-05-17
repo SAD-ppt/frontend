@@ -27,11 +27,9 @@ class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
     
     // Set the status to loading
     emit(state.copyWith(status: TestingSetupStatus.loading));
-    await Future<void>.delayed(const Duration(seconds: 1));
-
     // Get the cards of the deck
-    List<CardOverview> cardList = await cardRepository.getCardOverviewsOfDeck(state.deckID);
-    List<String> availableTags = await getAvailableTags(state.deckID);
+    List<CardOverview> cardList = await cardRepository.getCardOverviewsOfDeck(event.deckId);
+    List<String> availableTags = await getAvailableTags(event.deckId);
     List<String> availableCardTypes = cardList.map((card) => card.cardTemplateName).toSet().toList();
     
     emit(state.copyWith(

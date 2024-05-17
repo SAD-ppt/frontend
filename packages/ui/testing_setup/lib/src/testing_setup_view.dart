@@ -7,7 +7,8 @@ import 'package:testing_setup/src/bloc/event.dart';
 import 'package:testing_setup/src/bloc/state.dart';
 
 class TestingSetupScreen extends StatelessWidget {
-  const TestingSetupScreen({super.key});
+  final String deckId;
+  const TestingSetupScreen({super.key, required this.deckId});
 
   @override 
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class TestingSetupScreen extends StatelessWidget {
         deckRepository: context.read<DeckRepo>(),
         cardRepository: context.read<CardRepo>(),
         noteRepository: context.read<NoteRepo>(),
-      )..add(InitialEvent()),
+      )..add(InitialEvent(deckId)),
       child: _TestingSetupView(),
     );
   }
@@ -26,62 +27,28 @@ class _TestingSetupView extends StatelessWidget {
 
   @override 
   Widget build(BuildContext context) {
-    
     return BlocBuilder<TestingSetupBloc, TestingSetupState>(
       builder: (context, state) {
-        return Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView(
-              children: [
-                _Config(
-                  availableTagsList: state.availableTags,
-                  availableCardTypeList: state.availableCardTypes,
-                  onSelectedTagsChanged: (tags) => context.read<TestingSetupBloc>().add(SelectedTagsChanged(tags)),
-                  onSelectedCardTypeChanged: (cardTypes) => context.read<TestingSetupBloc>().add(SelectedCardTypeChanged(cardTypes)),
-                ),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Total cards'),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        state.totalFilteredCard.toString(),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
+        if (state.status == TestingSetupStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-                const SizedBox(height: 16),
+        if(state.cardList.isEmpty) {
+          return _NoCardNotification();
+        }
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<TestingSetupBloc>().add(StartEvent());
-                      },
-                      child: const Text('Start'),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
+        return _TestingSetupBody(
+          onTagsChanged: (tags) => context.read<TestingSetupBloc>().add(SelectedTagsChanged(tags)),
+          onCardTypesChanged: (cardTypes) => context.read<TestingSetupBloc>().add(SelectedCardTypeChanged(cardTypes)),
+          
+          availableTagsList: state.availableTags,
+          availableCardTypeList: state.availableCardTypes,
+          
+          totalFilteredCard: state.totalFilteredCard,
+
+          onStart: () => context.read<TestingSetupBloc>().add(StartEvent()),
+          onCancel: () => Navigator.of(context).pop(),
         );
     });
   }
@@ -106,15 +73,13 @@ class _Config extends StatelessWidget {
     // Setup configuration
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     
-    var tagTitle = Text('Tag(s)', style: fieldHeaderTextStyle);
+    var tagTitle = Text('Tag(s):', style: fieldHeaderTextStyle);
     var tagDropdown = CustomDropdown<String>.multiSelectSearch(
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose tag(s)',
       items: availableTagsList,
       onListChanged: (items) => {
-        // sort tags alphabetically
         items.sort(),
-        // context.read<TestingSetupBloc>().add(SelectedTagsChanged(items)),
         onSelectedTagsChanged(items),
       },
       decoration: CustomDropdownDecoration(
@@ -126,23 +91,28 @@ class _Config extends StatelessWidget {
     );
 
     var cardTypeTitle = Text('Card types:', style: fieldHeaderTextStyle);
-    var cardTypeDropdown = CustomDropdown<String>.multiSelectSearch(
-      hideSelectedFieldWhenExpanded: true,
-      hintText: 'Choose card type(s)',
-      items: availableCardTypeList,
-      onListChanged: (items) => {
-        // sort tags alphabetically
-        items.sort(),
-        // context.read<TestingSetupBloc>().add(SelectedTagsChanged(items)),
-        onSelectedCardTypeChanged(items),
-      },
-      decoration: CustomDropdownDecoration(
-        closedBorder: Border.all(color: Colors.grey),
-        expandedBorder: Border.all(color: Colors.grey),
-        closedBorderRadius: BorderRadius.zero,
-        expandedBorderRadius: BorderRadius.zero,
-      )
-    );
+    
+    Widget cardTypeDropdown;
+    if( availableCardTypeList.isEmpty ) {
+      cardTypeDropdown = const Text('No card type available');
+    } else {
+      cardTypeDropdown = CustomDropdown<String>.multiSelectSearch(
+        hideSelectedFieldWhenExpanded: true,
+        hintText: 'Choose card type(s)',
+        items: availableCardTypeList,
+        onListChanged: (items) => {
+          items.sort(),
+          onSelectedCardTypeChanged(items),
+        },
+        decoration: CustomDropdownDecoration(
+          closedBorder: Border.all(color: Colors.grey),
+          expandedBorder: Border.all(color: Colors.grey),
+          closedBorderRadius: BorderRadius.zero,
+          expandedBorderRadius: BorderRadius.zero,
+        )
+      );
+    }
+    
     return Column(
       children: [
         const SizedBox(height: 20),
@@ -163,6 +133,118 @@ class _Config extends StatelessWidget {
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+}
+
+class _TestingSetupBody extends StatelessWidget {
+
+  final Function(List<String> tags) onTagsChanged;
+  final Function(List<String> cardTypes) onCardTypesChanged;
+
+  final Function() onStart;
+  final Function() onCancel;
+
+  final List<String> availableTagsList;
+  final List<String> availableCardTypeList;
+
+  final int totalFilteredCard;
+  
+  const _TestingSetupBody({
+    required this.onTagsChanged,
+    required this.onCardTypesChanged,
+
+    required this.onStart,
+    required this.onCancel,
+
+    required this.availableTagsList,
+    required this.availableCardTypeList,
+
+    required this.totalFilteredCard,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
+    return Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              children: [
+                _Config(
+                  availableTagsList: availableTagsList,
+                  availableCardTypeList: availableCardTypeList,
+                  onSelectedTagsChanged: (tags) => context.read<TestingSetupBloc>().add(SelectedTagsChanged(tags)),
+                  onSelectedCardTypeChanged: (cardTypes) => context.read<TestingSetupBloc>().add(SelectedCardTypeChanged(cardTypes)),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Total cards:', style: fieldHeaderTextStyle),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black, width: 2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        totalFilteredCard.toString(),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                // empty box for spacing the buttons to the bottom of the screen
+                const SizedBox(height: 16),
+                // Start and Cancel button at the bottom
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: onCancel,
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: onStart,
+                      child: const Text('Start'),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+  }
+}
+
+class _NoCardNotification extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar( 
+        title: const Text('Testing Setup'),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+        )
+      ),
+
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'No card available for this deck', 
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+              )
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
