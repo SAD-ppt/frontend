@@ -7,8 +7,18 @@ import 'package:testing_setup/src/bloc/event.dart';
 import 'package:testing_setup/src/bloc/state.dart';
 
 class TestingSetupScreen extends StatelessWidget {
+  
   final String deckId;
-  const TestingSetupScreen({super.key, required this.deckId});
+
+  final Function( String deckId ) onStart;
+  final Function() onCancel;
+
+  const TestingSetupScreen({
+    super.key, 
+    required this.deckId,
+    required this.onStart,
+    required this.onCancel,
+  });
 
   @override 
   Widget build(BuildContext context) {
@@ -18,12 +28,23 @@ class TestingSetupScreen extends StatelessWidget {
         cardRepository: context.read<CardRepo>(),
         noteRepository: context.read<NoteRepo>(),
       )..add(InitialEvent(deckId)),
-      child: _TestingSetupView(),
+      child: _TestingSetupView(
+        onStart: onStart,
+        onCancel: onCancel,
+      ),
     );
   }
 }
 
 class _TestingSetupView extends StatelessWidget {
+
+  final Function( String deliveredDeckId ) onStart;
+  final Function() onCancel;
+
+  const _TestingSetupView({
+    required this.onStart,
+    required this.onCancel,
+  });
 
   @override 
   Widget build(BuildContext context) {
@@ -47,8 +68,11 @@ class _TestingSetupView extends StatelessWidget {
           
           totalFilteredCard: state.totalFilteredCard,
 
-          onStart: () => context.read<TestingSetupBloc>().add(StartEvent()),
-          onCancel: () => Navigator.of(context).pop(),
+          onStart: () => {
+            context.read<TestingSetupBloc>().add(StartEvent()),
+            onStart(state.deliverDeckId),
+          },
+          onCancel: onCancel,
         );
     });
   }
