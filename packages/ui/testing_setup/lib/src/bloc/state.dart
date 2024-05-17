@@ -13,7 +13,6 @@ class TestingSetupState extends Equatable {
   final TestingSetupStatus status;
   final String deckID;
   
-  // final List<CardOverview> filteredCards;
   final List<String> selectedTags;
   final List<String> selectedCardType;
 
@@ -23,6 +22,10 @@ class TestingSetupState extends Equatable {
 
   final int totalFilteredCard;
 
+  final String deliverDeckId;
+
+  final Map<String, String> dictionary;
+
   const TestingSetupState({
     this.status = TestingSetupStatus.initial,
     this.deckID = '',
@@ -31,8 +34,9 @@ class TestingSetupState extends Equatable {
     this.selectedTags = const [],
     this.availableCardTypes = const [],
     this.selectedCardType = const [],
-    // this.filteredCards = const [],
     this.totalFilteredCard = 0,
+    this.deliverDeckId = '',
+    this.dictionary = const {},
   });
 
   @override
@@ -44,15 +48,15 @@ class TestingSetupState extends Equatable {
         selectedTags,
         availableCardTypes,
         selectedCardType,
-        // filteredCards,
         totalFilteredCard,
+        deliverDeckId,
+        dictionary,
       ];
   
   TestingSetupState copyWith({
     TestingSetupStatus? status,
     String? deckID,
     
-    // List<CardOverview>? filteredCards,
     List<String>? selectedTags,
     List<String>? selectedCardType,
 
@@ -61,6 +65,9 @@ class TestingSetupState extends Equatable {
     List<String>? availableCardTypes,
 
     int? totalFilteredCard,
+
+    String? deliverDeckId,
+    Map<String, String>? dictionary,
   }) {
     return TestingSetupState(
       status: status ?? this.status,
@@ -70,8 +77,9 @@ class TestingSetupState extends Equatable {
       selectedTags: selectedTags ?? this.selectedTags,
       availableCardTypes: availableCardTypes ?? this.availableCardTypes,
       selectedCardType: selectedCardType ?? this.selectedCardType,
-      // filteredCards: cardList ?? this.filteredCards,
       totalFilteredCard: totalFilteredCard ?? this.totalFilteredCard,
+      deliverDeckId: deliverDeckId ?? this.deliverDeckId,
+      dictionary: dictionary ?? this.dictionary,
     );
   }
 }

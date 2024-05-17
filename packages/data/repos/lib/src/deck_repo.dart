@@ -30,20 +30,23 @@ class DeckRepo {
   }
 
   /// Create a test deck with all notes and card templates.
-  Future<String> createTestDeck(String deckId,
-      {List<String>? tags, List<String>? cardTemplateIds}) async {
+  Future<String> createTestDeck(String deckId, List<String> tags, List<String> cardTemplateIds) async {
+    
     if (deckId == "test") {
       throw ArgumentError('Deck id "test" is reserved for testing.');
     }
+    
     await deckApi.createDeck("Test Deck", "", deckId: "test");
+    
     var cardTemplates = await cardTemplateApi.getCardTemplates(null);
-    if (cardTemplateIds != null) {
+    if (cardTemplateIds.isNotEmpty) {
       cardTemplates = cardTemplates
           .where(
               (template) => cardTemplateIds.contains(template.cardTemplate.id))
           .toList();
     }
-    var notes = await noteApi.getNotes();
+
+    var notes = tags.isEmpty ? await noteApi.getNotes() : await noteApi.getNotes(tags: tags);
     for (var note in notes) {
       var noteId = note.note.id;
       for (var template in cardTemplates) {
