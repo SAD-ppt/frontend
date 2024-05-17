@@ -8,6 +8,12 @@ class TestingSetupEvent extends Equatable {
 }
 
 class InitialEvent extends TestingSetupEvent {
+  final String deckId;
+
+  const InitialEvent(this.deckId);
+
+  @override
+  List<Object> get props => [deckId];
 }
 
 class SelectedTagsChanged extends TestingSetupEvent {
