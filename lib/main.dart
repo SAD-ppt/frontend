@@ -46,7 +46,8 @@ class MyApp extends StatelessWidget {
               create: (context) => DeckRepo(
                   noteApi: db.noteApiHandler,
                   cardTemplateApi: db.cardTemplateApiHandler,
-                  deckApi: db.deckApiHandler, cardApi: db.cardApiHandler)),
+                  deckApi: db.deckApiHandler,
+                  cardApi: db.cardApiHandler)),
           RepositoryProvider<NoteRepo>(
               create: (context) => NoteRepo(
                   cardApi: db.cardApiHandler,
@@ -66,7 +67,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.tealAccent),
             useMaterial3: true,
           ),
-          home: const TestingScreen(deckId: 'deck1'),
+          home: _UiRoot(),
         ));
   }
 }
@@ -75,8 +76,32 @@ class _UiRoot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MainScreen(
+      onReviewDeck: (deckId) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => LearningScreen(
+            onFinished: () => Navigator.of(context).pop(),
+            deckId: deckId,
+            onBack: () => Navigator.of(context).pop(),
+          ),
+        ),
+      ),
+      onTestDeck: (deckId) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => TestingSetupScreen(
+              onCancel: () => Navigator.of(context).pop(),
+              onStart: (deckId) => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => LearningScreen(
+                          onFinished: () => Navigator.of(context).pop(),
+                          deckId: deckId,
+                          onBack: () => Navigator.of(context).pop()),
+                    ),
+                  ),
+              deckId: deckId),
+        ),
+      ),
       onAddNewCard: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddNewCardPage()),
+        MaterialPageRoute(builder: (context) => const AddNewCardPage()),
       ),
       onDeckSelected: (deckId) => Navigator.of(context).push(
         MaterialPageRoute(

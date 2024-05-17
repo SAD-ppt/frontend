@@ -9,17 +9,17 @@ import 'package:testing_setup/src/bloc/state.dart';
 class TestingSetupScreen extends StatelessWidget {
   final String deckId;
 
-  final Function( String deckId ) onStart;
+  final Function(String deckId) onStart;
   final Function() onCancel;
 
   const TestingSetupScreen({
-    super.key, 
+    super.key,
     required this.deckId,
     required this.onStart,
     required this.onCancel,
   });
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TestingSetupBloc(
@@ -27,7 +27,6 @@ class TestingSetupScreen extends StatelessWidget {
         cardRepository: context.read<CardRepo>(),
         noteRepository: context.read<NoteRepo>(),
       )..add(InitialEvent(deckId)),
-
       child: _TestingSetupView(
         onStart: onStart,
         onCancel: onCancel,
@@ -37,8 +36,7 @@ class TestingSetupScreen extends StatelessWidget {
 }
 
 class _TestingSetupView extends StatelessWidget {
-
-  final Function( String deliveredDeckId ) onStart;
+  final Function(String deliveredDeckId) onStart;
   final Function() onCancel;
 
   const _TestingSetupView({
@@ -46,39 +44,38 @@ class _TestingSetupView extends StatelessWidget {
     required this.onCancel,
   });
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<TestingSetupBloc, TestingSetupState>(
-      builder: (context, state) {
-        if (state.status == TestingSetupStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        builder: (context, state) {
+      if (state.status == TestingSetupStatus.loading) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-        if(state.cardList.isEmpty) {
-          return _NoCardNotification();
-        }
+      if (state.cardList.isEmpty) {
+        return _NoCardNotification();
+      }
 
-        return _TestingSetupBody(
-          onTagsChanged: (tags) => context.read<TestingSetupBloc>().add(SelectedTagsChanged(tags)),
-          onCardTypesChanged: (cardTypes) => context.read<TestingSetupBloc>().add(SelectedCardTypeChanged(cardTypes)),
-          
-          availableTagsList: state.availableTags,
-          availableCardTypeList: state.availableCardTypes,
-          
-          totalFilteredCard: state.totalFilteredCard,
-
-          onStart: () => {
-            context.read<TestingSetupBloc>().add(StartEvent()),
-            onStart(state.deliverDeckId),
-          },
-          onCancel: onCancel,
-        );
+      return _TestingSetupBody(
+        onTagsChanged: (tags) =>
+            context.read<TestingSetupBloc>().add(SelectedTagsChanged(tags)),
+        onCardTypesChanged: (cardTypes) => context
+            .read<TestingSetupBloc>()
+            .add(SelectedCardTypeChanged(cardTypes)),
+        availableTagsList: state.availableTags,
+        availableCardTypeList: state.availableCardTypes,
+        totalFilteredCard: state.totalFilteredCard,
+        onStart: () => {
+          context.read<TestingSetupBloc>().add(StartEvent()),
+          onStart(state.deliverDeckId),
+        },
+        onCancel: onCancel,
+      );
     });
   }
 }
 
 class _Config extends StatelessWidget {
-
   final List<String> availableTagsList;
   final List<String> availableCardTypeList;
   final Function(List<String>) onSelectedTagsChanged;
@@ -95,46 +92,44 @@ class _Config extends StatelessWidget {
   Widget build(BuildContext context) {
     // Setup configuration
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
-    
+
     var tagTitle = Text('Tag(s):', style: fieldHeaderTextStyle);
     Widget tagDropdown = const SizedBox();
-    if( availableTagsList.isNotEmpty ) {
+    if (availableTagsList.isNotEmpty) {
       tagDropdown = CustomDropdown<String>.multiSelectSearch(
+          hideSelectedFieldWhenExpanded: true,
+          hintText: 'Choose tag(s)',
+          items: availableTagsList,
+          onListChanged: (items) => {
+                items.sort(),
+                onSelectedTagsChanged(items),
+              },
+          decoration: CustomDropdownDecoration(
+            closedBorder: Border.all(color: Colors.grey),
+            expandedBorder: Border.all(color: Colors.grey),
+            closedBorderRadius: BorderRadius.zero,
+            expandedBorderRadius: BorderRadius.zero,
+          ));
+    }
+
+    var cardTypeTitle = Text('Card types:', style: fieldHeaderTextStyle);
+    Widget cardTypeDropdown = CustomDropdown<String>.multiSelectSearch(
         hideSelectedFieldWhenExpanded: true,
-        hintText: 'Choose tag(s)',
-        items: availableTagsList,
+        hintText: 'Choose card type(s)',
+        items: availableCardTypeList,
         onListChanged: (items) => {
-          items.sort(),
-          onSelectedTagsChanged(items),
-        },
+              items.sort(),
+              onSelectedCardTypeChanged(items),
+            },
         decoration: CustomDropdownDecoration(
           closedBorder: Border.all(color: Colors.grey),
           expandedBorder: Border.all(color: Colors.grey),
           closedBorderRadius: BorderRadius.zero,
           expandedBorderRadius: BorderRadius.zero,
-        )
-      );
-    }
-
-    var cardTypeTitle = Text('Card types:', style: fieldHeaderTextStyle);
-    Widget cardTypeDropdown = CustomDropdown<String>.multiSelectSearch(
-      hideSelectedFieldWhenExpanded: true,
-      hintText: 'Choose card type(s)',
-      items: availableCardTypeList,
-      onListChanged: (items) => {
-        items.sort(),
-        onSelectedCardTypeChanged(items),
-      },
-      decoration: CustomDropdownDecoration(
-        closedBorder: Border.all(color: Colors.grey),
-        expandedBorder: Border.all(color: Colors.grey),
-        closedBorderRadius: BorderRadius.zero,
-        expandedBorderRadius: BorderRadius.zero,
-      )
-    );
+        ));
 
     List<Widget> childrenWidget = [];
-    if( availableTagsList.isNotEmpty ) {
+    if (availableTagsList.isNotEmpty) {
       childrenWidget.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -153,7 +148,7 @@ class _Config extends StatelessWidget {
       ],
     ));
     childrenWidget.add(const SizedBox(height: 16));
-    
+
     return Column(
       children: childrenWidget,
     );
@@ -161,7 +156,6 @@ class _Config extends StatelessWidget {
 }
 
 class _TestingSetupBody extends StatelessWidget {
-
   final Function(List<String> tags) onTagsChanged;
   final Function(List<String> cardTypes) onCardTypesChanged;
 
@@ -172,17 +166,14 @@ class _TestingSetupBody extends StatelessWidget {
   final List<String> availableCardTypeList;
 
   final int totalFilteredCard;
-  
+
   const _TestingSetupBody({
     required this.onTagsChanged,
     required this.onCardTypesChanged,
-
     required this.onStart,
     required this.onCancel,
-
     required this.availableTagsList,
     required this.availableCardTypeList,
-
     required this.totalFilteredCard,
   });
 
@@ -190,55 +181,59 @@ class _TestingSetupBody extends StatelessWidget {
   Widget build(BuildContext context) {
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     return Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView(
-              children: [
-                _Config(
-                  availableTagsList: availableTagsList,
-                  availableCardTypeList: availableCardTypeList,
-                  onSelectedTagsChanged: (tags) => context.read<TestingSetupBloc>().add(SelectedTagsChanged(tags)),
-                  onSelectedCardTypeChanged: (cardTypes) => context.read<TestingSetupBloc>().add(SelectedCardTypeChanged(cardTypes)),
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: [
+            _Config(
+              availableTagsList: availableTagsList,
+              availableCardTypeList: availableCardTypeList,
+              onSelectedTagsChanged: (tags) => context
+                  .read<TestingSetupBloc>()
+                  .add(SelectedTagsChanged(tags)),
+              onSelectedCardTypeChanged: (cardTypes) => context
+                  .read<TestingSetupBloc>()
+                  .add(SelectedCardTypeChanged(cardTypes)),
+            ),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Total cards:', style: fieldHeaderTextStyle),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        totalFilteredCard.toString(),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Total cards:', style: fieldHeaderTextStyle),
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    totalFilteredCard.toString(),
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
-                // empty box for spacing the buttons to the bottom of the screen
-                const SizedBox(height: 16),
-                // Start and Cancel button at the bottom
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                      onPressed: onCancel,
-                      child: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: onStart,
-                      child: const Text('Start'),
-                    ),
-                  ],
-                )
               ],
             ),
-          ),
-        );
+            // empty box for spacing the buttons to the bottom of the screen
+            const SizedBox(height: 16),
+            // Start and Cancel button at the bottom
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: onCancel,
+                  child: const Text('Cancel'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: onStart,
+                  child: const Text('Start'),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -246,25 +241,18 @@ class _NoCardNotification extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar( 
-        title: const Text('Testing Setup'),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-        )
-      ),
-
+      appBar: AppBar(
+          title: const Text('Testing Setup'),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+          )),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'No card available for this deck', 
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-              )
-            ),
+            Text('No card available for this deck',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
