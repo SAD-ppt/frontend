@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class LearningPanelFinish extends StatelessWidget {
+  final void Function() onFinished;
   const LearningPanelFinish({
+    required this.onFinished,
     super.key,
   });
 
@@ -21,6 +23,13 @@ class LearningPanelFinish extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: onFinished,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            child: const Text('Back to main screen', style: TextStyle(color: Colors.white),)
+          ),
         ],
       ),
     );

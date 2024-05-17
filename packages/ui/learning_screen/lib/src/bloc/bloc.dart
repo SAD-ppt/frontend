@@ -14,6 +14,7 @@ class LearningScreenBloc
     on<LoadCardEvent>(_onLoadCard);
     on<RevealCardEvent>(_onRevealCard);
     on<SubmitButtonsPressed>(_onSubmitButtonsPressed);
+    on<FinishEvent>(_onFinishEvent);
   }
 
   FutureOr<void> _onInitial(
@@ -120,5 +121,13 @@ class LearningScreenBloc
       status: LearningScreenStatus.success,
       cardInfo: cardInfoNext,
     ));
+  }
+
+  FutureOr<void> _onFinishEvent(
+    FinishEvent event,
+    Emitter<LearningScreenState> emit,
+  ) {
+    // get back to the previous screen
+    emit(state.copyWith(status: LearningScreenStatus.finish));
   }
 }
