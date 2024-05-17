@@ -23,6 +23,7 @@ class TestingSetupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TestingSetupBloc(
+        onStart: onStart,
         deckRepository: context.read<DeckRepo>(),
         cardRepository: context.read<CardRepo>(),
         noteRepository: context.read<NoteRepo>(),
@@ -67,7 +68,6 @@ class _TestingSetupView extends StatelessWidget {
         totalFilteredCard: state.totalFilteredCard,
         onStart: () => {
           context.read<TestingSetupBloc>().add(StartEvent()),
-          onStart(state.deliverDeckId),
         },
         onCancel: onCancel,
       );
