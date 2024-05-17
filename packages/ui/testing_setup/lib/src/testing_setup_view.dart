@@ -105,9 +105,9 @@ class _Config extends StatelessWidget {
                 onSelectedTagsChanged(items),
               },
           decoration: CustomDropdownDecoration(
-            closedBorder: Border.all(color: Colors.grey),
-            expandedBorder: Border.all(color: Colors.grey),
-            closedBorderRadius: BorderRadius.zero,
+            closedBorder: Border.all(color: Colors.black, width: 2),
+            expandedBorder: Border.all(color: Colors.black, width: 2),
+            closedBorderRadius: BorderRadius.circular(10),
             expandedBorderRadius: BorderRadius.zero,
           ));
     }
@@ -122,9 +122,9 @@ class _Config extends StatelessWidget {
               onSelectedCardTypeChanged(items),
             },
         decoration: CustomDropdownDecoration(
-          closedBorder: Border.all(color: Colors.grey),
-          expandedBorder: Border.all(color: Colors.grey),
-          closedBorderRadius: BorderRadius.zero,
+          closedBorder: Border.all(color: Colors.black, width: 2),
+          expandedBorder: Border.all(color: Colors.black, width: 2),
+          closedBorderRadius: BorderRadius.circular(10),
           expandedBorderRadius: BorderRadius.zero,
         ));
 
@@ -137,7 +137,7 @@ class _Config extends StatelessWidget {
           Flexible(flex: 4, child: tagDropdown),
         ],
       ));
-      childrenWidget.add(const SizedBox(height: 16));
+      childrenWidget.add(const SizedBox(height: 20));
     }
 
     childrenWidget.add(Row(
@@ -147,7 +147,7 @@ class _Config extends StatelessWidget {
         Flexible(flex: 4, child: cardTypeDropdown)
       ],
     ));
-    childrenWidget.add(const SizedBox(height: 16));
+    childrenWidget.add(const SizedBox(height: 20));
 
     return Column(
       children: childrenWidget,
@@ -181,41 +181,31 @@ class _TestingSetupBody extends StatelessWidget {
   Widget build(BuildContext context) {
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
+      // backgroundColor: Colors.white,
+      appBar: AppBar(
+        // backgroundColor: Colors.white,
+        title: const Text('Testing Setup'),
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _Config(
-              availableTagsList: availableTagsList,
-              availableCardTypeList: availableCardTypeList,
-              onSelectedTagsChanged: (tags) => context
-                  .read<TestingSetupBloc>()
-                  .add(SelectedTagsChanged(tags)),
-              onSelectedCardTypeChanged: (cardTypes) => context
-                  .read<TestingSetupBloc>()
-                  .add(SelectedCardTypeChanged(cardTypes)),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Total cards:', style: fieldHeaderTextStyle),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2),
-                    borderRadius: BorderRadius.circular(10),
+            Expanded(
+              child: ListView(
+                children: [
+                  _Config(
+                    availableTagsList: availableTagsList,
+                    availableCardTypeList: availableCardTypeList,
+                    onSelectedTagsChanged: onTagsChanged,
+                    onSelectedCardTypeChanged: onCardTypesChanged,
                   ),
-                  child: Text(
-                    totalFilteredCard.toString(),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  _TotalBlock(totalFilteredCard: totalFilteredCard, fieldHeaderTextStyle: fieldHeaderTextStyle),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
-            // empty box for spacing the buttons to the bottom of the screen
-            const SizedBox(height: 16),
-            // Start and Cancel button at the bottom
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -229,7 +219,7 @@ class _TestingSetupBody extends StatelessWidget {
                   child: const Text('Start'),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -242,6 +232,7 @@ class _NoCardNotification extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          // backgroundColor: Colors.white,
           title: const Text('Testing Setup'),
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
@@ -256,6 +247,44 @@ class _NoCardNotification extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TotalBlock extends StatelessWidget {
+  final int totalFilteredCard;
+  final TextStyle? fieldHeaderTextStyle;
+
+  const _TotalBlock({
+    required this.totalFilteredCard,
+    required this.fieldHeaderTextStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(flex: 2, child: Text('Total cards:', style: fieldHeaderTextStyle)),
+        Flexible(flex: 4, child: Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            width: double.infinity,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black, width: 2),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                totalFilteredCard.toString(),
+                style: fieldHeaderTextStyle,
+              ),
+            ),
+          ),
+        )),        
+      ],
     );
   }
 }
