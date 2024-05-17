@@ -9,8 +9,15 @@ import 'package:learning_screen/src/learning_panel_widget.dart';
 import 'package:repos/repos.dart';
 
 class LearningScreen extends StatelessWidget {
+  final void Function() onBack;
+  final void Function() onFinished;
   final String deckId;
-  const LearningScreen({super.key, required this.deckId});
+  const LearningScreen({
+    super.key,
+    required this.onFinished,
+    required this.deckId,
+    required this.onBack,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +25,14 @@ class LearningScreen extends StatelessWidget {
         create: (context) =>
             LearningScreenBloc(cardRepo: context.read<CardRepo>())
               ..add(InitialEvent(deckId: deckId)),
-        child: _LearningScreenView());
+        child: _LearningScreenView(onBack: onBack, onFinished: onFinished));
   }
 }
 
 class _LearningScreenView extends StatelessWidget {
+  final void Function() onBack;
+  final void Function() onFinished;
+  const _LearningScreenView({required this.onBack, required this.onFinished});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LearningScreenBloc, LearningScreenState>(
@@ -32,9 +42,7 @@ class _LearningScreenView extends StatelessWidget {
           // Back button and settings icon
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              // Navigator.of(context).pop();
-            },
+            onPressed: onBack,
           ),
           actions: const <Widget>[
             IconButton(
@@ -50,6 +58,7 @@ class _LearningScreenView extends StatelessWidget {
               LearningPanelFinish(
                 onFinished: () {
                   context.read<LearningScreenBloc>().add(const FinishEvent());
+                  onFinished();
                 },
               ),
               // call the function to delete temp deck
