@@ -185,6 +185,39 @@ class CardApiHandler implements CardApi {
       return Future.value(cards);
     });
   }
+  @override
+  Future<int> deleteCards({String? deckId, List<String>? tags}) async {
+    if (deckId == null && tags == null) {
+      return await _deleteCardsRaw();
+    } else if (deckId != null && tags == null) {
+      return await _deleteCardsByDeckId(deckId);
+    } else if (deckId == null && tags != null) {
+      return await _deleteCardsByTags(tags);
+    } else {
+      return await _deleteCardsByDeckIdAndTags(deckId!, tags!);
+    }
+  }
+
+  Future<int> _deleteCardsRaw() {
+    return db.delete('Card').then((value) => value);
+  }
+
+  Future<int> _deleteCardsByDeckId(String deckId) {
+    return db.delete('Card', where: 'DeckID = ?', whereArgs: [deckId])
+        .then((value) => value);
+  }
+
+  Future<int> _deleteCardsByTags(List<String> tags) {
+    return db.rawDelete(
+        'DELETE FROM Card WHERE NoteID IN (SELECT NoteID FROM NoteTag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?)',
+        [...tags, tags.length]).then((value) => value);
+  }
+
+  Future<int> _deleteCardsByDeckIdAndTags(String deckId, List<String> tags) {
+    return db.rawDelete(
+        'DELETE FROM Card WHERE DeckID = ? AND NoteID IN (SELECT NoteID FROM NoteTag WHERE Name IN (${tags.map((_) => '?').join(',')}) GROUP BY NoteID HAVING COUNT(*) >= ?)',
+        [deckId, ...tags, tags.length]).then((value) => value);
+  }
 
   @override
   Stream<List<CardDetail>> getCardsStream(
