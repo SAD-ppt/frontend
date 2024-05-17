@@ -48,11 +48,11 @@ Future<Database> initializeDB() async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Note(UniqueID TEXT PRIMARY KEY, NoteTemplateID TEXT, FOREIGN KEY(NoteTemplateID) REFERENCES NoteTemplate(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS NoteField(NoteID TEXT, OrderNumber INTEGER, RichTextData TEXT, PRIMARY KEY(NoteID, OrderNumber), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID), FOREIGN KEY(OrderNumber) REFERENCES NoteTemplateField(OrderNumber))');
+        'CREATE TABLE IF NOT EXISTS NoteField(NoteID TEXT, OrderNumber INTEGER, RichTextData TEXT, PRIMARY KEY(NoteID, OrderNumber), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS CardTemplate(UniqueID TEXT PRIMARY KEY, NoteTemplateID TEXT, Name TEXT, FOREIGN KEY(NoteTemplateID) REFERENCES NoteTemplate(UniqueID))');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS CardTemplateField(CardTemplateID TEXT, OrderNumber INTEGER, Side INTEGER, PRIMARY KEY(CardTemplateID, OrderNumber), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(OrderNumber) REFERENCES NoteTemplateField(OrderNumber))');
+        'CREATE TABLE IF NOT EXISTS CardTemplateField(CardTemplateID TEXT, OrderNumber INTEGER, Side INTEGER, PRIMARY KEY(CardTemplateID, OrderNumber), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID))');
     await db.execute(
         'CREATE TABLE IF NOT EXISTS Card(CardTemplateID TEXT, DeckID TEXT, NoteID TEXT, PRIMARY KEY(CardTemplateID, DeckID, NoteID), FOREIGN KEY(CardTemplateID) REFERENCES CardTemplate(UniqueID), FOREIGN KEY(DeckID) REFERENCES Deck(UniqueID), FOREIGN KEY(NoteID) REFERENCES Note(UniqueID))');
     await db.execute(
@@ -116,15 +116,15 @@ class SqliteDB {
       if (value.isEmpty) {
         db.execute("""
         INSERT INTO NoteTemplateField (NoteTemplateID, OrderNumber, Name) VALUES 
-          ('note_template1', 1, 'Field 1'),
-          ('note_template1', 2, 'Field 2'),
-          ('note_template1', 3, 'Field 3'),
-          ('note_template2', 1, 'Field 1'),
-          ('note_template2', 2, 'Field 2'),
-          ('note_template2', 3, 'Field 3'),
-          ('note_template3', 1, 'Field 1'),
-          ('note_template3', 2, 'Field 2'),
-          ('note_template3', 3, 'Field 3');""");
+          ('note_template1', 0, 'Field 1'),
+          ('note_template1', 1, 'Field 2'),
+          ('note_template1', 2, 'Field 3'),
+          ('note_template2', 0, 'Field 1'),
+          ('note_template2', 1, 'Field 2'),
+          ('note_template2', 2, 'Field 3'),
+          ('note_template3', 0, 'Field 1'),
+          ('note_template3', 1, 'Field 2'),
+          ('note_template3', 2, 'Field 3');""");
       }
     });
     await db.query('Note').then((value) {
@@ -164,15 +164,15 @@ class SqliteDB {
       if (value.isEmpty) {
         db.execute("""
         INSERT INTO CardTemplateField (CardTemplateID, OrderNumber, Side) VALUES 
-          ('card_template1', 1, 0),
-          ('card_template1', 2, 1),
-          ('card_template1', 3, 0),
-          ('card_template2', 1, 0),
-          ('card_template2', 2, 1),
-          ('card_template2', 3, 0),
-          ('card_template3', 1, 0),
-          ('card_template3', 2, 1),
-          ('card_template3', 3, 0);""");
+          ('card_template1', 0, 0),
+          ('card_template1', 1, 1),
+          ('card_template1', 2, 0),
+          ('card_template2', 0, 0),
+          ('card_template2', 1, 1),
+          ('card_template2', 2, 0),
+          ('card_template3', 0, 0),
+          ('card_template3', 1, 1),
+          ('card_template3', 2, 0);""");
       }
     });
     await db.query('Card').then((value) {
@@ -180,29 +180,19 @@ class SqliteDB {
         db.execute("""
         INSERT INTO Card (CardTemplateID, DeckID, NoteID) VALUES 
           ('card_template1', 'deck1', 'note1'),
+          ('card_template2', 'deck1', 'note2'),
+          ('card_template3', 'deck1', 'note3'),
           ('card_template2', 'deck2', 'note2'),
           ('card_template3', 'deck3', 'note3');""");
-      }
-    });
-    await db.query('NoteTag').then((value) {
-      if (value.isEmpty) {
-        db.execute("""
-        INSERT INTO NoteTag (Name, NoteID, Color) VALUES 
-          ('tag1', '', 'red'),
-          ('tag2', '', 'blue'),
-          ('tag3', '', 'green'),
-          ('tag1', 'note1', 'red'),
-          ('tag2', 'note2', 'blue'),
-          ('tag3', 'note3', 'green');""");
       }
     });
     await db.query('LearningResult').then((value) {
       if (value.isEmpty) {
         db.execute("""
         INSERT INTO LearningResult (DeckID, NoteID, CardTemplateID, Time, Result) VALUES 
-          ('deck1', 'note1', 'card_template1', '2022-01-01 00:00:00', 'Result 1'),
-          ('deck2', 'note2', 'card_template2', '2022-01-01 00:00:00', 'Result 2'),
-          ('deck3', 'note3', 'card_template3', '2022-01-01 00:00:00', 'Result 3');""");
+          ('deck1', 'note1', 'card_template1', '2022-01-01 00:00:00', 'Easy'),
+          ('deck2', 'note2', 'card_template2', '2022-01-01 00:00:00', 'Medium'),
+          ('deck3', 'note3', 'card_template3', '2022-01-01 00:00:00', 'Hard');""");
       }
     });
     await db.query('LearningStat').then((value) {

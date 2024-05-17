@@ -14,7 +14,15 @@ class AddCardTypesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Card Types'),
+        title:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          const Text('Add Card Types'),
+          IconButton(
+              onPressed: () {
+                context.read<AddNewTemplateBloc>().add(const Submit());
+              },
+              icon: const Icon(Icons.check))
+        ]),
         leading: BackButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -40,18 +48,22 @@ class _AddCardTypes extends StatelessWidget {
         return ListView(
           children: [
             for (var i = 0; i < state.cardTypes.length; i++)
-              _CardTypeForm(index: i),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: _CardTypeForm(index: i),
+              ),
             ElevatedButton(
+              style: ButtonStyle(
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
               onPressed: () {
                 context.read<AddNewTemplateBloc>().add(const AddNewCardType());
               },
-              child: const Text('Add Card Type'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                context.read<AddNewTemplateBloc>().add(const Submit());
-              },
-              child: const Text('Done'),
+              child: const Icon(Icons.add),
             ),
           ],
         );
@@ -69,7 +81,7 @@ class _CardTypeForm extends StatelessWidget {
         builder: (context, state) {
       return Card(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               CardTypeName(
