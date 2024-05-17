@@ -7,16 +7,21 @@ import 'package:card_browser/src/bloc/event.dart';
 import 'package:repos/repos.dart';
 
 class CardBrowserScreen extends StatelessWidget {
-  const CardBrowserScreen({super.key});
+  final void Function() onBack;
+  final String deckId;
+  const CardBrowserScreen(
+      {super.key, required this.onBack, required this.deckId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => CardBrowserBloc(
-        deckRepository: context.read<DeckRepo>(), 
-        cardRepository: context.read<CardRepo>()
-      )..add(InitialEvent()),
-      child: _CardBrowserScreenView(),
+          deckRepository: context.read<DeckRepo>(),
+          cardRepository: context.read<CardRepo>())
+        ..add(InitialEvent(deckId)),
+      child: _CardBrowserScreenView(
+        onBack: onBack,
+      ),
     );
   }
 }
@@ -26,6 +31,8 @@ const int totalCard = 27;
 const int memorizedCard = 3;
 
 class _CardBrowserScreenView extends StatelessWidget {
+  final void Function() onBack;
+  const _CardBrowserScreenView({required this.onBack});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CardBrowserBloc, CardBrowserState>(
@@ -39,23 +46,24 @@ class _CardBrowserScreenView extends StatelessWidget {
                 hintText: 'Search for cards',
                 // no shadow
                 elevation: const WidgetStatePropertyAll<double>(0),
-                onChanged: (value) => context.read<CardBrowserBloc>().add(SearchEvent(value)),
+                onChanged: (value) =>
+                    context.read<CardBrowserBloc>().add(SearchEvent(value)),
               ),
             ),
             leading: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: onBack,
               icon: const Icon(Icons.arrow_back),
             ),
           ),
-          body: 
-            BodyCardBrowser(
-              content: state.cardList, 
-              total: totalCard, 
-              memorized: memorizedCard,
-              onReview: () => context.read<CardBrowserBloc>().add(ReviewEvent()),
-              onTest: () => context.read<CardBrowserBloc>().add(TestEvent()),
-              onAddCard: () => context.read<CardBrowserBloc>().add(AddCardEvent()),
-            ),
+          body: BodyCardBrowser(
+            content: state.cardList,
+            total: totalCard,
+            memorized: memorizedCard,
+            onReview: () => context.read<CardBrowserBloc>().add(ReviewEvent()),
+            onTest: () => context.read<CardBrowserBloc>().add(TestEvent()),
+            onAddCard: () =>
+                context.read<CardBrowserBloc>().add(AddCardEvent()),
+          ),
         );
       },
     );
