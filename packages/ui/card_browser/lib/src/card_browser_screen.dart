@@ -25,8 +25,6 @@ class CardBrowserScreen extends StatelessWidget {
 const int totalCard = 27;
 const int memorizedCard = 3;
 
-const List<String> content = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-
 class _CardBrowserScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,14 +33,20 @@ class _CardBrowserScreenView extends StatelessWidget {
         return Scaffold(
           // Tools bar
           appBar: AppBar(
-            title: _ToolsBar(
-              onSearch: () => null,
-              onFilter: () => null,
-              onMore: () => null,
+            title: SizedBox(
+              height: 45,
+              child: SearchBar(
+                hintText: 'Search for cards',
+                // no shadow
+                elevation: const WidgetStatePropertyAll<double>(0),
+                onChanged: (value) => context.read<CardBrowserBloc>().add(SearchEvent(value)),
+              ),
             ),
-            leading: const BackButton(),
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+            ),
           ),
-
           body: 
             BodyCardBrowser(
               content: state.cardList, 
@@ -58,39 +62,36 @@ class _CardBrowserScreenView extends StatelessWidget {
   }
 }
 
-class _ToolsBar extends StatelessWidget {
-  
-  final Function() onSearch;
-  final Function() onFilter;
-  final Function() onMore;
-
-  const _ToolsBar({
-    required this.onSearch,
-    required this.onFilter,
-    required this.onMore,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        IconButton(
-          onPressed: onSearch,
-          icon: const Icon(Icons.search),
-          padding: const EdgeInsets.all(10.0),
-        ),
-        IconButton(
-          onPressed: onFilter,
-          icon: const Icon(Icons.filter_alt),
-          padding: const EdgeInsets.all(10.0),
-        ),
-        IconButton(
-          onPressed: onMore,
-          icon: const Icon(Icons.more_vert),
-          padding: const EdgeInsets.all(10.0),
-        ),
-      ],
-    );
-  }
-}
+// class _ToolsBar extends StatelessWidget { 
+//   final Function() onSearch;
+//   final Function() onFilter;
+//   final Function() onMore;
+//   const _ToolsBar({
+//     required this.onSearch,
+//     required this.onFilter,
+//     required this.onMore,
+//   });
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.end,
+//       children: [
+//         IconButton(
+//           onPressed: onSearch,
+//           icon: const Icon(Icons.search),
+//           padding: const EdgeInsets.all(10.0),
+//         ),
+//         IconButton(
+//           onPressed: onFilter,
+//           icon: const Icon(Icons.filter_alt),
+//           padding: const EdgeInsets.all(10.0),
+//         ),
+//         IconButton(
+//           onPressed: onMore,
+//           icon: const Icon(Icons.more_vert),
+//           padding: const EdgeInsets.all(10.0),
+//         ),
+//       ],
+//     );
+//   }
+// }

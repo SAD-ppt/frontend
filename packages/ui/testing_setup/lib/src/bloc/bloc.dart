@@ -30,31 +30,74 @@ class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
     await Future<void>.delayed(const Duration(seconds: 1));
 
     // Get the cards of the deck
-    List<Card> cardList = await cardRepository.getCardsOfDeck(state.deckID);
+    List<CardOverview> cardList = await cardRepository.getCardOverviewsOfDeck(state.deckID);
     List<String> availableTags = await getAvailableTags(state.deckID);
-    List<CardTemplate> availableCardTypes = const [];                         // Still update
-
+    List<String> availableCardTypes = cardList.map((card) => card.cardTemplateName).toSet().toList();
+    
     emit(state.copyWith(
       status: TestingSetupStatus.loaded,
-      filteredCards: cardList,
+      // filteredCards: cardList,
       cardList: cardList,
       availableTags: availableTags,
       availableCardTypes: availableCardTypes,
+      totalFilteredCard: cardList.length,
     ));
   }
 
   void _onSelectedTagsChanged(
     SelectedTagsChanged event, Emitter<TestingSetupState> emit) {
-    emit(state.copyWith(selectedTags: event.selectedTags));
+  
+    emit(state.copyWith(status: TestingSetupStatus.loading));
+    
+    int totalFilteredCard = 0;
+    
+    for (CardOverview card in state.cardList) {
+      if (event.selectedTags.every((tag) => card.tags.contains(tag)) && 
+          state.selectedCardType.contains(card.cardTemplateName)) {
+        totalFilteredCard++;
+      }
+    }
+
+    emit(state.copyWith(
+      selectedTags: event.selectedTags,
+      totalFilteredCard: totalFilteredCard,
+      status: TestingSetupStatus.loaded,
+    ));
   }
 
   void _onSelectedCardTypeChanged(
     SelectedCardTypeChanged event, Emitter<TestingSetupState> emit) {
-    emit(state.copyWith(selectedCardType: event.selectedCardType));
+    
+    emit(state.copyWith(status: TestingSetupStatus.loading));
+
+    int totalFilteredCard = 0;
+
+    for (CardOverview card in state.cardList) {
+      if (state.selectedTags.every((tag) => card.tags.contains(tag)) && 
+          event.selectedCardType.contains(card.cardTemplateName)) {
+        totalFilteredCard++;
+      }
+    }
+
+    emit(state.copyWith(
+      selectedCardType: event.selectedCardType,
+      totalFilteredCard: totalFilteredCard,
+      status: TestingSetupStatus.loaded,
+    ));
   }
 
   void _onStart(StartEvent event, Emitter<TestingSetupState> emit) {
-    // Start testing
+    
+    // Filter the cards
+    List<CardOverview> filteredCards = [];
+    for (CardOverview card in state.cardList) {
+      if (state.selectedTags.every((tag) => card.tags.contains(tag)) && 
+          state.selectedCardType.contains(card.cardTemplateName)) {
+        filteredCards.add(card);
+      }
+    }
+
+    // Navigate to the testing screen
   }
 
   // Helper functions

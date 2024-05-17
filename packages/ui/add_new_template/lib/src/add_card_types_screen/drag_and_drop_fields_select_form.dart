@@ -24,6 +24,7 @@ class DragAndDropFieldsSelectForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Available Fields'),
         _AvailableFieldsList(availableFields: availableFields),
@@ -65,8 +66,11 @@ class _AvailableFieldsList extends StatelessWidget {
                 label: Text(field),
               ),
             ),
-            child: Chip(
-              label: Text(field),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Chip(
+                label: Text(field),
+              ),
             ),
           ),
       ],
@@ -89,20 +93,21 @@ class _ChosenFieldsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return DragTarget<String>(
       builder: (context, candidateData, rejectedData) {
-        final border = candidateData.isEmpty
-            ? Border.all(
-                color: Theme.of(context).colorScheme.secondaryContainer)
-            : Border.all(
-                color: Theme.of(context).colorScheme.secondary, width: 4);
+        final color = candidateData.isEmpty
+            ? Theme.of(context).colorScheme.secondaryContainer
+            : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5);
         return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           constraints: const BoxConstraints(
             minHeight: 50,
             minWidth: double.infinity,
           ),
           decoration: BoxDecoration(
-            border: border,
+            color: color,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Wrap(
+            spacing: 8,
             children: [
               for (var field in fields)
                 Draggable<String>(
@@ -114,7 +119,7 @@ class _ChosenFieldsList extends StatelessWidget {
                   ),
                   child: Chip(
                     label: Text(field),
-                    deleteIcon: const Icon(Icons.delete),
+                    deleteIcon: const Icon(Icons.cancel),
                     onDeleted: () => onRemoved(field),
                   ),
                 ),

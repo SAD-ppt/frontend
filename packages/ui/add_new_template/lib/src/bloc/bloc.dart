@@ -30,7 +30,17 @@ class AddNewTemplateBloc
 
   FutureOr<void> _onFieldsChanged(
       FieldsChanged event, Emitter<AddNewTemplateState> emit) {
-    emit(state.copyWith(fields: event.fields));
+    final cardTypes = state.cardTypes.map((cardType) {
+      final frontFields = cardType.frontFields.where((field) {
+        return event.fields.contains(field);
+      }).toList();
+      final backFields = cardType.backFields.where((field) {
+        return event.fields.contains(field);
+      }).toList();
+      return cardType.copyWith(
+          frontFields: frontFields, backFields: backFields);
+    }).toList();
+    emit(state.copyWith(fields: event.fields, cardTypes: cardTypes));
   }
 
   FutureOr<void> _onAddNewCardType(
