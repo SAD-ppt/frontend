@@ -115,7 +115,11 @@ class _UiRoot extends StatelessWidget {
         ),
       ),
       onAddNewTemplate: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddNewTemplateScreen()),
+        MaterialPageRoute(
+            builder: (context) => AddNewTemplateScreen(
+                  onBack: () => Navigator.of(context).pop(),
+                  onDone: () => Navigator.of(context).pop(),
+                )),
       ),
     );
   }
