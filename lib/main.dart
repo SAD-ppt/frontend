@@ -105,7 +105,10 @@ class _UiRoot extends StatelessWidget {
       ),
       onDeckSelected: (deckId) => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => CardBrowserScreen(),
+          builder: (context) => CardBrowserScreen(
+            deckId: deckId,
+            onBack: () => Navigator.of(context).pop(),
+          ),
         ),
       ),
       onAddNewTemplate: () => Navigator.of(context).push(
