@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:repos/repos.dart' as repos;
 import 'package:card_browser/src/component/status_bar.dart';
 
-
 const double cardSize = 150;
 
 class BodyCardBrowser extends StatelessWidget {
-  
   final List<repos.Card> content;
 
   final int total;
@@ -19,52 +17,48 @@ class BodyCardBrowser extends StatelessWidget {
   final Function() onAddCard;
 
   const BodyCardBrowser({
-    super.key, 
-    
+    super.key,
     required this.content,
-
     required this.total,
     required this.memorized,
-
     required this.onReview,
     required this.onTest,
     required this.onAddCard,
   });
-  
+
   @override
   Widget build(BuildContext context) {
-
-  double screenWidth = MediaQuery.of(context).size.width;
-  int maxCard = ((screenWidth + 20) / (cardSize + 40)).floor();
+    double screenWidth = MediaQuery.of(context).size.width;
+    int maxCard = ((screenWidth + 20) / (cardSize + 40)).floor();
 
     return Column(
-    children: [
-      StatusBar(allCard: total, memorized: memorized),
-      // const Divider(),
-      Expanded(
-        child: ListView(
-          shrinkWrap: true,
-          children: createScrollView(content, maxCard),
+      children: [
+        StatusBar(allCard: total, memorized: memorized),
+        // const Divider(),
+        Expanded(
+          child: ListView(
+            shrinkWrap: true,
+            children: createScrollView(content, maxCard),
+          ),
         ),
-      ),
-      // const Divider(),
-      _ReviewBar(
-        onReview: onReview,
-        onTest: onTest,
-        onAddCard: onAddCard,
-      ),
-    ],
+        // const Divider(),
+        _ReviewBar(
+          onReview: onReview,
+          onTest: onTest,
+          onAddCard: onAddCard,
+        ),
+      ],
     );
   }
 }
 
 List<Widget> createScrollView(List<repos.Card> content, int maxCard) {
   List<_CardRow> result = [];
-  for( int i = 0; i < content.length; i += maxCard ) {
+  for (int i = 0; i < content.length; i += maxCard) {
     List<_CardWidget> row = [];
-    for( int j = i; j < min( content.length, i + maxCard); ++j ) {
+    for (int j = i; j < min(content.length, i + maxCard); ++j) {
       row.add(_CardWidget(
-        name: content[j].front[0].$2, 
+        name: content[j].front[0].$2,
         definition: content[j].back[0].$2,
       ));
     }
@@ -74,22 +68,19 @@ List<Widget> createScrollView(List<repos.Card> content, int maxCard) {
 }
 
 class _CardWidget extends StatelessWidget {
-  
   final String name;
   final String definition;
 
   const _CardWidget({
-    required this.name, 
+    required this.name,
     required this.definition,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      
       width: cardSize,
       height: cardSize,
-
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.black,
@@ -97,19 +88,17 @@ class _CardWidget extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(8.0),
       ),
-
       padding: const EdgeInsets.all(8.0),
       margin: const EdgeInsets.all(20.0),
-
       child: Stack(
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Name of card
-              Text( name, style: const TextStyle( fontWeight: FontWeight.bold ) ),
+              Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4.0),
-              
+
               // Definition of card
               Expanded(
                 child: SingleChildScrollView(
@@ -125,8 +114,10 @@ class _CardWidget extends StatelessWidget {
           ),
           // Specially for icon button
           Positioned(
-            bottom: 0.0, right: 0.0,
-            child: IconButton( onPressed: () {}, icon: const Icon(Icons.more_vert) ),
+            bottom: 0.0,
+            right: 0.0,
+            child:
+                IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
           ),
         ],
       ),
@@ -154,8 +145,7 @@ class _CardRow extends StatelessWidget {
         for (int i = 0; i < maxCard - cards.length; i++)
           const SizedBox(width: cardSize + 20),
       ];
-    } 
-    else {
+    } else {
       rowChildren = cards;
     }
 
@@ -167,7 +157,6 @@ class _CardRow extends StatelessWidget {
 }
 
 class _ReviewBar extends StatelessWidget {
-
   final Function() onReview;
   final Function() onTest;
   final Function() onAddCard;
@@ -184,18 +173,14 @@ class _ReviewBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _ReviewBarItem(
-            content: 'Review', 
+          Expanded(
+              child: _ReviewBarItem(
+            content: 'Review',
             onClicked: onReview,
-          ), 
-          _ReviewBarItem(
-            content: 'Test', 
-            onClicked: onTest
-          ),
-          _ReviewBarItem(
-            content: 'Add card', 
-            onClicked: onAddCard
-          ), 
+          )),
+          Expanded(child: _ReviewBarItem(content: 'Test', onClicked: onTest)),
+          Expanded(
+              child: _ReviewBarItem(content: 'Add card', onClicked: onAddCard)),
         ],
       ),
     );
@@ -203,7 +188,6 @@ class _ReviewBar extends StatelessWidget {
 }
 
 class _ReviewBarItem extends StatelessWidget {
-  
   final String content;
   final VoidCallback onClicked;
 
@@ -214,18 +198,21 @@ class _ReviewBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onClicked,
-      child: Container(
-        width: 200,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.black),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
         ),
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.all(10),
-        child: Center(child: Text(content)),
+        onPressed: onClicked,
+        child: Text(
+          content,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
 }
+
