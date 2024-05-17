@@ -57,6 +57,9 @@ dependencies:
   testing_setup:
     path: 'packages/ui/testing_setup'
 
+  testing_screen:
+    path: 'packages/ui/testing_screen'
+
   repos:
     path: 'packages/data/repos'
   
