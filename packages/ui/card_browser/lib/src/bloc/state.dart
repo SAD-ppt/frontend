@@ -10,13 +10,13 @@ enum CardBrowserStatus {
 
 class CardBrowserState extends Equatable {
   final CardBrowserStatus status;
-  final String deckID;
+  final String? deckID;
   final List<Card> cardList;
   final List<Card> selectedCards;
 
   const CardBrowserState({
     this.status = CardBrowserStatus.initial,
-    this.deckID = '',
+    this.deckID,
     this.cardList = const [],
     this.selectedCards = const [],
   });
@@ -38,3 +38,4 @@ class CardBrowserState extends Equatable {
     );
   }
 }
+

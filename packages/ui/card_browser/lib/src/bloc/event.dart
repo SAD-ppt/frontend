@@ -8,16 +8,19 @@ class CardBrowserEvent extends Equatable {
 }
 
 class InitialEvent extends CardBrowserEvent {
+  final String deckId;
+
+  const InitialEvent(this.deckId);
+
+  @override
+  List<Object> get props => [deckId];
 }
 
-class ReviewEvent extends CardBrowserEvent {
-}
+class ReviewEvent extends CardBrowserEvent {}
 
-class TestEvent extends CardBrowserEvent {
-}
+class TestEvent extends CardBrowserEvent {}
 
-class AddCardEvent extends CardBrowserEvent {
-}
+class AddCardEvent extends CardBrowserEvent {}
 
 class SearchEvent extends CardBrowserEvent {
   final String keyword;
