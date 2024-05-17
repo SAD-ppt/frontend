@@ -24,20 +24,22 @@ class DeckRepo {
 
   /// Should be called after the user has finished learning (review or test).
   Future<void> cleanDeckAfterLearningSession(String deckId) async {
+    print("DECK ID" + deckId);
     if (deckId == "test") {
       await cardApi.deleteCards(deckId: deckId);
+      await deckApi.deleteDeck(deckId);
     }
   }
 
   /// Create a test deck with all notes and card templates.
-  Future<String> createTestDeck(String deckId, List<String> tags, List<String> cardTemplateIds) async {
-    
+  Future<String> createTestDeck(
+      String deckId, List<String> tags, List<String> cardTemplateIds) async {
     if (deckId == "test") {
       throw ArgumentError('Deck id "test" is reserved for testing.');
     }
-    
+
     await deckApi.createDeck("Test Deck", "", deckId: "test");
-    
+
     var cardTemplates = await cardTemplateApi.getCardTemplates(null);
     if (cardTemplateIds.isNotEmpty) {
       cardTemplates = cardTemplates
@@ -46,7 +48,9 @@ class DeckRepo {
           .toList();
     }
 
-    var notes = tags.isEmpty ? await noteApi.getNotes() : await noteApi.getNotes(tags: tags);
+    var notes = tags.isEmpty
+        ? await noteApi.getNotes()
+        : await noteApi.getNotes(tags: tags);
     for (var note in notes) {
       var noteId = note.note.id;
       for (var template in cardTemplates) {
@@ -59,8 +63,10 @@ class DeckRepo {
           cardTemplateId: template.cardTemplate.id,
         );
         await cardApi.createCard(card);
+        print("CARD" + card.toString());
       }
     }
+    print("NOTE" + notes.toString());
     return "test";
   }
 
