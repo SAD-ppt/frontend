@@ -10,11 +10,15 @@ class MainScreen extends StatelessWidget {
   final void Function() onAddNewCard;
   final void Function() onAddNewTemplate;
   final void Function(String deckId) onDeckSelected;
+  final void Function(String deckId) onReviewDeck;
+  final void Function(String deckId) onTestDeck;
   const MainScreen(
       {super.key,
       required this.onAddNewCard,
       required this.onAddNewTemplate,
-      required this.onDeckSelected});
+      required this.onDeckSelected,
+      required this.onReviewDeck,
+      required this.onTestDeck});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +26,8 @@ class MainScreen extends StatelessWidget {
       create: (context) => MainScreenBloc(deckRepo: context.read<DeckRepo>())
         ..add(const MainScreenInitial()),
       child: _MainScreenView(
+        onReviewDeck: onReviewDeck,
+        onTestDeck: onTestDeck,
         onDeckSelected: onDeckSelected,
         onAddNewCard: onAddNewCard,
         onAddNewTemplate: onAddNewTemplate,
@@ -34,10 +40,15 @@ class _MainScreenView extends StatelessWidget {
   final void Function() onAddNewCard;
   final void Function() onAddNewTemplate;
   final void Function(String deckId) onDeckSelected;
+  final void Function(String deckId) onReviewDeck;
+  final void Function(String deckId) onTestDeck;
   const _MainScreenView(
       {required this.onAddNewCard,
       required this.onAddNewTemplate,
-      required this.onDeckSelected});
+      required this.onDeckSelected,
+      required this.onReviewDeck,
+      required this.onTestDeck});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainScreenBloc, MainScreenState>(
@@ -64,6 +75,8 @@ class _MainScreenView extends StatelessWidget {
             children: state.filteredDecks
                 .map(
                   (deck) => DeckItem(
+                    onReviewDeck: () => onReviewDeck(deck.id),
+                    onTestDeck: () => onTestDeck(deck.id),
                     deck: deck.name,
                     description: deck.deckDescription,
                     onTap: () => onDeckSelected(deck.id),
@@ -149,4 +162,3 @@ class _MainScreenView extends StatelessWidget {
     );
   }
 }
-

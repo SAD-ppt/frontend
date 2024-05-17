@@ -8,11 +8,15 @@ class DeckItem extends StatelessWidget {
     required this.deck,
     required this.description,
     required this.onTap,
+    required this.onReviewDeck,
+    required this.onTestDeck,
   }) : super(key: key);
 
   final String deck;
   final String description;
   final VoidCallback onTap;
+  final VoidCallback onReviewDeck;
+  final VoidCallback onTestDeck;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +35,11 @@ class DeckItem extends StatelessWidget {
               alignment: MainAxisAlignment.start,
               children: [
                 TextButton(
-                  onPressed: () => null,
+                  onPressed: onReviewDeck,
                   child: const Text('Review'),
                 ),
                 TextButton(
-                  onPressed: () => null,
+                  onPressed: onTestDeck,
                   child: const Text('Test'),
                 ),
               ],
