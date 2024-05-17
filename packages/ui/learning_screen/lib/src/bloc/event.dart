@@ -24,3 +24,7 @@ final class SubmitButtonsPressed extends LearningScreenEvent {
   final String difficulty;
   const SubmitButtonsPressed({required this.difficulty});
 }
+
+final class FinishEvent extends LearningScreenEvent {
+  const FinishEvent();
+}

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_screen/src/bloc/bloc.dart';
 import 'package:learning_screen/src/bloc/event.dart';
 import 'package:learning_screen/src/bloc/state.dart';
+import 'package:learning_screen/src/learning_panel_finish.dart';
 import 'package:learning_screen/src/learning_panel_loading.dart';
 import 'package:learning_screen/src/learning_panel_widget.dart';
 import 'package:repos/repos.dart';
@@ -14,7 +15,9 @@ class LearningScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => LearningScreenBloc(cardRepo: context.read<CardRepo>())..add(InitialEvent(deckId: deckId)),
+        create: (context) =>
+            LearningScreenBloc(cardRepo: context.read<CardRepo>())
+              ..add(InitialEvent(deckId: deckId)),
         child: _LearningScreenView());
   }
 }
@@ -43,10 +46,19 @@ class _LearningScreenView extends StatelessWidget {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (state.status == LearningScreenStatus.finish) ...[
+              LearningPanelFinish(
+                onFinished: () {
+                  context.read<LearningScreenBloc>().add(const FinishEvent());
+                },
+              ),
+              // call the function to delete temp deck
+            ],
             if (state.status == LearningScreenStatus.loading) ...[
               const LearningPanelLoading(),
             ],
-            if (state.status == LearningScreenStatus.success && state.side == LearningCardSide.front) ...[
+            if (state.status == LearningScreenStatus.success &&
+                state.side == LearningCardSide.front) ...[
               Expanded(
                 child: LearningPanelWidget(
                     cardInfo: state.cardInfo ?? const CardInfo.empty()),
@@ -69,7 +81,8 @@ class _LearningScreenView extends StatelessWidget {
                 ),
               )
             ],
-            if (state.status == LearningScreenStatus.success && state.side == LearningCardSide.back) ...[
+            if (state.status == LearningScreenStatus.success &&
+                state.side == LearningCardSide.back) ...[
               Expanded(
                   child: LearningPanelWidget(
                       cardInfo: state.cardInfo ?? const CardInfo.empty())),
@@ -82,8 +95,9 @@ class _LearningScreenView extends StatelessWidget {
                     ),
                     onPressed: () {
                       // emit the LearningScreenSubmitButtonPressed event
-                      context.read<LearningScreenBloc>().add(
-                          const SubmitButtonsPressed(difficulty: 'easy'));
+                      context
+                          .read<LearningScreenBloc>()
+                          .add(const SubmitButtonsPressed(difficulty: 'easy'));
                     },
                     child: const Text(
                       'Easy',
@@ -110,8 +124,9 @@ class _LearningScreenView extends StatelessWidget {
                     ),
                     onPressed: () {
                       // emit the LearningScreenSubmitButtonPressed event
-                      context.read<LearningScreenBloc>().add(
-                          const SubmitButtonsPressed(difficulty: 'hard'));
+                      context
+                          .read<LearningScreenBloc>()
+                          .add(const SubmitButtonsPressed(difficulty: 'hard'));
                     },
                     child: const Text(
                       'Hard',

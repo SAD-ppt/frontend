@@ -63,9 +63,22 @@ void main() async {
     });
     // delete deck
     await sqlDB.deckApiHandler.deleteDeck(deckCreated.id);
+    // create deck with id 'test'
+    deck = const Deck(
+      id: 'test',
+      name: 'Test Deck',
+      description: 'Test Deck Description',
+    );
+    deckCreated = await sqlDB.deckApiHandler.createDeck(deck.name, deck.description, deckId: 'test');
+    // get deck
+    await sqlDB.deckApiHandler.getDeck(deckCreated.id).then((value) {
+      expect(value.id, deckCreated.id);
+      expect(value.name, deck.name);
+      expect(value.description, deck.description);
+    });
     // get all decks
     var decks = await sqlDB.deckApiHandler.getDecks();
-    expect(decks.length, 3);
+    expect(decks.length, 4);
     await sqlDB.close();
     await deleteDBFile(filename);
   });
@@ -350,6 +363,18 @@ void main() async {
     cards =
         await sqlDB.cardApiHandler.getCards(deckId: 'deck1', tags: ['Tag2']);
     expect(cards.length, 2);
+    // delete card in deck1 and have tag Tag2
+    int delNum = await sqlDB.cardApiHandler.deleteCards(deckId: 'deck1', tags: ['Tag2']);
+    expect(delNum, 2);
+    // delete card in deck1
+    delNum = await sqlDB.cardApiHandler.deleteCards(deckId: 'deck1');
+    expect(delNum, 1);
+    // delete card have Tag2
+    delNum = await sqlDB.cardApiHandler.deleteCards(tags: ['Tag2']);
+    expect(delNum, 1);
+    // delete all cards
+    delNum = await sqlDB.cardApiHandler.deleteCards();
+    expect(delNum, 1);
     await sqlDB.close();
     await deleteDBFile(filename);
   });

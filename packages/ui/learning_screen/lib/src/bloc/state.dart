@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:learning_screen/src/learning_panel_widget.dart';
 
-enum LearningScreenStatus { initial, loading, success, error }
+enum LearningScreenStatus { initial, loading, success, finish, error }
 
 enum LearningCardSide { front, back }
 

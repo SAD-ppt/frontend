@@ -16,12 +16,14 @@ class DeckApiHandler implements DeckApi {
   final Database db;
   const DeckApiHandler({required this.db});
   @override
-  Future<Deck> createDeck(String name, String description) async {
-    Deck deck =
-        Deck(id: const Uuid().v4(), name: name, description: description);
-    await db.insert('Deck', deck.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    return deck;
+  Future<Deck> createDeck(String name, String description, {String? deckId}) async {
+    deckId ??= const Uuid().v4();
+    await db.insert('Deck', {
+      'UniqueID': deckId,
+      'Name': name,
+      'Description': description,
+    });
+    return Deck(id: deckId, name: name, description: description);
   }
 
   @override
