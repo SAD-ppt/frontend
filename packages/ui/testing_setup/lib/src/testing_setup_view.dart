@@ -7,7 +7,8 @@ import 'package:testing_setup/src/bloc/event.dart';
 import 'package:testing_setup/src/bloc/state.dart';
 
 class TestingSetupScreen extends StatelessWidget {
-  const TestingSetupScreen({super.key});
+  final String deckId;
+  const TestingSetupScreen({super.key, required this.deckId});
 
   @override 
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class TestingSetupScreen extends StatelessWidget {
         deckRepository: context.read<DeckRepo>(),
         cardRepository: context.read<CardRepo>(),
         noteRepository: context.read<NoteRepo>(),
-      )..add(InitialEvent()),
+      )..add(InitialEvent(deckId)),
       child: _TestingSetupView(),
     );
   }
@@ -72,7 +73,7 @@ class _Config extends StatelessWidget {
     // Setup configuration
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     
-    var tagTitle = Text('Tag(s)', style: fieldHeaderTextStyle);
+    var tagTitle = Text('Tag(s):', style: fieldHeaderTextStyle);
     var tagDropdown = CustomDropdown<String>.multiSelectSearch(
       hideSelectedFieldWhenExpanded: true,
       hintText: 'Choose tag(s)',
@@ -164,6 +165,7 @@ class _TestingSetupBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     return Scaffold(
           body: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -179,7 +181,7 @@ class _TestingSetupBody extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total cards'),
+                    Text('Total cards:', style: fieldHeaderTextStyle),
                     Container(
                       padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
@@ -193,9 +195,9 @@ class _TestingSetupBody extends StatelessWidget {
                     ),
                   ],
                 ),
-
+                // empty box for spacing the buttons to the bottom of the screen
                 const SizedBox(height: 16),
-
+                // Start and Cancel button at the bottom
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
