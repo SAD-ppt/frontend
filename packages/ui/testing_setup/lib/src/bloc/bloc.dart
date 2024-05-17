@@ -51,7 +51,7 @@ class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
     
     for (CardOverview card in state.cardList) {
       if (event.selectedTags.every((tag) => card.tags.contains(tag)) && 
-          state.selectedCardType.contains(card.cardTemplateName)) {
+          (state.selectedCardType.isEmpty || state.selectedCardType.contains(card.cardTemplateName))) {
         totalFilteredCard++;
       }
     }
@@ -72,7 +72,7 @@ class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
 
     for (CardOverview card in state.cardList) {
       if (state.selectedTags.every((tag) => card.tags.contains(tag)) && 
-          event.selectedCardType.contains(card.cardTemplateName)) {
+          (event.selectedCardType.isEmpty || event.selectedCardType.contains(card.cardTemplateName))) {
         totalFilteredCard++;
       }
     }
@@ -87,13 +87,6 @@ class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
   void _onStart(StartEvent event, Emitter<TestingSetupState> emit) {
     
     // Filter the cards
-    List<CardOverview> filteredCards = [];
-    for (CardOverview card in state.cardList) {
-      if (state.selectedTags.every((tag) => card.tags.contains(tag)) && 
-          state.selectedCardType.contains(card.cardTemplateName)) {
-        filteredCards.add(card);
-      }
-    }
 
     // Navigate to the testing screen
   }
