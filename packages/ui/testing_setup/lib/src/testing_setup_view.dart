@@ -259,4 +259,3 @@ class _NoCardNotification extends StatelessWidget {
     );
   }
 }
-
