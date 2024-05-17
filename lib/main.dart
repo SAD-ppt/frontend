@@ -89,14 +89,11 @@ class _UiRoot extends StatelessWidget {
         MaterialPageRoute(
           builder: (context) => TestingSetupScreen(
               onCancel: () => Navigator.of(context).pop(),
-              onStart: (deckId) => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => LearningScreen(
-                          onFinished: () => Navigator.of(context).pop(),
-                          deckId: deckId,
-                          onBack: () => Navigator.of(context).pop()),
+              onStart: (deckId) => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => TestingScreen(
+                      deckId: deckId,
                     ),
-                  ),
+                  )),
               deckId: deckId),
         ),
       ),
