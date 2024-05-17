@@ -8,8 +8,9 @@ import 'package:testing_screen/src/testing_panel_widget.dart';
 
 class TestingScreenBloc extends Bloc<TestingScreenEvent, TestingScreenState> {
   final CardRepo cardRepo;
+  final DeckRepo deckRepo;
 
-  TestingScreenBloc({required this.cardRepo})
+  TestingScreenBloc({required this.cardRepo, required this.deckRepo})
       : super(const TestingScreenState.initial()) {
     on<InitialEvent>(_onInitial);
     on<FinishEvent>(_onFinish);
@@ -19,7 +20,8 @@ class TestingScreenBloc extends Bloc<TestingScreenEvent, TestingScreenState> {
 
   FutureOr<void> _onInitial(
       InitialEvent event, Emitter<TestingScreenState> emit) async {
-    emit(state.copyWith(status: TestingCardStatus.loading, deckId: event.deckId));
+    emit(state.copyWith(
+        status: TestingCardStatus.loading, deckId: event.deckId));
     Card? card = await cardRepo.nextCardForReview(event.deckId);
     if (card == null) {
       emit(state.copyWith(status: TestingCardStatus.finish));
@@ -39,9 +41,10 @@ class TestingScreenBloc extends Bloc<TestingScreenEvent, TestingScreenState> {
     ));
   }
 
-  void _onFinish(FinishEvent event, Emitter<TestingScreenState> emit) {
+  void _onFinish(FinishEvent event, Emitter<TestingScreenState> emit) async {
     // call the function to delete temp deck
     emit(state.copyWith(status: TestingCardStatus.finish));
+    await deckRepo.cleanDeckAfterLearningSession("test");
   }
 
   FutureOr<void> _onRevealCard(
