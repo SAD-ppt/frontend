@@ -8,6 +8,15 @@ class AddNewCardEvent extends Equatable {
 }
 
 class InitialEvent extends AddNewCardEvent {
+  String? deckId;
+  InitialEvent({String? deckId}) {
+    if (deckId != null) {
+      this.deckId = deckId;
+    }
+  }
+
+  @override
+  List<Object> get props => [deckId!];
 }
 
 class SubmitCard extends AddNewCardEvent {

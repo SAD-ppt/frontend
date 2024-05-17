@@ -8,15 +8,20 @@ import 'package:repos/repos.dart';
 import './card_form.dart';
 
 class AddNewCardPage extends StatelessWidget {
-  const AddNewCardPage({super.key});
+  String? deck;
+  AddNewCardPage({super.key, String? deckId}) {
+    if (deckId != null) {
+      deck = deckId;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => AddNewCardBloc(
-          deckRepository: context.read<DeckRepo>(),
-          noteRepository: context.read<NoteRepo>(),
-          noteTemplateRepository: context.read<NoteTemplateRepo>(),
-        )..add(InitialEvent()),
+              deckRepository: context.read<DeckRepo>(),
+              noteRepository: context.read<NoteRepo>(),
+              noteTemplateRepository: context.read<NoteTemplateRepo>(),
+            )..add(InitialEvent(deckId: deck)),
         child: _AddNewCardView());
   }
 }
@@ -56,7 +61,9 @@ class _AddNewCardView extends StatelessWidget {
                 context.read<AddNewCardBloc>().add(NoteTemplateChanged(value))
               },
               onCardFormFieldChanged: (index, value) => {
-                context.read<AddNewCardBloc>().add(FieldValueChanged(index, value))
+                context
+                    .read<AddNewCardBloc>()
+                    .add(FieldValueChanged(index, value))
               },
               onCardTypesChanged: (value) =>
                   {context.read<AddNewCardBloc>().add(CardTypesChanged(value))},
