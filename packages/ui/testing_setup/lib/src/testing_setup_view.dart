@@ -74,35 +74,15 @@ class _Config extends StatelessWidget {
     var fieldHeaderTextStyle = Theme.of(context).textTheme.titleMedium;
     
     var tagTitle = Text('Tag(s):', style: fieldHeaderTextStyle);
-    var tagDropdown = CustomDropdown<String>.multiSelectSearch(
-      hideSelectedFieldWhenExpanded: true,
-      hintText: 'Choose tag(s)',
-      items: availableTagsList,
-      onListChanged: (items) => {
-        items.sort(),
-        onSelectedTagsChanged(items),
-      },
-      decoration: CustomDropdownDecoration(
-        closedBorder: Border.all(color: Colors.grey),
-        expandedBorder: Border.all(color: Colors.grey),
-        closedBorderRadius: BorderRadius.zero,
-        expandedBorderRadius: BorderRadius.zero,
-      )
-    );
-
-    var cardTypeTitle = Text('Card types:', style: fieldHeaderTextStyle);
-    
-    Widget cardTypeDropdown;
-    if( availableCardTypeList.isEmpty ) {
-      cardTypeDropdown = const Text('No card type available');
-    } else {
-      cardTypeDropdown = CustomDropdown<String>.multiSelectSearch(
+    Widget tagDropdown = const SizedBox();
+    if( availableTagsList.isNotEmpty ) {
+      tagDropdown = CustomDropdown<String>.multiSelectSearch(
         hideSelectedFieldWhenExpanded: true,
-        hintText: 'Choose card type(s)',
-        items: availableCardTypeList,
+        hintText: 'Choose tag(s)',
+        items: availableTagsList,
         onListChanged: (items) => {
           items.sort(),
-          onSelectedCardTypeChanged(items),
+          onSelectedTagsChanged(items),
         },
         decoration: CustomDropdownDecoration(
           closedBorder: Border.all(color: Colors.grey),
@@ -112,27 +92,47 @@ class _Config extends StatelessWidget {
         )
       );
     }
+
+    var cardTypeTitle = Text('Card types:', style: fieldHeaderTextStyle);
+    Widget cardTypeDropdown = CustomDropdown<String>.multiSelectSearch(
+      hideSelectedFieldWhenExpanded: true,
+      hintText: 'Choose card type(s)',
+      items: availableCardTypeList,
+      onListChanged: (items) => {
+        items.sort(),
+        onSelectedCardTypeChanged(items),
+      },
+      decoration: CustomDropdownDecoration(
+        closedBorder: Border.all(color: Colors.grey),
+        expandedBorder: Border.all(color: Colors.grey),
+        closedBorderRadius: BorderRadius.zero,
+        expandedBorderRadius: BorderRadius.zero,
+      )
+    );
+
+    List<Widget> childrenWidget = [];
+    if( availableTagsList.isNotEmpty ) {
+      childrenWidget.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(flex: 2, child: tagTitle),
+          Flexible(flex: 4, child: tagDropdown),
+        ],
+      ));
+      childrenWidget.add(const SizedBox(height: 16));
+    }
+
+    childrenWidget.add(Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(flex: 2, child: cardTypeTitle),
+        Flexible(flex: 4, child: cardTypeDropdown)
+      ],
+    ));
+    childrenWidget.add(const SizedBox(height: 16));
     
     return Column(
-      children: [
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(flex: 2, child: tagTitle),
-            Flexible(flex: 4, child: tagDropdown),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(flex: 2, child: cardTypeTitle),
-            Flexible(flex: 4, child: cardTypeDropdown)
-          ],
-        ),
-        const SizedBox(height: 16),
-      ],
+      children: childrenWidget,
     );
   }
 }
