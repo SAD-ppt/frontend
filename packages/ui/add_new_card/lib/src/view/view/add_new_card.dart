@@ -8,8 +8,10 @@ import 'package:repos/repos.dart';
 import './card_form.dart';
 
 class AddNewCardPage extends StatelessWidget {
+  final void Function() onDone;
+  final void Function() onBack;
   String? deck;
-  AddNewCardPage({super.key, String? deckId}) {
+  AddNewCardPage({super.key, required this.onDone, required this.onBack, String? deckId}) {
     if (deckId != null) {
       deck = deckId;
     }
@@ -18,15 +20,19 @@ class AddNewCardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => AddNewCardBloc(
-              deckRepository: context.read<DeckRepo>(),
-              noteRepository: context.read<NoteRepo>(),
-              noteTemplateRepository: context.read<NoteTemplateRepo>(),
-            )..add(InitialEvent(deckId: deck)),
-        child: _AddNewCardView());
+                  deckRepository: context.read<DeckRepo>(),
+                  noteRepository: context.read<NoteRepo>(),
+                  noteTemplateRepository: context.read<NoteTemplateRepo>(),
+                )..add(InitialEvent(deckId: deck)),
+        child: _AddNewCardView(onDone: onDone, onBack: onBack));
   }
 }
 
 class _AddNewCardView extends StatelessWidget {
+  final void Function() onDone;
+  final void Function() onBack;
+
+  const _AddNewCardView({required this.onDone, required this.onBack});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AddNewCardBloc, AddNewCardState>(
@@ -35,7 +41,9 @@ class _AddNewCardView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Add new card'),
-            leading: const BackButton(),
+            leading: BackButton(
+              onPressed: onBack,
+            ),
           ),
           body: const Loading(),
         );
@@ -43,7 +51,10 @@ class _AddNewCardView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: _TitleBar(
-              onDone: () => context.read<AddNewCardBloc>().add(SubmitCard()),
+              onDone: () {
+                context.read<AddNewCardBloc>().add(SubmitCard());
+                onDone();
+              },
               onMore: () => null,
             ),
             leading: const BackButton(),

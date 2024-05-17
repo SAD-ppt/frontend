@@ -62,6 +62,7 @@ class _AvailableFieldsList extends StatelessWidget {
           Draggable<String>(
             data: field,
             feedback: Material(
+              type: MaterialType.transparency,
               child: Chip(
                 label: Text(field),
               ),

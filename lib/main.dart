@@ -101,7 +101,10 @@ class _UiRoot extends StatelessWidget {
         ),
       ),
       onAddNewCard: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const AddNewCardPage()),
+        MaterialPageRoute(
+            builder: (context) => AddNewCardPage(
+                onBack: () => Navigator.of(context).pop(),
+                onDone: () => Navigator.of(context).pop())),
       ),
       onDeckSelected: (deckId) => Navigator.of(context).push(
         MaterialPageRoute(
@@ -112,7 +115,11 @@ class _UiRoot extends StatelessWidget {
         ),
       ),
       onAddNewTemplate: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddNewTemplateScreen()),
+        MaterialPageRoute(
+            builder: (context) => AddNewTemplateScreen(
+                  onBack: () => Navigator.of(context).pop(),
+                  onDone: () => Navigator.of(context).pop(),
+                )),
       ),
     );
   }
