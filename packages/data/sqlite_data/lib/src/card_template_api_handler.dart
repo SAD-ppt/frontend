@@ -166,8 +166,14 @@ class CardTemplateApiHandler implements CardTemplateApi {
 
   @override
   Future<List<CardTemplateDetail>> getCardTemplates(String? noteTemplateId) {
-    return db.query('CardTemplate',
-        where: 'NoteTemplateID = ?', whereArgs: [noteTemplateId]).then((value) {
+    Future<List<Map<String, dynamic>>> query;
+    if (noteTemplateId == null) {
+      query = db.query('CardTemplate');
+    } else {
+      query = db.query('CardTemplate',
+          where: 'NoteTemplateID = ?', whereArgs: [noteTemplateId]);
+    }
+    return query.then((value) {
       if (value.isEmpty) {
         throw Exception('No card templates found');
       }

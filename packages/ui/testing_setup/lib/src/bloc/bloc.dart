@@ -7,11 +7,13 @@ import 'package:testing_setup/src/bloc/state.dart';
 
 class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
 
+  final void Function(String) onStart;
   final DeckRepo deckRepository;
   final CardRepo cardRepository;
   final NoteRepo noteRepository;
 
   TestingSetupBloc({
+    required this.onStart,
     required this.deckRepository,
     required this.cardRepository,
     required this.noteRepository,
@@ -99,6 +101,8 @@ class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
       state.selectedTags, 
       selectedCardTypeId.toSet().toList()
     );
+    print("Result ID: $resultID");
+    onStart(resultID);
     
     emit(state.copyWith(
       status: TestingSetupStatus.loaded,
