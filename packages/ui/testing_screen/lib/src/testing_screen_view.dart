@@ -19,11 +19,11 @@ class TestingScreen extends StatelessWidget {
             cardRepo: context.read<CardRepo>(),
             deckRepo: context.read<DeckRepo>())
           ..add(InitialEvent(deckId: deckId)),
-        child: _LearningScreenView());
+        child: _TestingScreenView());
   }
 }
 
-class _LearningScreenView extends StatelessWidget {
+class _TestingScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TestingScreenBloc, TestingScreenState>(

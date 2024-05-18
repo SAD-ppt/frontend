@@ -149,4 +149,10 @@ class CardRepo {
       );
     }));
   }
+
+  Future<int> getNumCardsOfDeck(String deckId) async {
+    return await cardApi.getNumCardsInDeck(deckId).then(
+      (value) => value!.toInt(),
+    );
+  }
 }
