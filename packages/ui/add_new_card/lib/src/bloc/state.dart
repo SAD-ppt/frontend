@@ -74,7 +74,8 @@ class AddNewCardState extends Equatable {
       tagsList: tagsList ?? this.tagsList,
       availableTagsList: availableTagsList ?? this.availableTagsList,
       availableDecks: availableDecks ?? this.availableDecks,
-      availableNoteTemplates: availableNoteTemplates ?? this.availableNoteTemplates,
+      availableNoteTemplates:
+          availableNoteTemplates ?? this.availableNoteTemplates,
       availableCardTypes: availableCardTypes ?? this.availableCardTypes,
     );
   }
