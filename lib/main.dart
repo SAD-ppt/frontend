@@ -89,19 +89,19 @@ class _UiRoot extends StatelessWidget {
         MaterialPageRoute(
           builder: (context) => TestingSetupScreen(
               onCancel: () => Navigator.of(context).pop(),
-              onStart: (deckId) => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => LearningScreen(
-                          onFinished: () => Navigator.of(context).pop(),
-                          deckId: deckId,
-                          onBack: () => Navigator.of(context).pop()),
+              onStart: (deckId) => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => TestingScreen(
+                      deckId: deckId,
                     ),
-                  ),
+                  )),
               deckId: deckId),
         ),
       ),
       onAddNewCard: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const AddNewCardPage()),
+        MaterialPageRoute(
+            builder: (context) => AddNewCardPage(
+                onBack: () => Navigator.of(context).pop(),
+                onDone: () => Navigator.of(context).pop())),
       ),
       onDeckSelected: (deckId) => Navigator.of(context).push(
         MaterialPageRoute(
@@ -112,7 +112,11 @@ class _UiRoot extends StatelessWidget {
         ),
       ),
       onAddNewTemplate: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddNewTemplateScreen()),
+        MaterialPageRoute(
+            builder: (context) => AddNewTemplateScreen(
+                  onBack: () => Navigator.of(context).pop(),
+                  onDone: () => Navigator.of(context).pop(),
+                )),
       ),
     );
   }

@@ -10,7 +10,6 @@ import 'package:repos/repos.dart';
 // }
 
 class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
-
   final DeckRepo deckRepository;
   final NoteRepo noteRepository;
   final NoteTemplateRepo noteTemplateRepository;
@@ -20,7 +19,6 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     required this.noteRepository,
     required this.noteTemplateRepository,
   }) : super(const AddNewCardState()) {
-
     on<InitialEvent>(_onInitial);
     on<SubmitCard>(_onSubmitCard);
     on<DeckChanged>(_onDeckChanged);
@@ -42,46 +40,66 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     // Load data from repository
     List<DeckOverview> deckList = await deckRepository.getDeckOverviews();
 
-    List<NoteTemplate> noteTemplateList = await noteTemplateRepository.getAllNoteTemplates();
-    
+    List<NoteTemplate> noteTemplateList =
+        await noteTemplateRepository.getAllNoteTemplates();
+
     List<CardTemplate> cardTemplateList = const [];
-    if(noteTemplateList.isNotEmpty) {
-      NoteTemplateDetail noteTemplateDetail = await noteTemplateRepository.getNoteTemplateDetail(noteTemplateList[0].id);
+    if (noteTemplateList.isNotEmpty) {
+      NoteTemplateDetail noteTemplateDetail = await noteTemplateRepository
+          .getNoteTemplateDetail(noteTemplateList[0].id);
       cardTemplateList = noteTemplateDetail.cardTemplates;
     }
 
-    List<String> fieldsList = getFieldsForNoteTemplate(noteTemplateList[0].name, noteTemplateList);
+    List<String> fieldsList =
+        getFieldsForNoteTemplate(noteTemplateList[0].name, noteTemplateList);
     // map each field to a tuple of field name and value
-    List<(String, String)> fieldNamesValues = fieldsList.map((field) => (field, '')).toList();
+    List<(String, String)> fieldNamesValues =
+        fieldsList.map((field) => (field, '')).toList();
     List<String> tagList = await noteRepository.getTags();
 
+    String deckInitItem;
+    if (event.deckId != null) {
+      deckInitItem = deckList.firstWhere((deck) => deck.id == event.deckId).name;
+    } else {
+      deckInitItem = deckList.isNotEmpty ? deckList[0].name : '';
+    }
+
     emit(state.copyWith(
-        status: Status.loaded,
-        deckName: deckList.isNotEmpty ? deckList[0].name : '',
-        noteTemplateName: noteTemplateList.isNotEmpty ? noteTemplateList[0].name : '',
-        fieldNamesValues: fieldNamesValues,
-        tagsList: const [],
-        selectedCardTypes: [],
-        availableDecks: deckList,
-        availableNoteTemplates: noteTemplateList,
-        availableCardTypes: cardTemplateList,
-        availableTagsList: tagList,
+      status: Status.loaded,
+      deckName: deckInitItem,
+      noteTemplateName:
+          noteTemplateList.isNotEmpty ? noteTemplateList[0].name : '',
+      fieldNamesValues: fieldNamesValues,
+      tagsList: const [],
+      selectedCardTypes: [],
+      availableDecks: deckList,
+      availableNoteTemplates: noteTemplateList,
+      availableCardTypes: cardTemplateList,
+      availableTagsList: tagList,
     ));
   }
 
-  FutureOr<void> _onSubmitCard(SubmitCard event, Emitter<AddNewCardState> emit) async {
+  FutureOr<void> _onSubmitCard(
+      SubmitCard event, Emitter<AddNewCardState> emit) async {
     emit(state.copyWith(status: Status.adding));
-    return noteRepository.createNote(
-        state.deckName,
-      getNoteTemplateByName(state.noteTemplateName, state.availableNoteTemplates).id,
+    // get deck id from deck name
+    String deckId = state.availableDecks
+        .firstWhere((deck) => deck.name == state.deckName)
+        .id;
+    return noteRepository
+        .createNote(
+      deckId,
+      getNoteTemplateByName(
+              state.noteTemplateName, state.availableNoteTemplates)
+          .id,
       state.fieldNamesValues.map((field) => field.$2).toList(),
       tags: state.tagsList,
-    ).then((value) {
+    )
+        .then((value) {
       emit(state.copyWith(status: Status.addSuccess));
     }).catchError((error) {
       emit(state.copyWith(status: Status.addError));
     });
-    
   }
 
   void _onDeckChanged(DeckChanged event, Emitter<AddNewCardState> emit) {
@@ -93,11 +111,15 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
     emit(state.copyWith(status: Status.changing));
     await Future.delayed(const Duration(milliseconds: 500));
 
-    NoteTemplate noteTemplate = getNoteTemplateByName(event.noteTemplateName, state.availableNoteTemplates);
-    NoteTemplateDetail noteTemplateDetail = await noteTemplateRepository.getNoteTemplateDetail(noteTemplate.id);
+    NoteTemplate noteTemplate = getNoteTemplateByName(
+        event.noteTemplateName, state.availableNoteTemplates);
+    NoteTemplateDetail noteTemplateDetail =
+        await noteTemplateRepository.getNoteTemplateDetail(noteTemplate.id);
     List<CardTemplate> cardTemplateList = noteTemplateDetail.cardTemplates;
-    List<String> fieldsList = getFieldsForNoteTemplate(event.noteTemplateName, state.availableNoteTemplates);
-    List<(String, String)> fieldNamesValues = fieldsList.map((field) => (field, '')).toList();
+    List<String> fieldsList = getFieldsForNoteTemplate(
+        event.noteTemplateName, state.availableNoteTemplates);
+    List<(String, String)> fieldNamesValues =
+        fieldsList.map((field) => (field, '')).toList();
 
     emit(state.copyWith(
         status: Status.changed,
@@ -138,17 +160,24 @@ class AddNewCardBloc extends Bloc<AddNewCardEvent, AddNewCardState> {
   }
 
   // Helper function
-  List<String> getFieldsForNoteTemplate(String noteTemplateName, List<NoteTemplate> noteTemplateList) {
-    return noteTemplateList.firstWhere((noteTemplate) => noteTemplate.name == noteTemplateName).fieldNames;
+  List<String> getFieldsForNoteTemplate(
+      String noteTemplateName, List<NoteTemplate> noteTemplateList) {
+    return noteTemplateList
+        .firstWhere((noteTemplate) => noteTemplate.name == noteTemplateName)
+        .fieldNames;
   }
 
-  NoteTemplate getNoteTemplateByName(String noteTemplateName, List<NoteTemplate> noteTemplateList) {
-    return noteTemplateList.firstWhere((noteTemplate) => noteTemplate.name == noteTemplateName);
+  NoteTemplate getNoteTemplateByName(
+      String noteTemplateName, List<NoteTemplate> noteTemplateList) {
+    return noteTemplateList
+        .firstWhere((noteTemplate) => noteTemplate.name == noteTemplateName);
   }
 
-  void _onFieldValueChanged(FieldValueChanged event, Emitter<AddNewCardState> emit) {
+  void _onFieldValueChanged(
+      FieldValueChanged event, Emitter<AddNewCardState> emit) {
     List<(String, String)> newFieldNamesValues = state.fieldNamesValues;
-    newFieldNamesValues[event.index] = (newFieldNamesValues[event.index].$1, event.value);
+    newFieldNamesValues[event.index] =
+        (newFieldNamesValues[event.index].$1, event.value);
     emit(state.copyWith(fieldNamesValues: newFieldNamesValues));
   }
 }

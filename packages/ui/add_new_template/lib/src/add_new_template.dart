@@ -6,16 +6,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repos/repos.dart';
 
 class AddNewTemplateScreen extends StatelessWidget {
+  final void Function() onDone;
+  final void Function() onBack;
   const AddNewTemplateScreen({
+    required this.onDone,
+    required this.onBack,
     super.key,
   });
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AddNewTemplateBloc(
-          onSuccess: () {
-            Navigator.of(context).pop();
-          },
+          onSuccess: onDone,
           noteTemplateRepo: context.read<NoteTemplateRepo>()),
       child: Navigator(
         initialRoute: 'add_new_template/add_fields',
@@ -24,9 +26,7 @@ class AddNewTemplateScreen extends StatelessWidget {
           switch (settings.name) {
             case 'add_new_template/add_fields':
               builder = (BuildContext _) => AddFieldsScreen(
-                    onBack: () {
-                      Navigator.of(context).pop();
-                    },
+                    onBack: onBack,
                   );
             case 'add_new_template/add_card_types':
               builder = (BuildContext context) => const AddCardTypesScreen();

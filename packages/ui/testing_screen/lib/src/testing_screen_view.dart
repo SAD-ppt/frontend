@@ -15,14 +15,15 @@ class TestingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) =>
-            TestingScreenBloc(cardRepo: context.read<CardRepo>())
-              ..add(InitialEvent(deckId: deckId)),
-        child: _LearningScreenView());
+        create: (context) => TestingScreenBloc(
+            cardRepo: context.read<CardRepo>(),
+            deckRepo: context.read<DeckRepo>())
+          ..add(InitialEvent(deckId: deckId)),
+        child: _TestingScreenView());
   }
 }
 
-class _LearningScreenView extends StatelessWidget {
+class _TestingScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TestingScreenBloc, TestingScreenState>(
@@ -49,7 +50,9 @@ class _LearningScreenView extends StatelessWidget {
             if (state.status == TestingCardStatus.finish) ...[
               TestingPanelFinish(
                 onFinished: () {
-                  context.read<TestingScreenBloc>().add(FinishEvent(deckId: state.deckId));
+                  context
+                      .read<TestingScreenBloc>()
+                      .add(FinishEvent(deckId: state.deckId));
                 },
               ),
               // call the function to delete temp deck
@@ -95,7 +98,9 @@ class _LearningScreenView extends StatelessWidget {
                     ),
                     onPressed: () {
                       // emit the LearningScreenSubmitButtonPressed event
-                      context.read<TestingScreenBloc>().add(const SubmitButtonsPressed(result: 'correct'));
+                      context
+                          .read<TestingScreenBloc>()
+                          .add(const SubmitButtonsPressed(result: 'correct'));
                     },
                     child: const Text(
                       'Correct',
@@ -108,7 +113,9 @@ class _LearningScreenView extends StatelessWidget {
                     ),
                     onPressed: () {
                       // emit the LearningScreenSubmitButtonPressed event
-                      context.read<TestingScreenBloc>().add(const SubmitButtonsPressed(result: 'incorrect'));
+                      context
+                          .read<TestingScreenBloc>()
+                          .add(const SubmitButtonsPressed(result: 'incorrect'));
                     },
                     child: const Text(
                       'Incorrect',
