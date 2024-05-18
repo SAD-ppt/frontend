@@ -92,6 +92,26 @@ class CardRepo {
     return null;
   }
 
+  /// Get number of cards due for review in the deck with the given [deckId].
+  Future<int> numCardsDueForReview(String deckId) async {
+    if (_cardsDueForReview[deckId] == null) {
+      await _updateCardsDueForReview(deckId);
+    }
+    return _cardsDueForReview[deckId]!.length;
+  }
+
+  /// Get number cards due for review in the deck with the given [deckId] and [selectedCardIds].
+  /// The [selectedCardIds] is a list of card ids is the ones that are selected to be reviewed.
+  Future<int> numCardsDueForReviewWithSelection(
+      String deckId, List<CardKey> selectedCardIds) async {
+    if (_cardsDueForReview[deckId] == null) {
+      await _updateCardsDueForReview(deckId);
+    }
+    return _cardsDueForReview[deckId]!
+        .where((pair) => selectedCardIds.contains(pair.$1.key))
+        .length;
+  }
+
   /// Get all cards in the deck with the given [deckId].
   Future<List<Card>> getCardsOfDeck(String deckId) {
     return cardApi
