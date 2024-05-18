@@ -14,11 +14,14 @@ class CardBrowserState extends Equatable {
   final List<Card> cardList;
   final List<Card> selectedCards;
 
+  final int remainingCards;
+
   const CardBrowserState({
     this.status = CardBrowserStatus.initial,
     this.deckID,
     this.cardList = const [],
     this.selectedCards = const [],
+    this.remainingCards = 0,
   });
 
   @override
@@ -29,12 +32,14 @@ class CardBrowserState extends Equatable {
     String? deckID,
     List<Card>? cardList,
     List<Card>? selectedCards,
+    int? remainingCards,
   }) {
     return CardBrowserState(
       status: status ?? this.status,
       deckID: deckID ?? this.deckID,
       cardList: cardList ?? this.cardList,
       selectedCards: selectedCards ?? this.selectedCards,
+      remainingCards: remainingCards ?? this.remainingCards,
     );
   }
 }

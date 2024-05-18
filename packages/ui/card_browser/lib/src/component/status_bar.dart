@@ -18,7 +18,7 @@ class StatusBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _StatusBarItem(name: 'All', number: allCard),
-          _StatusBarItem(name: 'Memorized', number: memorized),
+          _StatusBarItem(name: 'Learned', number: memorized),
           _StatusBarItem(name: 'Remained', number: allCard - memorized),
         ],
       ),
