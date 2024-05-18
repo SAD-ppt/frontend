@@ -41,6 +41,8 @@ class TestingSetupBloc extends Bloc<TestingSetupEvent, TestingSetupState> {
       availableCardTypes.add(card.cardTemplateName);
       dictionary[card.cardTemplateName] = card.id.cardTemplateId;
     }
+
+    availableCardTypes = availableCardTypes.toSet().toList();
     
     emit(state.copyWith(
       status: TestingSetupStatus.loaded,
