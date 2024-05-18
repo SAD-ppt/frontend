@@ -80,6 +80,8 @@ class _UiRoot extends StatelessWidget {
 
   onBackCallback() => Navigator.of(context).pop();
 
+  onFinishedCallBack() => Navigator.of(context).popUntil((route) => route.isFirst);
+
   // Create builder functions for each screen
   builderAddNewCard(context) => AddNewCardPage(
     onBack: onBackCallback,
@@ -110,7 +112,7 @@ class _UiRoot extends StatelessWidget {
     builder: (context) => LearningScreen(
       deckId: deckId,
       onBack: onBackCallback,
-      onFinished: onBackCallback,
+      onFinished: onFinishedCallBack,
     ),
   );
 
@@ -134,13 +136,9 @@ class _UiRoot extends StatelessWidget {
   
     return MainScreen(
       onReviewDeck: (deckId) => Navigator.of(context).push( learningRoute(deckId) ),
-
       onTestDeck: (deckId) => Navigator.of(context).push( testingSetupRoute(deckId) ),
-
       onAddNewCard: () => Navigator.of(context).push( addNewCardRoute ),
-
       onDeckSelected: (deckId) => Navigator.of(context).push( cardBrowserRoute(deckId) ),
-
       onAddNewTemplate: () => Navigator.of(context).push( addNewTemplateRoute ),
     );
   }
