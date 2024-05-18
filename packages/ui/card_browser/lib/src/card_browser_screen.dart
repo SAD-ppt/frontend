@@ -5,12 +5,27 @@ import 'package:card_browser/src/component/body_card_browser.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:card_browser/src/bloc/event.dart';
 import 'package:repos/repos.dart';
+import 'package:logger/logger.dart';
+
+var logger = Logger();
 
 class CardBrowserScreen extends StatelessWidget {
-  final void Function() onBack;
+  
   final String deckId;
-  const CardBrowserScreen(
-      {super.key, required this.onBack, required this.deckId});
+  
+  final void Function() onBack;
+  final void Function(String deckId) onReviewDeck;
+  final void Function(String deckId) onTestDeck;
+  final void Function() onAddNewCard;
+  
+  const CardBrowserScreen({
+    super.key, 
+    required this.deckId,
+    required this.onBack,
+    required this.onReviewDeck,
+    required this.onTestDeck,
+    required this.onAddNewCard 
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +36,28 @@ class CardBrowserScreen extends StatelessWidget {
         ..add(InitialEvent(deckId)),
       child: _CardBrowserScreenView(
         onBack: onBack,
+        onAddNewCard: onAddNewCard,
+        onReviewDeck: onReviewDeck,
+        onTestDeck: onTestDeck,
       ),
     );
   }
 }
 
-// Global variable for future use
-const int totalCard = 27;
-const int memorizedCard = 3;
-
 class _CardBrowserScreenView extends StatelessWidget {
+
   final void Function() onBack;
-  const _CardBrowserScreenView({required this.onBack});
+  final void Function() onAddNewCard;
+  final void Function(String deckId) onReviewDeck;
+  final void Function(String deckId) onTestDeck;
+
+  const _CardBrowserScreenView({
+    required this.onBack,
+    required this.onAddNewCard,
+    required this.onReviewDeck,
+    required this.onTestDeck
+  });
+  
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CardBrowserBloc, CardBrowserState>(
@@ -57,49 +82,20 @@ class _CardBrowserScreenView extends StatelessWidget {
           ),
           body: BodyCardBrowser(
             content: state.cardList,
-            total: totalCard,
-            memorized: memorizedCard,
-            onReview: () => context.read<CardBrowserBloc>().add(ReviewEvent()),
-            onTest: () => context.read<CardBrowserBloc>().add(TestEvent()),
-            onAddCard: () =>
-                context.read<CardBrowserBloc>().add(AddCardEvent()),
+            total: state.selectedCards.length,
+            memorized: state.selectedCards.length - state.remainingCards,
+            onReview: () => {
+              if (state.deckID != null) onReviewDeck(state.deckID!)
+              else logger.d('Deck ID is null')
+            },
+            onTest: () => {
+              if (state.deckID != null) onTestDeck(state.deckID!)
+              else logger.d('Deck ID is null')
+            },
+            onAddCard: onAddNewCard,
           ),
         );
       },
     );
   }
 }
-
-// class _ToolsBar extends StatelessWidget { 
-//   final Function() onSearch;
-//   final Function() onFilter;
-//   final Function() onMore;
-//   const _ToolsBar({
-//     required this.onSearch,
-//     required this.onFilter,
-//     required this.onMore,
-//   });
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.end,
-//       children: [
-//         IconButton(
-//           onPressed: onSearch,
-//           icon: const Icon(Icons.search),
-//           padding: const EdgeInsets.all(10.0),
-//         ),
-//         IconButton(
-//           onPressed: onFilter,
-//           icon: const Icon(Icons.filter_alt),
-//           padding: const EdgeInsets.all(10.0),
-//         ),
-//         IconButton(
-//           onPressed: onMore,
-//           icon: const Icon(Icons.more_vert),
-//           padding: const EdgeInsets.all(10.0),
-//         ),
-//       ],
-//     );
-//   }
-// }

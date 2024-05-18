@@ -27,7 +27,15 @@ class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
 
     // Get the cards of the deck
     List<Card> cardList = await cardRepository.getCardsOfDeck(state.deckID!);
-    emit(state.copyWith(status: CardBrowserStatus.loaded, cardList: cardList));
+    // Get remaining cards
+    int remainingCards = await cardRepository.numCardsDueForReview(state.deckID!);
+    
+    emit(state.copyWith(
+      status: CardBrowserStatus.loaded, 
+      cardList: cardList,
+      remainingCards: remainingCards,
+      selectedCards: cardList
+    ));
   }
 
   FutureOr<void> _onReview(ReviewEvent event, Emitter<CardBrowserState> emit) {
@@ -43,7 +51,7 @@ class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
     print('Adding Card');
   }
 
-  void _onSearch(SearchEvent event, Emitter<CardBrowserState> emit) {
+  Future<void> _onSearch(SearchEvent event, Emitter<CardBrowserState> emit) async {
     // Set the status to loading
     emit(state.copyWith(status: CardBrowserStatus.loading));
     // Logical resolution
@@ -58,8 +66,17 @@ class CardBrowserBloc extends Bloc<CardBrowserEvent, CardBrowserState> {
             (card) => (card.front[0].$2).toLowerCase().contains(event.keyword))
         .toList();
 
+    List<CardKey> selectedCardIds = selectedCards
+        .map((card) => card.key)
+        .toList();
+
+    int remainingCards = await cardRepository.numCardsDueForReviewWithSelection(
+        state.deckID!, selectedCardIds);
+
     emit(state.copyWith(
-        status: CardBrowserStatus.loaded, selectedCards: selectedCards));
+        status: CardBrowserStatus.loaded, 
+        selectedCards: selectedCards,
+        remainingCards: remainingCards));
   }
 }
 
