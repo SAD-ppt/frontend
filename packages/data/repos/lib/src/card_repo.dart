@@ -39,11 +39,6 @@ class CardRepo {
 
   Future<void> _updateCardsDueForReview(String deckId) async {
     final cards = await cardApi.getCards(deckId: deckId);
-    if (deckId == 'test') {
-      _cardsDueForReview[deckId] =
-          cards.map((card) => (card.toCard(), null)).toList();
-      return;
-    }
     final cardsWithLearningStats = await Future.wait(cards.map((card) async {
       final cardDetail = card.toCard();
       final key = api.CardKey(
