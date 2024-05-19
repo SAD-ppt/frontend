@@ -9,8 +9,17 @@ import 'package:testing_screen/src/testing_panel_loading.dart';
 import 'package:testing_screen/src/testing_panel_widget.dart';
 
 class TestingScreen extends StatelessWidget {
+  
   final String deckId;
-  const TestingScreen({super.key, required this.deckId});
+  final void Function() onFinished;
+  final void Function() onBack;
+
+  const TestingScreen({
+    super.key, 
+    required this.deckId,
+    required this.onFinished,
+    required this.onBack,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +28,23 @@ class TestingScreen extends StatelessWidget {
             cardRepo: context.read<CardRepo>(),
             deckRepo: context.read<DeckRepo>())
           ..add(InitialEvent(deckId: deckId)),
-        child: _TestingScreenView());
+        child: _TestingScreenView(
+          onFinished: onFinished,
+          onBack: onBack,
+        ));
   }
 }
 
 class _TestingScreenView extends StatelessWidget {
+
+  final void Function() onFinished;
+  final void Function() onBack;
+
+  const _TestingScreenView({
+    required this.onFinished,
+    required this.onBack,
+  });
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TestingScreenBloc, TestingScreenState>(
@@ -33,9 +54,7 @@ class _TestingScreenView extends StatelessWidget {
           // Back button and settings icon
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              // Navigator.of(context).pop();
-            },
+            onPressed: onBack,
           ),
           actions: const <Widget>[
             IconButton(
@@ -49,11 +68,7 @@ class _TestingScreenView extends StatelessWidget {
           children: [
             if (state.status == TestingCardStatus.finish) ...[
               TestingPanelFinish(
-                onFinished: () {
-                  context
-                      .read<TestingScreenBloc>()
-                      .add(FinishEvent(deckId: state.deckId));
-                },
+                onFinished: onFinished,
               ),
               // call the function to delete temp deck
             ],

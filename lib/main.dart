@@ -105,6 +105,8 @@ class _UiRoot extends StatelessWidget {
   MaterialPageRoute testingRoute( deckId ) => MaterialPageRoute(
     builder: (context) => TestingScreen(
       deckId: deckId,
+      onBack: onBackCallback,
+      onFinished: onFinishedCallBack,
     ),
   );
 

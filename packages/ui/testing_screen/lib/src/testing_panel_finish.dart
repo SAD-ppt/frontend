@@ -19,7 +19,7 @@ class TestingPanelFinish extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'You have completed the learning session.',
+            'You have completed the testing session.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 16),
